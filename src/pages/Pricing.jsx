@@ -1,4 +1,7 @@
-import { ReactNode } from "react";
+import { useEffect, useState, useContext } from "react";
+import KhaltiCheckout from "khalti-checkout-web";
+import axios from "axios";
+
 import {
   Box,
   Stack,
@@ -11,9 +14,23 @@ import {
   ListItem,
   ListIcon,
   Button,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  Wrap,
+  Avatar,
+  Flex,
+  Center,
+  ModalBody,
+  IconButton,
+  useToast,
+  Skeleton,
 } from "@chakra-ui/react";
 import { FaCheckCircle } from "react-icons/fa";
-
+import AuthContext from "../context/AuthContext";
+import { getTokens } from "../services/localStorage";
+import Navbar from "../components/Navbar/Navbar";
 function PriceWrapper({ children }) {
   return (
     <Box
@@ -30,184 +47,266 @@ function PriceWrapper({ children }) {
 }
 
 export default function Pricing() {
-  return (
-    <Box py={12}>
-      <VStack spacing={2} textAlign="center">
-        <Heading as="h1" fontSize="4xl">
-          Plans that fit your need
-        </Heading>
-        <Text fontSize="lg" color={"gray.500"}>
-          Start with 14-day free trial. No credit card needed. Cancel at
-          anytime.
-        </Text>
-      </VStack>
-      <Stack
-        direction={{ base: "column", md: "row" }}
-        textAlign="center"
-        justify="center"
-        spacing={{ base: 4, lg: 10 }}
-        py={10}
-      >
-        <PriceWrapper>
-          <Box py={4} px={12}>
-            <Text fontWeight="500" fontSize="2xl">
-              Hobby
-            </Text>
-            <HStack justifyContent="center">
-              <Text fontSize="3xl" fontWeight="600">
-                $
-              </Text>
-              <Text fontSize="5xl" fontWeight="900">
-                79
-              </Text>
-              <Text fontSize="3xl" color="gray.500">
-                /month
-              </Text>
-            </HStack>
-          </Box>
-          <VStack
-            bg={useColorModeValue("gray.50", "gray.700")}
-            py={4}
-            borderBottomRadius={"xl"}
-          >
-            <List spacing={3} textAlign="start" px={12}>
-              <ListItem>
-                <ListIcon as={FaCheckCircle} color="green.500" />
-                unlimited build minutes
-              </ListItem>
-              <ListItem>
-                <ListIcon as={FaCheckCircle} color="green.500" />
-                Lorem, ipsum dolor.
-              </ListItem>
-              <ListItem>
-                <ListIcon as={FaCheckCircle} color="green.500" />
-                5TB Lorem, ipsum dolor.
-              </ListItem>
-            </List>
-            <Box w="80%" pt={7}>
-              <Button w="full" colorScheme="red" variant="outline">
-                Start trial
-              </Button>
-            </Box>
-          </VStack>
-        </PriceWrapper>
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [pricingData, setPricingData] = useState([]);
+  const [pricingID, setPricingID] = useState();
+  const [pricingDetail, setPricingDetail] = useState({});
+  const [khaltiResponse, setKhaltiResponse] = useState({});
+  const [error, setError] = useState(false);
+  const { accessToken } = getTokens();
+  const { tokens, subscribed } = useContext(AuthContext);
+  const [userSubscribed, setUserSubscribed] = subscribed;
+  console.log(userSubscribed);
+  const toast = useToast();
+  console.log(accessToken);
 
-        <PriceWrapper>
-          <Box position="relative">
-            <Box
-              position="absolute"
-              top="-16px"
-              left="50%"
-              style={{ transform: "translate(-50%)" }}
+  useEffect(() => {
+    async function getPricingData() {
+      try {
+        const res = await axios({
+          method: "GET",
+          url: "membership/",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const removedData = res.data.shift();
+        setPricingData(res.data);
+      } catch (error) {
+        console.log(error.response.data);
+      }
+    }
+    getPricingData();
+  }, []);
+
+  const openModal = (e, id) => {
+    setModalOpen(true);
+    setPricingDetail(pricingData.find((obj) => obj.id === id));
+  };
+  const modalClose = () => {
+    setModalOpen(false);
+  };
+
+  const handlePayment = () => {
+    console.log("CLICkED");
+    console.log(pricingDetail);
+    let config = {
+      // replace this key with yours
+      publicKey: "test_public_key_4b33f92a102b4901aab413faf63178d9",
+      productIdentity: "1234567890",
+      productName: "Dragon",
+      productUrl: "http://gameofthrones.wikia.com/wiki/Dragons",
+      eventHandler: {
+        async onSuccess(payload) {
+          // hit merchant api for initiating verfication
+          // setKhaltiResponse(payload);
+          try {
+            const res = await axios({
+              method: "POST",
+              url: "subscribe/",
+              data: {
+                membership_type: pricingDetail.membership_type,
+                amount: payload.amount,
+                token: payload.token,
+              },
+              headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${accessToken}`,
+              },
+            });
+          } catch (error) {
+            toast({
+              title: "Server error. Please try again later.",
+              status: "error",
+              duration: 4000,
+              isClosable: true,
+            });
+          }
+        },
+        // onError handler is optional
+        onError(error) {
+          // handle errors
+          console.log(error);
+        },
+        onClose() {},
+      },
+      paymentPreference: [
+        "KHALTI",
+        // "EBANKING",
+        // "MOBILE_BANKING",
+        // "CONNECT_IPS",
+        // "SCT",
+      ],
+    };
+    if (accessToken) {
+      setModalOpen(false);
+      let checkout = new KhaltiCheckout(config);
+      checkout.show({ amount: 10000 });
+    } else {
+      setError(true);
+    }
+  };
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "You're not logged in",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+  }, [error]);
+  console.log(pricingData.length);
+  return (
+    <>
+      <Navbar />
+
+      <Box py={12}>
+        <VStack spacing={2} textAlign="center">
+          <Heading as="h1" fontSize="4xl">
+            Plans that fit your need
+          </Heading>
+          <Text fontSize="lg" color={"gray.500"}>
+            Start with 14-day free trial. No credit card needed. Cancel at
+            anytime.
+          </Text>
+        </VStack>
+        <Modal isOpen={modalOpen} onClose={modalClose} isCentered>
+          <ModalOverlay />
+          <ModalContent bgColor="transparent" boxShadow="none">
+            <ModalBody>
+              <Stack direction={"row"} justify="space-evenly">
+                <Stack align={"center"}>
+                  <Avatar
+                    _hover={{ cursor: "pointer" }}
+                    src="https://play-lh.googleusercontent.com/Xh_OlrdkF1UnGCnMN__4z-yXffBAEl0eUDeVDPr4UthOERV4Fll9S-TozSfnlXDFzw"
+                    onClick={handlePayment}
+                  />
+                  {/* <Button
+                  _hover={{
+                    bgColor: useColorModeValue("gray.400", "gray.700"),
+                  }}
+                  bgColor={useColorModeValue("gray.300", "gray.600")}
+                  onClick={handlePayment}
+                >
+                  Khalti
+                </Button> */}
+                </Stack>
+                <Stack align={"center"}>
+                  <Avatar src="https://esewa.com.np/common/images/esewa-icon-large.png" />
+                  {/* <Button
+                  _hover={{
+                    bgColor: useColorModeValue("gray.400", "gray.700"),
+                  }}
+                  bgColor={useColorModeValue("gray.300", "gray.600")}
+                >
+                  eSewa
+                </Button> */}
+                </Stack>
+                <Stack align={"center"}>
+                  <Avatar />
+                  {/* <Button
+                  _hover={{
+                    bgColor: useColorModeValue("gray.400", "gray.700"),
+                  }}
+                  bgColor={useColorModeValue("gray.300", "gray.600")}
+                >
+                  Stripe
+                </Button> */}
+                </Stack>
+              </Stack>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+        <Stack
+          direction={{ base: "column", md: "row" }}
+          textAlign="center"
+          justify="center"
+          spacing={{ base: 4, lg: 10 }}
+          py={10}
+        >
+          {pricingData.length ? (
+            pricingData?.map((item) => {
+              return (
+                <PriceWrapper key={item.id}>
+                  <Box py={4} px={12}>
+                    <Text fontWeight="500" fontSize="2xl">
+                      {item.membership_type}
+                    </Text>
+                    <Text color="gray.500">
+                      {item.duration} {item.duration > 1 ? "months" : "month"}{" "}
+                      package
+                    </Text>
+                    <HStack justifyContent="center">
+                      <Text fontSize="3xl" fontWeight="600">
+                        $
+                      </Text>
+                      <Text fontSize="5xl" fontWeight="900">
+                        {Math.floor(item.price)}
+                      </Text>
+                    </HStack>
+                  </Box>
+                  <VStack
+                    // bg={useColorModeValue("gray.50", "gray.700")}
+                    py={4}
+                    borderBottomRadius={"xl"}
+                  >
+                    <List spacing={3} textAlign="start" px={12}>
+                      {item?.description?.map((item) => {
+                        return (
+                          <ListItem
+                            key={item}
+                            display="flex"
+                            alignItems={"center"}
+                          >
+                            <ListIcon as={FaCheckCircle} color="green.500" />
+                            <Text>{item}</Text>
+                          </ListItem>
+                        );
+                      })}
+                    </List>
+                    <Box w="80%" pt={7}>
+                      <Button
+                        w="full"
+                        colorScheme="red"
+                        onClick={(e) => openModal(e, item.id)}
+                        disabled={userSubscribed}
+                        variant={userSubscribed ? null : "outline"}
+                      >
+                        {userSubscribed ? "Subscribed" : "Subscribe now"}
+                      </Button>
+                    </Box>
+                  </VStack>
+                </PriceWrapper>
+              );
+            })
+          ) : (
+            <Stack
+              // display="flex"
+              // direction="row"
+              direction={{ base: "column", md: "row" }}
+              textAlign="center"
+              justify="center"
+              // align="center"
+              spacing={4}
+              p={10}
+              // bgColor="blue"
+              width="100%"
             >
-              <Text
-                textTransform="uppercase"
-                bg={useColorModeValue("red.300", "red.700")}
-                px={3}
-                py={1}
-                color={useColorModeValue("gray.900", "gray.300")}
-                fontSize="sm"
-                fontWeight="600"
-                rounded="xl"
-              >
-                Most Popular
-              </Text>
-            </Box>
-            <Box py={4} px={12}>
-              <Text fontWeight="500" fontSize="2xl">
-                Growth
-              </Text>
-              <HStack justifyContent="center">
-                <Text fontSize="3xl" fontWeight="600">
-                  $
-                </Text>
-                <Text fontSize="5xl" fontWeight="900">
-                  149
-                </Text>
-                <Text fontSize="3xl" color="gray.500">
-                  /month
-                </Text>
-              </HStack>
-            </Box>
-            <VStack
-              bg={useColorModeValue("gray.50", "gray.700")}
-              py={4}
-              borderBottomRadius={"xl"}
-            >
-              <List spacing={3} textAlign="start" px={12}>
-                <ListItem>
-                  <ListIcon as={FaCheckCircle} color="green.500" />
-                  unlimited build minutes
-                </ListItem>
-                <ListItem>
-                  <ListIcon as={FaCheckCircle} color="green.500" />
-                  Lorem, ipsum dolor.
-                </ListItem>
-                <ListItem>
-                  <ListIcon as={FaCheckCircle} color="green.500" />
-                  5TB Lorem, ipsum dolor.
-                </ListItem>
-                <ListItem>
-                  <ListIcon as={FaCheckCircle} color="green.500" />
-                  5TB Lorem, ipsum dolor.
-                </ListItem>
-                <ListItem>
-                  <ListIcon as={FaCheckCircle} color="green.500" />
-                  5TB Lorem, ipsum dolor.
-                </ListItem>
-              </List>
-              <Box w="80%" pt={7}>
-                <Button w="full" colorScheme="red">
-                  Start trial
-                </Button>
+              <Box flex="1" px={{ base: "20", md: "1" }}>
+                <Skeleton height="20rem" />
               </Box>
-            </VStack>
-          </Box>
-        </PriceWrapper>
-        <PriceWrapper>
-          <Box py={4} px={12}>
-            <Text fontWeight="500" fontSize="2xl">
-              Scale
-            </Text>
-            <HStack justifyContent="center">
-              <Text fontSize="3xl" fontWeight="600">
-                $
-              </Text>
-              <Text fontSize="5xl" fontWeight="900">
-                349
-              </Text>
-              <Text fontSize="3xl" color="gray.500">
-                /month
-              </Text>
-            </HStack>
-          </Box>
-          <VStack
-            bg={useColorModeValue("gray.50", "gray.700")}
-            py={4}
-            borderBottomRadius={"xl"}
-          >
-            <List spacing={3} textAlign="start" px={12}>
-              <ListItem>
-                <ListIcon as={FaCheckCircle} color="green.500" />
-                unlimited build minutes
-              </ListItem>
-              <ListItem>
-                <ListIcon as={FaCheckCircle} color="green.500" />
-                Lorem, ipsum dolor.
-              </ListItem>
-              <ListItem>
-                <ListIcon as={FaCheckCircle} color="green.500" />
-                5TB Lorem, ipsum dolor.
-              </ListItem>
-            </List>
-            <Box w="80%" pt={7}>
-              <Button w="full" colorScheme="red" variant="outline">
-                Start trial
-              </Button>
-            </Box>
-          </VStack>
-        </PriceWrapper>
-      </Stack>
-    </Box>
+              <Box flex="1" px={{ base: "20", md: "1" }}>
+                <Skeleton height="20rem" />
+              </Box>
+              <Box flex="1" px={{ base: "20", md: "1" }}>
+                <Skeleton height="20rem" />
+              </Box>
+            </Stack>
+          )}
+        </Stack>
+      </Box>
+    </>
   );
 }

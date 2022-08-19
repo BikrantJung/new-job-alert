@@ -54,7 +54,7 @@ export default function Footer() {
               <Logo color={useColorModeValue("gray.700", "white")} />
             </Box>
             <Text fontSize={"sm"}>
-              © 2022 Chakra Templates. All rights reserved
+              © {new Date().getFullYear()} Job Alert Nepal. All rights reserved
             </Text>
           </Stack>
           <Stack align={"flex-start"}>
@@ -84,10 +84,8 @@ export default function Footer() {
           <Stack align={"flex-start"}>
             <ListHeader>Follow Us</ListHeader>
             <Link href={"#"}>Facebook</Link>
-            <Link href={"#"}>Twitter</Link>
-            <Link href={"#"}>Dribbble</Link>
+            <Link href={"#"}>Whatsapp</Link>
             <Link href={"#"}>Instagram</Link>
-            <Link href={"#"}>LinkedIn</Link>
           </Stack>
         </SimpleGrid>
       </Container>

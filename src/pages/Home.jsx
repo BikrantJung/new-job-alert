@@ -8,7 +8,8 @@ import RecentJobs from "../components/Recent Jobs/RecentJobs";
 function Home() {
   return (
     <div>
-      
+      <Navbar />
+
       <Hero />
       <Categories />
       <RecentJobs />

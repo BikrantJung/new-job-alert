@@ -8,15 +8,15 @@ const saveTokens = (value) => {
 
 const saveUserID = (userID) => {
   if (userID) {
-    localStorage.setItem("userID", userID);
+    localStorage.setItem("localUserID", userID);
   }
 };
 
 const getTokens = () => {
   const accessToken = localStorage.getItem("accessToken");
   const refreshToken = localStorage.getItem("refreshToken");
-  const userID = localStorage.getItem("userID");
-  return { accessToken, refreshToken, userID };
+  const localUserID = localStorage.getItem("localUserID");
+  return { accessToken, refreshToken, localUserID };
 };
 const clearTokens = () => {
   localStorage.removeItem("accessToken");

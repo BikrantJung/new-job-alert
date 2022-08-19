@@ -23,6 +23,7 @@ import { Link as ReactLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import StateContext from "../context/StateContext";
 import { useToast } from "@chakra-ui/react";
+import Navbar from "../components/Navbar/Navbar";
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -58,7 +59,7 @@ export default function Signup() {
       console.log(res);
       setIsLoading(false);
       navigate("/login");
-      console.log("SIGNUP",justRegistered)
+      console.log("SIGNUP", justRegistered);
     } catch (error) {
       setIsLoading(false);
 
@@ -95,6 +96,7 @@ export default function Signup() {
 
   return (
     <>
+      <Navbar />
       <Flex
         minH={"100vh"}
         align={"center"}

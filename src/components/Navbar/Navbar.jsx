@@ -24,9 +24,26 @@ import { FiSettings } from "react-icons/fi";
 import { IoIosLogOut } from "react-icons/io";
 import AuthContext from "../../context/AuthContext";
 import { clearTokens } from "../../services/localStorage";
-const Links = ["Jobs", "Pricing", "Start Hiring","Contact"];
+const Links = [
+  {
+    link: "/jobs",
+    text: "Jobs",
+  },
+  {
+    link: "/pricing",
+    text: "Pricing",
+  },
+  {
+    link: "/create-job-post",
+    text: "Start Hiring",
+  },
+  {
+    link: "/contact-us",
+    text: "Contact us",
+  },
+];
 
-const NavLink = ({ children }) => (
+const NavLink = (props) => (
   <Link
     as={ReactLink}
     px={2}
@@ -36,9 +53,9 @@ const NavLink = ({ children }) => (
       textDecoration: "none",
       bg: useColorModeValue("gray.200", "gray.700"),
     }}
-    to={`/${children.toLowerCase()}`}
+    to={props.link}
   >
-    {children}
+    {props.children}
   </Link>
 );
 
@@ -77,7 +94,9 @@ export default function Navbar() {
               display={{ base: "none", md: "flex" }}
             >
               {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
+                <NavLink key={link.link} link={link.link}>
+                  {link.text}
+                </NavLink>
               ))}
             </HStack>
           </HStack>
