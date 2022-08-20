@@ -67,7 +67,6 @@ export default function Navbar() {
   const handleLogout = () => {
     setTimeout(() => {
       clearTokens();
-      window.location.reload(false);
     }, 500);
   };
 

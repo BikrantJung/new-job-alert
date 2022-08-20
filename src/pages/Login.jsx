@@ -62,9 +62,13 @@ export default function Login() {
       });
       console.log(res);
       setIsLoading(false);
-      setAuthTokens(res.data.token);
       saveTokens(res.data.token);
-      window.location.reload(false);
+      setAuthTokens({
+        accessToken: res.data.token.access,
+        refreshToken: res.data.token.refresh,
+      });
+
+      // window.location.reload(false);
     } catch (error) {
       setIsLoading(false);
       // setServerError(error.response.data.errors);
