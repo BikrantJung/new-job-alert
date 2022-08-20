@@ -11,7 +11,6 @@ import {
 import StateContext from "../../context/StateContext";
 
 export default function Hero() {
-
   return (
     <Stack minH={"88vh"} direction={{ base: "column", md: "row" }}>
       <Flex p={8} flex={1} align={"center"} justify={"center"}>
@@ -42,7 +41,11 @@ export default function Hero() {
             The project board is an exclusive resource for contract work. It's
             perfect for freelancers, agencies, and moonlighters.
           </Text>
-          <Stack direction={{ base: "column", md: "row" }} spacing={4}>
+          <Stack
+            direction={{ base: "column", md: "row" }}
+            spacing={4}
+            align={{ base: "center", md: "flex-start" }}
+          >
             <Button
               rounded={"full"}
               bg={"blue.400"}
@@ -50,10 +53,13 @@ export default function Hero() {
               _hover={{
                 bg: "blue.500",
               }}
+              width={{ base: "40%", md: "inherit" }}
             >
               Create post
             </Button>
-            <Button rounded={"full"}>Find job</Button>
+            <Button rounded={"full"} width={{ base: "40%", md: "inherit" }}>
+              Find job
+            </Button>
           </Stack>
         </Stack>
       </Flex>

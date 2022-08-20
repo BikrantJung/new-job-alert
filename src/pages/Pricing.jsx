@@ -57,9 +57,7 @@ export default function Pricing() {
   const { accessToken } = getTokens();
   const { tokens, subscribed } = useContext(AuthContext);
   const [userSubscribed, setUserSubscribed] = subscribed;
-  console.log(userSubscribed);
   const toast = useToast();
-  console.log(accessToken);
 
   useEffect(() => {
     async function getPricingData() {
@@ -89,8 +87,6 @@ export default function Pricing() {
   };
 
   const handlePayment = () => {
-    console.log("CLICkED");
-    console.log(pricingDetail);
     let config = {
       // replace this key with yours
       publicKey: "test_public_key_4b33f92a102b4901aab413faf63178d9",
@@ -157,7 +153,6 @@ export default function Pricing() {
       });
     }
   }, [error]);
-  console.log(pricingData.length);
   return (
     <>
       <Navbar />

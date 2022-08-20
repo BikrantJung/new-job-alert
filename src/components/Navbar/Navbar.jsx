@@ -61,8 +61,9 @@ const NavLink = (props) => (
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { tokens } = useContext(AuthContext);
+  const { tokens, user_data } = useContext(AuthContext);
   const [authTokens, setAuthTokens] = tokens;
+  const [userData, setUserData] = user_data;
   const navigate = useNavigate();
   const handleLogout = () => {
     setTimeout(() => {
@@ -100,6 +101,7 @@ export default function Navbar() {
               ))}
             </HStack>
           </HStack>
+          {userData?.name}
           <Flex alignItems={"center"} gap="5">
             <ToggleMode />
             {authTokens.accessToken ? (

@@ -54,7 +54,7 @@ export default function Login() {
     try {
       const res = await axios({
         method: "POST",
-        url: "login/",
+        url: "http://192.168.1.75:8000/api/user/login/",
         data: loginData,
         headers: {
           "Content-type": "application/json",

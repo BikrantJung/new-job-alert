@@ -16,16 +16,8 @@ import RestrictLoginPage from "./utils/RestrictLoginPage";
 import Pricing from "./pages/Pricing";
 import JobPost from "./pages/JobPost";
 import Jobs from "./pages/Jobs";
-import { useContext, useEffect } from "react";
-import StateContext from "./context/StateContext";
 import { MainContent, Posts } from "./pages/Profile";
 function App() {
-  const { render_nav } = useContext(StateContext);
-  const [renderNav, setRenderNav] = render_nav;
-  useEffect(() => {
-    setRenderNav(true);
-  }, []);
-  console.log(renderNav);
   return (
     <BrowserRouter>
       <div className="App">
@@ -39,7 +31,6 @@ function App() {
             <Route path="/profile" element={<Profile />}>
               <Route index element={<MainContent />} />
               <Route path="posts" element={<Posts />} />
-
             </Route>
           </Route>
           <Route path="/pricing" element={<Pricing />} />
