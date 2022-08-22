@@ -11,12 +11,15 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import VerifyRegister from "./services/VerifyRegister";
 import PrivateRoute from "./utils/PrivateRoute";
-import Profile from "./pages/Profile";
+import Profile from "./pages/Profile/Profile";
 import RestrictLoginPage from "./utils/RestrictLoginPage";
 import Pricing from "./pages/Pricing";
 import JobPost from "./pages/JobPost";
-import Jobs from "./pages/Jobs";
-import { MainContent, Posts } from "./pages/Profile";
+import Jobs from "./pages/Jobs/Jobs";
+// import { MainContent, Posts } from "./pages/Profile/Profile";
+import MainContent from "./pages/Profile/MainContent";
+import UserPost from "./components/UserPost/UserPost";
+import Contact from "./pages/Contact";
 function App() {
   return (
     <BrowserRouter>
@@ -27,10 +30,11 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
           </Route>
+          <Route path="/contact-us" element={<Contact />} />
           <Route path="/" element={<PrivateRoute />}>
             <Route path="/profile" element={<Profile />}>
               <Route index element={<MainContent />} />
-              <Route path="posts" element={<Posts />} />
+              <Route path="posts" element={<UserPost />} />
             </Route>
           </Route>
           <Route path="/pricing" element={<Pricing />} />

@@ -1,17 +1,20 @@
 import axios from "axios";
+import jwt_decode from "jwt-decode";
 import { createContext, useEffect, useState } from "react";
 import { getTokens } from "../services/localStorage";
 import { saveUserID } from "../services/localStorage";
 import NewAxios from "../utils/newAxios";
-const AuthContext = createContext();
+const AuthContext = createContext("");
 export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
   const { accessToken, refreshToken, localUserID } = getTokens();
-
   const [userSubscribed, setUserSubscribed] = useState(false);
   const [userData, setUserData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [userID, setUserID] = useState(localUserID ? localUserID : null);
+  const [userProfileData, setUserProfileData] = useState([]);
+  const [isExpired, setIsExpired] = useState(true);
   const [authTokens, setAuthTokens] = useState(
     accessToken && refreshToken
       ? {
@@ -27,32 +30,38 @@ export const AuthProvider = ({ children }) => {
   const api = NewAxios();
 
   useEffect(() => {
-    async function getUserSubscribed() {
-      if (accessToken) {
-        // Using axios_instance.
+    async function getUserProfileData() {
+      if (localUserID) {
         try {
-          const res = await api.get("profile/");
-          console.log(res);
-          setUserSubscribed(res.data.is_subscribed);
-          setUserData(res.data);
-
+          const res = await api.get(`profile/${localUserID}`);
+          setUserProfileData(res.data);
           saveUserID(res.data.id);
+          console.log(res);
         } catch (error) {
-          // console.log(error);
+          console.log(error);
         }
       }
     }
-    getUserSubscribed();
-  }, [accessToken, authTokens]);
-  const contextData = {
-    tokens: [authTokens, setAuthTokens],
+    setLoading(false);
+    getUserProfileData();
+  }, [accessToken, isExpired, localUserID]);
 
-    subscribed: [userSubscribed, setUserSubscribed],
-    // userid: [userID, setUserID],
-    user_data: [userData, setUserData],
+  const contextData = {
+    authTokens,
+    setAuthTokens,
+    userSubscribed,
+    setUserSubscribed,
+    userData,
+    setUserData,
+    userProfileData,
+    setUserProfileData,
+    isExpired,
+    setIsExpired,
   };
 
   return (
-    <AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={contextData}>
+      {loading ? null : children}
+    </AuthContext.Provider>
   );
 };

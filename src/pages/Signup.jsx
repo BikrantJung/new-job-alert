@@ -63,7 +63,7 @@ export default function Signup() {
     } catch (error) {
       setIsLoading(false);
 
-      if (error?.response.data.errors.non_field_errors) {
+      if (error?.response.data?.errors?.non_field_errors) {
         toast({
           title: error?.response.data.errors.non_field_errors[0],
           status: "warning",
@@ -90,7 +90,6 @@ export default function Signup() {
   };
 
   useEffect(() => {
-    console.log("HELLO");
     window.scrollTo(0, 0);
   }, []);
 

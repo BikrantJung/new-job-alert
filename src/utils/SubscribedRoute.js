@@ -8,8 +8,7 @@ import {
 import { useContext } from "react";
 import AuthContext from "../context/AuthContext";
 const SubscribedRoute = ({ children }) => {
-  const { subscribed } = useContext(AuthContext);
-  const [userSubscribed, setUserSubscribed] = subscribed;
+  const { userSubscribed } = useContext(AuthContext);
   const authed = userSubscribed ? true : false; // isauth() returns true or false based on localStorage
   const location = useLocation();
   return authed ? (

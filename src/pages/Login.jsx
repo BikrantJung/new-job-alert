@@ -19,14 +19,13 @@ import { Link as ReactLink, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import AuthContext from "../context/AuthContext";
 import StateContext from "../context/StateContext";
-import { saveTokens } from "../services/localStorage";
+import { saveTokens, saveUserID } from "../services/localStorage";
 export default function Login() {
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { tokens } = useContext(AuthContext);
+  const { setAuthTokens } = useContext(AuthContext);
   const { just_registered } = useContext(StateContext);
-  const [authTokens, setAuthTokens] = tokens;
   const [justRegistered, setJustRegistered] = just_registered;
 
   const navigate = useNavigate();
@@ -54,7 +53,7 @@ export default function Login() {
     try {
       const res = await axios({
         method: "POST",
-        url: "http://192.168.1.75:8000/api/user/login/",
+        url: "login/",
         data: loginData,
         headers: {
           "Content-type": "application/json",
@@ -64,6 +63,7 @@ export default function Login() {
       setIsLoading(false);
       setAuthTokens(res.data.token);
       saveTokens(res.data.token);
+      saveUserID(res.data.id);
       window.location.reload(false);
     } catch (error) {
       setIsLoading(false);

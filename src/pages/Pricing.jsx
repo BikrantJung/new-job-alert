@@ -31,6 +31,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import AuthContext from "../context/AuthContext";
 import { getTokens } from "../services/localStorage";
 import Navbar from "../components/Navbar/Navbar";
+import NewAxios from "../utils/newAxios";
 function PriceWrapper({ children }) {
   return (
     <Box
@@ -55,10 +56,9 @@ export default function Pricing() {
   const [khaltiResponse, setKhaltiResponse] = useState({});
   const [error, setError] = useState(false);
   const { accessToken } = getTokens();
-  const { tokens, subscribed } = useContext(AuthContext);
-  const [userSubscribed, setUserSubscribed] = subscribed;
+  const { userSubscribed, isExpired } = useContext(AuthContext);
   const toast = useToast();
-
+  const api = NewAxios();
   useEffect(() => {
     async function getPricingData() {
       try {
@@ -75,12 +75,28 @@ export default function Pricing() {
         console.log(error.response.data);
       }
     }
+
     getPricingData();
   }, []);
 
-  const openModal = (e, id) => {
-    setModalOpen(true);
-    setPricingDetail(pricingData.find((obj) => obj.id === id));
+  const checkUserVerification = async (e, id) => {
+    try {
+      const data = {
+        membership_type: null,
+        amount: null,
+        token: null,
+      };
+
+      const res = await api.post("subscribe/", data);
+      console.log(res);
+      setModalOpen(true);
+      setPricingDetail(pricingData.find((obj) => obj.id === id));
+    } catch (error) {
+      console.log(error);
+    }
+
+    // setModalOpen(true);
+    // setPricingDetail(pricingData.find((obj) => obj.id === id));
   };
   const modalClose = () => {
     setModalOpen(false);
@@ -265,7 +281,7 @@ export default function Pricing() {
                       <Button
                         w="full"
                         colorScheme="red"
-                        onClick={(e) => openModal(e, item.id)}
+                        onClick={(e) => checkUserVerification(e, item.id)}
                         disabled={userSubscribed}
                         variant={userSubscribed ? null : "outline"}
                       >

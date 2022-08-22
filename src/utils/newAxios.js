@@ -1,14 +1,16 @@
 import axios from "axios";
 import dayjs from "dayjs";
 import jwtDecode from "jwt-decode";
+import { useContext } from "react";
+import AuthContext from "../context/AuthContext";
 
-import { saveTokens, getTokens } from "../services/localStorage";
+import { saveTokens, getTokens, saveUserID } from "../services/localStorage";
 
-export default function NewAxios() {
+function NewAxios() {
   const { accessToken, refreshToken } = getTokens();
-  //   const { tokens } = useContext(AuthContext);
+  const { setIsExpired } = useContext(AuthContext);
   //   const [authTokens, setAuthTokens] = tokens;
-  const baseURL = "http://192.168.1.75:8000/api/user/";
+  const baseURL = "http://192.168.1.71:8000/api/user/";
 
   const axiosInstance = axios.create({
     baseURL,
@@ -20,15 +22,14 @@ export default function NewAxios() {
   axiosInstance.interceptors.request.use(async (req) => {
     const user = jwtDecode(accessToken);
     const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
-
-    console.log("expired", isExpired);
-
     //    Wherever I use axiosInstance, they will only work if accesstoken is not expired
     //    If I use default axios, they will work anytime
     if (!isExpired) {
-      console.log("HELLO");
       return req; // if user is not expired return request here, don't run following functions
     }
+
+    //   saveTokens()
+
     try {
       const response = await axios({
         method: "POST",
@@ -37,17 +38,15 @@ export default function NewAxios() {
           refresh: refreshToken,
         },
       });
-      console.log("New response", response);
-      saveTokens(response.data);
 
       req.headers.authorization = `Bearer ${response.data.access}`;
-    } catch (error) {
-      console.log(error);
-    }
-
-    //   saveTokens()
+      saveTokens(response.data);
+      console.log(response.data);
+      setIsExpired(false);
+    } catch (error) {}
 
     return req;
   });
   return axiosInstance;
 }
+export default NewAxios;

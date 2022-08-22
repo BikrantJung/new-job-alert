@@ -1,16 +1,11 @@
-import {
-  Navigate,
-  Outlet,
-  useLocation,
-} from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useContext } from "react";
 import AuthContext from "../context/AuthContext";
 const RestrictLoginPage = ({ children }) => {
-  const { tokens } = useContext(AuthContext);
-  const [authTokens, setAuthTokens] = tokens;
+  const { authTokens } = useContext(AuthContext);
   const location = useLocation();
 
-  const authed =  authTokens.accessToken ? true : false; // isauth() returns true or false based on localStorage
+  const authed = authTokens.accessToken ? true : false; // isauth() returns true or false based on localStorage
 
   return !authed ? (
     <Outlet />

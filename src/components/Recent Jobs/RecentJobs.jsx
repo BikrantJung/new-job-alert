@@ -1,12 +1,11 @@
 import React from "react";
 import { Box, Center, Heading, Stack } from "@chakra-ui/react";
-import JobCard from "./JobCard";
+import RecentJobCard from "./RecentJobCard";
 function RecentJobs() {
   return (
     <>
       <Center py={5}>
         <Heading
-        
           sx={{
             my: 3,
             pb: 2,
@@ -44,9 +43,9 @@ function RecentJobs() {
         py={6}
         flexWrap="wrap"
       >
-        <JobCard />
-        <JobCard />
-        <JobCard />
+        <RecentJobCard />
+        <RecentJobCard />
+        <RecentJobCard />
       </Stack>
     </>
   );

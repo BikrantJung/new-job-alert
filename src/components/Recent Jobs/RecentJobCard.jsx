@@ -17,7 +17,7 @@ import { CheckIcon } from "@chakra-ui/icons";
 import { GoLocation } from "react-icons/go";
 import { AiOutlineDollar, AiOutlineTag } from "react-icons/ai";
 import { MdWorkOutline } from "react-icons/md";
-export default function JobCard() {
+export default function RecentJobCard() {
   return (
     <Box
       maxW={"330px"}

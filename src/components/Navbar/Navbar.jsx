@@ -24,6 +24,9 @@ import { FiSettings } from "react-icons/fi";
 import { IoIosLogOut } from "react-icons/io";
 import AuthContext from "../../context/AuthContext";
 import { clearTokens } from "../../services/localStorage";
+import handleLogout from "../../utils/logoutUser";
+import { ProfileMenu } from "../../pages/Profile/Profile";
+
 const Links = [
   {
     link: "/jobs",
@@ -61,23 +64,15 @@ const NavLink = (props) => (
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { tokens, user_data } = useContext(AuthContext);
-  const [authTokens, setAuthTokens] = tokens;
-  const [userData, setUserData] = user_data;
+  const { authTokens, userProfileData } = useContext(AuthContext);
   const navigate = useNavigate();
-  const handleLogout = () => {
-    setTimeout(() => {
-      clearTokens();
-      window.location.reload(false);
-    }, 500);
-  };
 
   return (
     <>
       <Box
         bg={useColorModeValue("gray.100", "gray.900")}
         px={4}
-        sx={{ position: "sticky", top: 0, zIndex: 1000 }}
+        sx={{ position: "sticky", top: 0, zIndex: 1500 }}
       >
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <IconButton
@@ -94,47 +89,18 @@ export default function Navbar() {
               spacing={4}
               display={{ base: "none", md: "flex" }}
             >
-              {Links.map((link) => (
-                <NavLink key={link.link} link={link.link}>
+              {Links.map((link, index) => (
+                <NavLink key={index} link={link.link}>
                   {link.text}
                 </NavLink>
               ))}
             </HStack>
           </HStack>
-          {userData?.name}
+
           <Flex alignItems={"center"} gap="5">
             <ToggleMode />
             {authTokens.accessToken ? (
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  rounded={"full"}
-                  variant={"link"}
-                  cursor={"pointer"}
-                  minW={0}
-                >
-                  <Avatar size={"sm"} src={""} />
-                </MenuButton>
-                <MenuList>
-                  <Link
-                    as={ReactLink}
-                    to="/profile"
-                    _hover={{ textDecoration: "none" }}
-                  >
-                    <MenuItem icon={<AiOutlineUser size={16} />}>
-                      Profile
-                    </MenuItem>
-                  </Link>
-                  <MenuItem icon={<FiSettings size={16} />}>Settings</MenuItem>
-                  <MenuDivider />
-                  <MenuItem
-                    icon={<IoIosLogOut size={16} />}
-                    onClick={handleLogout}
-                  >
-                    Log out
-                  </MenuItem>
-                </MenuList>
-              </Menu>
+              <ProfileMenu py={1} />
             ) : (
               <Link
                 as={ReactLink}
@@ -150,8 +116,10 @@ export default function Navbar() {
         {isOpen ? (
           <Box pb={4} display={{ md: "none" }}>
             <Stack as={"nav"} spacing={4}>
-              {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
+              {Links.map((link, index) => (
+                <NavLink key={index} link={link.link}>
+                  {link.text}
+                </NavLink>
               ))}
             </Stack>
           </Box>
