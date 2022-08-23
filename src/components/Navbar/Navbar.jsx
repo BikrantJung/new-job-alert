@@ -109,7 +109,7 @@ export default function Navbar() {
           <Flex alignItems={"center"} gap={[5]}>
             <ToggleMode />
             {authTokens.accessToken ? (
-              userProfileData.username ? (
+              !userProfileData.username ? (
                 <ProfileMenu py={1} ml={3} />
               ) : (
                 <Flex width={["auto", "auto", "100px"]} align="center" gap={1}>

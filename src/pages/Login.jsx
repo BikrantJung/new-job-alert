@@ -64,9 +64,11 @@ export default function Login() {
       setAuthTokens(res.data.token);
       saveTokens(res.data.token);
       saveUserID(res.data.id);
+      localStorage.setItem("session", JSON.stringify(res.data.token));
       window.location.reload(false);
     } catch (error) {
       setIsLoading(false);
+      console.log(error);
       // setServerError(error.response.data.errors);
       if (error?.response?.data?.errors?.non_field_errors) {
         toast({

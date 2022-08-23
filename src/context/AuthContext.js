@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { getTokens } from "../services/localStorage";
 import { saveUserID } from "../services/localStorage";
 import NewAxios from "../utils/newAxios";
+import { axiosPrivate } from "../utils/axiosPrivate";
 const AuthContext = createContext("");
 export default AuthContext;
 
@@ -29,16 +30,33 @@ export const AuthProvider = ({ children }) => {
 
   const api = NewAxios();
 
+  // useEffect(() => {
+  //   async function getUserProfileData() {
+  //     if (localUserID && allowData) {
+  //       console.log("I RAN");
+  //       try {
+  //         const res = await api.get(`profileSelf/${localUserID}`);
+  //         setUserProfileData([]);
+  //         setUserProfileData(res.data);
+  //         saveUserID(res.data.id);
+  //         console.log("PROFILESELF", res);
+  //         console.log(res);
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     }
+  //   }
+  //   setLoading(false);
+  //   getUserProfileData();
+  // }, [accessToken, isExpired, localUserID]);
+
   useEffect(() => {
     async function getUserProfileData() {
       if (localUserID && allowData) {
         console.log("I RAN");
         try {
-          const res = await api.get(`profileSelf/${localUserID}`);
-          setUserProfileData([]);
-          setUserProfileData(res.data);
-          saveUserID(res.data.id);
-          console.log("PROFILESELF", res);
+          const res = await axiosPrivate.get(`profileSelf/${localUserID}`);
+
           console.log(res);
         } catch (error) {
           console.log(error);
