@@ -71,11 +71,13 @@ export default function Navbar() {
 
   const navigate = useNavigate();
 
+
   const handleLogout = () => {
     setTimeout(() => {
       clearTokens();
     }, 500);
   };
+
 
 
 
