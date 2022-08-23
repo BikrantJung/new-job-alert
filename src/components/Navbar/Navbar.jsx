@@ -71,7 +71,6 @@ export default function Navbar() {
 
   const navigate = useNavigate();
 
-
   return (
     <>
       <Box
