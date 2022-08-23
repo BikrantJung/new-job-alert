@@ -44,7 +44,7 @@ function ContactDetails(props) {
       subscription: userProfileData.subscription,
     };
     try {
-      const res = await api.put(`profile/${localUserID}`, contactData, {
+      const res = await api.put(`profileSelf/${localUserID}`, contactData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

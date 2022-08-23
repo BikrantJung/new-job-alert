@@ -108,8 +108,7 @@ export default function Login() {
               Login to your account
             </Heading>
             <Text fontSize={"lg"} color={"gray.600"}>
-              to enjoy all of our cool <Link color={"blue.400"}>features</Link>{" "}
-              ✌️
+              to start posting job and access many more features
             </Text>
           </Stack>
           <Box

@@ -38,7 +38,7 @@ const Links = [
   },
   {
     link: "/create-job-post",
-    text: "Start Hiring",
+    text: "Post a job",
   },
   {
     link: "/contact-us",
@@ -83,7 +83,11 @@ export default function Navbar() {
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems={"center"}>
-            <Box>Jobs Nepal</Box>
+            <Box>
+              <Link as={ReactLink} to="/">
+                Jobs Nepal
+              </Link>
+            </Box>
             <HStack
               as={"nav"}
               spacing={4}

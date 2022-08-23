@@ -54,6 +54,8 @@ function Jobs() {
                 JobType={item.JobType}
                 JobTags={item.JobTags}
                 JobDescription={item.JobDescription}
+                UserName={item.username}
+                userID={item.user}
               />
             );
           })}

@@ -50,7 +50,7 @@ function SocialMeidaDetails(props) {
       subscription: userProfileData.subscription,
     };
     try {
-      const res = await api.put(`profile/${localUserID}`, socialData, {
+      const res = await api.put(`profileSelf/${localUserID}`, socialData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

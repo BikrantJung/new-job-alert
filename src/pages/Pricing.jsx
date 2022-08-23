@@ -80,21 +80,36 @@ export default function Pricing() {
   }, []);
 
   const checkUserVerification = async (e, id) => {
-    try {
-      const data = {
-        membership_type: null,
-        amount: null,
-        token: null,
-      };
+    if (accessToken) {
+      try {
+        const data = {
+          membership_type: null,
+          amount: null,
+          token: null,
+        };
 
-      const res = await api.post("subscribe/", data);
-      console.log(res);
-      setModalOpen(true);
-      setPricingDetail(pricingData.find((obj) => obj.id === id));
-    } catch (error) {
-      console.log(error);
+        const res = await api.post("subscribe/", data);
+        console.log(res);
+        setModalOpen(true);
+        setPricingDetail(pricingData.find((obj) => obj.id === id));
+      } catch (error) {
+        if (error.response.data.msg) {
+          toast({
+            title: "You are not verified. Check inbox for verification.",
+            status: "error",
+            duration: 4000,
+            isClosable: true,
+          });
+        }
+      }
+    } else {
+      toast({
+        title: "You are not logged in",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
     }
-
     // setModalOpen(true);
     // setPricingDetail(pricingData.find((obj) => obj.id === id));
   };
@@ -179,7 +194,7 @@ export default function Pricing() {
             Plans that fit your need
           </Heading>
           <Text fontSize="lg" color={"gray.500"}>
-            Start with 14-day free trial. No credit card needed. Cancel at
+            Start with 7-day free trial. No credit card needed. Cancel at
             anytime.
           </Text>
         </VStack>

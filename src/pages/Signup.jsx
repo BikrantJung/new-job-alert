@@ -108,7 +108,7 @@ export default function Signup() {
               Sign up
             </Heading>
             <Text fontSize={"lg"} color={"gray.600"}>
-              to enjoy all of our cool features ✌️
+              to start posting job and access many more features
             </Text>
           </Stack>
           <Box
@@ -119,7 +119,13 @@ export default function Signup() {
           >
             <Stack spacing={4} as={"form"} onSubmit={handleSubmit}>
               <FormControl id="firstName" isRequired>
-                <FormLabel>User Name</FormLabel>
+                <FormLabel style={{ marginBottom: "0" }}>User Name</FormLabel>
+                <Text
+                  fontSize={[12, 13, 14, 15, 16, 17]}
+                  style={{ marginTop: "0" }}
+                >
+                  This must be unique and cannot be changed later.
+                </Text>
                 <Input type="text" name="userName" />
               </FormControl>
 

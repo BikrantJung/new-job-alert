@@ -24,10 +24,10 @@ function NewAxios() {
     const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
     //    Wherever I use axiosInstance, they will only work if accesstoken is not expired
     //    If I use default axios, they will work anytime
+    console.log(isExpired);
     if (!isExpired) {
       return req; // if user is not expired return request here, don't run following functions
     }
-
     //   saveTokens()
 
     try {
@@ -43,7 +43,9 @@ function NewAxios() {
       saveTokens(response.data);
       console.log(response.data);
       setIsExpired(false);
-    } catch (error) {}
+    } catch (error) {
+      console.log("NEW AXIOS", error);
+    }
 
     return req;
   });

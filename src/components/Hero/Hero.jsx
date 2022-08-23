@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import {
   Button,
   Flex,
@@ -8,7 +7,6 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import StateContext from "../../context/StateContext";
 
 export default function Hero() {
   return (
@@ -32,10 +30,10 @@ export default function Hero() {
             >
               JOBS ALLTIME
             </Text>
-            <br />{" "}
+            <br />
             <Text color={"blue.400"} as={"span"}>
               GRAB NOW
-            </Text>{" "}
+            </Text>
           </Heading>
           <Text fontSize={{ base: "md", lg: "lg" }} color={"gray.500"}>
             The project board is an exclusive resource for contract work. It's
@@ -46,6 +44,7 @@ export default function Hero() {
             spacing={4}
             align={{ base: "center", md: "flex-start" }}
           >
+            
             <Button
               rounded={"full"}
               bg={"blue.400"}

@@ -45,7 +45,7 @@ function GeneralDetails(props) {
       subscription: userProfileData.subscription,
     };
     try {
-      const res = await api.put(`profile/${localUserID}`, generalData, {
+      const res = await api.put(`profileSelf/${localUserID}`, generalData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

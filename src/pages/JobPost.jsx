@@ -175,10 +175,11 @@ export default function JobPost() {
       SalaryMax: data.get("max_salary"),
       ImportantInformation: data.get("job_information"),
     };
-    console.log(postData.JobImage)
+    console.log(postData.JobImage);
     try {
       const res = await api.post("post/", postData);
       setIsLoading(false);
+      window.location.reload(false);
     } catch (error) {
       setIsLoading(false);
 
@@ -189,9 +190,10 @@ export default function JobPost() {
           duration: 4000,
           isClosable: true,
         });
-      } else {
+      }
+      if (error.response.data.msg) {
         toast({
-          title: "error.response.data",
+          title: error.response.data.msg,
           status: "error",
           duration: 4000,
           isClosable: true,

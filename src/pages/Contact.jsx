@@ -68,7 +68,7 @@ export default function Contact() {
                         color="#DCE2FF"
                         leftIcon={<MdPhone color="#1970F1" size="20px" />}
                       >
-                        +977-9848000000
+                        +977-9851116608 
                       </Button>
                       <Button
                         size="md"
@@ -77,7 +77,7 @@ export default function Contact() {
                         color="#DCE2FF"
                         leftIcon={<MdEmail color="#1970F1" size="20px" />}
                       >
-                        useremail@gmail.com
+                        jobalertnepal2020@gmail.com
                       </Button>
                       <Button
                         size="md"

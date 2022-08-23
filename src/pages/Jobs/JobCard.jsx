@@ -7,6 +7,7 @@ import {
   Heading,
   Icon,
   Image,
+  Link,
   Skeleton,
   Stack,
   Tag,
@@ -19,13 +20,17 @@ import {
 import React, { useState } from "react";
 import JobImage from "../../images/job-image.jpg";
 import { GoLocation } from "react-icons/go";
-import { AiOutlineDollar, AiOutlineMail } from "react-icons/ai";
+import { AiOutlineDollar, AiOutlineMail, AiOutlineUser } from "react-icons/ai";
+import { Link as ReactLink } from "react-router-dom";
 import JobModal from "./JobModal";
 function JobCard(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedModal, setSelectedModal] = useState("");
   const handleClick = (e) => {
     setSelectedModal(e.target.value);
+  };
+  const handleProfileClick = (name) => {
+    console.log("name", name);
   };
   return (
     <Stack
@@ -49,13 +54,24 @@ function JobCard(props) {
         <CustomText fontSize={[18, 19, 20, 21, 22]} fontWeight="bold">
           {props.JobTitle}
         </CustomText>
-        <CustomText
-          fontSize={[13, 14, 15, 16, 17]}
-          color={useColorModeValue("gray.600", "gray.400")}
-          fontWeight="bold"
+        {/* <Link
+          as={ReactLink}
+          to={`/profile/${props.UserName}`}
+          id={props.userID}
         >
-          Company name
-        </CustomText>
+          <Stack direction={"row"} align="center">
+            <Icon as={AiOutlineUser} color="red" fontSize={20} />
+            <CustomText
+              fontSize={[11, 11, 13, 14, 15]}
+              color={useColorModeValue("green")}
+              as="em"
+              onClick={() => handleProfileClick(props.user)}
+            >
+              @{props.UserName}
+            </CustomText>
+          </Stack>
+        </Link> */}
+
         <Stack direction={"row"} align="center">
           <Icon as={GoLocation} color="green.400" fontSize={20} />
           <CustomText fontSize={[13, 14, 15, 16, 17]}>

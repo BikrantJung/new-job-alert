@@ -1,5 +1,3 @@
-import axios from "axios";
-import jwt_decode from "jwt-decode";
 import { createContext, useEffect, useState } from "react";
 import { getTokens } from "../services/localStorage";
 import { saveUserID } from "../services/localStorage";
@@ -15,6 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [userID, setUserID] = useState(localUserID ? localUserID : null);
   const [userProfileData, setUserProfileData] = useState([]);
   const [isExpired, setIsExpired] = useState(true);
+  const [profileID, setProfileID] = useState(null);
   const [authTokens, setAuthTokens] = useState(
     accessToken && refreshToken
       ? {
@@ -26,14 +25,15 @@ export const AuthProvider = ({ children }) => {
           refreshToken: null,
         }
   );
-
+        
   const api = NewAxios();
 
   useEffect(() => {
     async function getUserProfileData() {
       if (localUserID) {
         try {
-          const res = await api.get(`profile/${localUserID}`);
+          const res = await api.get(`profileSelf/${localUserID}`);
+          setUserProfileData([]);
           setUserProfileData(res.data);
           saveUserID(res.data.id);
           console.log(res);

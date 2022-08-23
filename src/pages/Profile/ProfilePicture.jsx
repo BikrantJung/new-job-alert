@@ -54,7 +54,7 @@ function ProfilePicture(props) {
     console.log(imgData.avatar);
 
     try {
-      const res = await api.put(`profile/${localUserID}`, imgData, {
+      const res = await api.put(`profileSelf/${localUserID}`, imgData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

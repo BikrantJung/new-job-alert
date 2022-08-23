@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import {
   IconButton,
   Avatar,
@@ -14,46 +14,29 @@ import {
   DrawerContent,
   Text,
   useDisclosure,
-  BoxProps,
-  FlexProps,
   Menu,
   MenuButton,
   MenuDivider,
   MenuItem,
   MenuList,
-  Skeleton,
 } from "@chakra-ui/react";
 import {
   FiHome,
   FiTrendingUp,
   FiCompass,
-  FiStar,
   FiSettings,
   FiMenu,
-  FiBell,
   FiChevronDown,
   FiLogOut,
 } from "react-icons/fi";
-import { FaFacebook, FaWhatsapp } from "react-icons/fa";
-import { IoLogoWhatsapp } from "react-icons/io";
-import { EditIcon, AddIcon } from "@chakra-ui/icons";
-import { IconType } from "react-icons";
-import { ReactText } from "react";
-import { Link as ReactLink, Outlet } from "react-router-dom";
-import { useState } from "react";
+
+import { Link as ReactLink, Outlet, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useContext } from "react";
 import AuthContext from "../../context/AuthContext";
 import ToggleMode from "../../components/ToggleMode";
-import {
-  AiOutlineUser,
-  AiFillInstagram,
-  AiFillTwitterCircle,
-} from "react-icons/ai";
-import { IoIosLogOut } from "react-icons/io";
+import { AiOutlineUser } from "react-icons/ai";
 import handleLogout from "../../utils/logoutUser";
-import Avatar1 from "../../images/avatar1.png";
-import StateContext from "../../context/StateContext";
 import NewAxios from "../../utils/newAxios";
 import { getTokens } from "../../services/localStorage";
 const LinkItems = [
@@ -69,22 +52,23 @@ export default function Profile({ children }) {
     useContext(AuthContext);
   const { localUserID, accessToken } = getTokens();
   const api = NewAxios();
-
+  const { id } = useParams();
+  console.log("ID", id);
   useEffect(() => {
     async function getUserProfileData() {
-      if (isExpired === false) {
-        try {
-          const res = await api.get(`profile/${localUserID}`);
-          console.log(res);
-          setUserProfileData(res.data);
-        } catch (error) {
-          console.log(error);
-        }
+      try {
+        const res = await api.get(`profile/${localUserID}`);
+        console.log(res);
+        console.log("HELLO HAHA");
+        setUserProfileData([]);
+        setUserProfileData(res.data);
+      } catch (error) {
+        console.log(error);
       }
     }
 
     getUserProfileData();
-  }, [accessToken, isExpired, localUserID]);
+  }, [accessToken, isExpired]);
   return (
     <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
       <SidebarContent
@@ -125,9 +109,11 @@ const SidebarContent = ({ onClose, ...rest }) => {
       {...rest}
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Text fontSize="2xl" fontWeight="bold">
-          Job Alert
-        </Text>
+        <Link as={ReactLink} to="/">
+          <Text fontSize="2xl" fontWeight="bold">
+            Job Alert
+          </Text>
+        </Link>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
@@ -218,6 +204,8 @@ const MobileNav = ({ onOpen, ...rest }) => {
 };
 export const ProfileMenu = (props) => {
   const { userProfileData, setUserProfileData } = useContext(AuthContext);
+  const { localUserID } = getTokens();
+
   return (
     <Menu>
       <MenuButton
@@ -248,7 +236,12 @@ export const ProfileMenu = (props) => {
         bg={useColorModeValue("white", "gray.900")}
         borderColor={useColorModeValue("gray.200", "gray.700")}
       >
-        <Link as={ReactLink} to="/profile" _hover={{ textDecoration: "none" }}>
+        <Link
+          as={ReactLink}
+          // to={`/profile/${userProfileData.username}`}
+          to={`/profile`}
+          _hover={{ textDecoration: "none" }}
+        >
           <MenuItem icon={<AiOutlineUser fontSize={18} />}>Profile</MenuItem>
         </Link>
         <Link as={ReactLink} to="/settings" _hover={{ textDecoration: "none" }}>

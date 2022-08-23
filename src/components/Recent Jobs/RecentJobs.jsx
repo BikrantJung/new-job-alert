@@ -1,7 +1,14 @@
 import React from "react";
 import { Box, Center, Heading, Stack } from "@chakra-ui/react";
 import RecentJobCard from "./RecentJobCard";
+import { useEffect } from "react";
 function RecentJobs() {
+
+  useEffect( ()=>{
+
+  },[] )
+
+
   return (
     <>
       <Center py={5}>

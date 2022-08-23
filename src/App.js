@@ -20,6 +20,7 @@ import Jobs from "./pages/Jobs/Jobs";
 import MainContent from "./pages/Profile/MainContent";
 import UserPost from "./components/UserPost/UserPost";
 import Contact from "./pages/Contact";
+import CompanyJob from "./pages/Jobs/CompanyJob";
 function App() {
   return (
     <BrowserRouter>
@@ -32,14 +33,15 @@ function App() {
           </Route>
           <Route path="/contact-us" element={<Contact />} />
           <Route path="/" element={<PrivateRoute />}>
+            <Route path="/create-job-post" element={<JobPost />} />
             <Route path="/profile" element={<Profile />}>
               <Route index element={<MainContent />} />
               <Route path="posts" element={<UserPost />} />
             </Route>
           </Route>
           <Route path="/pricing" element={<Pricing />} />
-          <Route path="/create-job-post" element={<JobPost />} />
           <Route path="/jobs" element={<Jobs />} />
+          <Route path="/jobs/:id" element={<CompanyJob />} />
           <Route
             path="/api/user/verify/:id/:token"
             element={<VerifyRegister />}

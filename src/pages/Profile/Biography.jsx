@@ -39,7 +39,7 @@ function Biography(props) {
     };
 
     try {
-      const res = await api.put(`profile/${localUserID}`, biographyData, {
+      const res = await api.put(`profileSelf/${localUserID}`, biographyData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

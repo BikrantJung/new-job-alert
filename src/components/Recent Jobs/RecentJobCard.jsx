@@ -1,19 +1,14 @@
 import {
   Box,
-  Center,
   Text,
   Stack,
   List,
-  ListItem,
-  ListIcon,
   Button,
   useColorModeValue,
   Icon,
-  Badge,
   TagLabel,
   Tag,
 } from "@chakra-ui/react";
-import { CheckIcon } from "@chakra-ui/icons";
 import { GoLocation } from "react-icons/go";
 import { AiOutlineDollar, AiOutlineTag } from "react-icons/ai";
 import { MdWorkOutline } from "react-icons/md";
