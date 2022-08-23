@@ -19,14 +19,13 @@ import { Link as ReactLink, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import AuthContext from "../context/AuthContext";
 import StateContext from "../context/StateContext";
-import { saveTokens } from "../services/localStorage";
+import { saveTokens, saveUserID } from "../services/localStorage";
 export default function Login() {
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { tokens } = useContext(AuthContext);
+  const { setAuthTokens } = useContext(AuthContext);
   const { just_registered } = useContext(StateContext);
-  const [authTokens, setAuthTokens] = tokens;
   const [justRegistered, setJustRegistered] = just_registered;
 
   const navigate = useNavigate();
@@ -63,14 +62,21 @@ export default function Login() {
       console.log(res);
       setIsLoading(false);
       saveTokens(res.data.token);
+
       setAuthTokens({
         accessToken: res.data.token.access,
         refreshToken: res.data.token.refresh,
       });
 
       // window.location.reload(false);
+
+      saveUserID(res.data.id);
+      localStorage.setItem("session", JSON.stringify(res.data.token));
+      window.location.reload(false);
+
     } catch (error) {
       setIsLoading(false);
+      console.log(error);
       // setServerError(error.response.data.errors);
       if (error?.response?.data?.errors?.non_field_errors) {
         toast({
@@ -112,8 +118,7 @@ export default function Login() {
               Login to your account
             </Heading>
             <Text fontSize={"lg"} color={"gray.600"}>
-              to enjoy all of our cool <Link color={"blue.400"}>features</Link>{" "}
-              ✌️
+              to start posting job and access many more features
             </Text>
           </Stack>
           <Box

@@ -1,64 +1,74 @@
-import { Box, Icon, IconButton, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  GridItem,
+  Image,
+  LinkBox,
+  LinkOverlay,
+  Stack,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import React from "react";
-import { BsCodeSlash } from "react-icons/bs";
-function CategoryCard() {
+import { useState } from "react";
+import { Link as ReactLink } from "react-router-dom";
+import { Link } from "@chakra-ui/react";
+function CategoryCard(props) {
+  const [name, setName] = useState("");
+
+  console.log(name);
   return (
-    <Box
-      sx={{
-        height: "150px",
-        w: "210px",
+    <LinkBox>
+      <LinkOverlay as={ReactLink} to={`/jobs/${props.company}`}>
+        <GridItem
+          sx={{
+            height: "70px",
+            cursor: "pointer",
+          }}
+        >
+          <Stack
+            boxShadow={"md"}
+            rounded={"md"}
+            bgColor={useColorModeValue("white", "black")}
+            // border="1px solid"
+            // borderColor="gray.400"
+            p={1}
+            sx={{
+              height: "100%",
+              width: "100%",
+              position: "relative",
+              "&:hover": {
+                filter: useColorModeValue("brightness(0.9)", "brightness(1.2)"),
+              },
+            }}
+            // alignItems="center"
+            // justifyContent="space-between"
+            direction={"row"}
+          >
+            <Stack align="flex-start" justify="center">
+              <Image src={props.logo} rounded="md" boxSize={["50px"]} />
+            </Stack>
 
-        boxShadow: 1,
-        cursor: "pointer",
-      }}
-    >
-      <Stack
-        boxShadow={"md"}
-        rounded={"md"}
-        sx={{
-          height: "100%",
-          width: "100%",
-          position: "relative",
+            <Stack justify="center">
+              <Text
+                fontSize={[11, 12, 13, 14, 15, 16, 17]}
+                sx={{ fontWeight: "bold" }}
+                color={useColorModeValue("black", "gray.300")}
+              >
+                {props.company}
+              </Text>
 
-          "&::after": {
-            content: '""',
-            position: "absolute",
-            left: "50%",
-            transform: "translateX(-50%)",
-            bottom: "0",
-            width: "40%",
-            height: "2px",
-            opacity: 1,
-            backgroundColor: "blue.400",
-            transition: " all 0.2s linear ",
-          },
-          "&:hover:after": {
-            backgroundColor: "red.400",
-            width: "210px",
-          },
-          svg: {
-            color: "blue.400",
-            transition: " color 0.2s linear ",
-          },
-
-          "&:hover svg": {
-            color: "red.400",
-          },
-        }}
-        alignItems="center"
-        justifyContent="center"
-        spacing={2}
-      >
-        <Icon as={BsCodeSlash} fontSize={20} />
-
-        <Text sx={{ fontSize: 16, fontWeight: 500, color: "text.main" }}>
-          Frontend Development
-        </Text>
-        <Text sx={{ fontSize: 13, fontWeight: 500, color: "text.light" }}>
-          10 Jobs Available
-        </Text>
-      </Stack>
-    </Box>
+              <Text
+                sx={{ fontSize: 13, fontWeight: 500 }}
+                style={{ marginTop: "0" }}
+                color={useColorModeValue("black", "gray.300")}
+              >
+                {props.post}
+              </Text>
+            </Stack>
+          </Stack>
+        </GridItem>
+      </LinkOverlay>
+    </LinkBox>
   );
 }
 

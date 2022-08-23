@@ -6,8 +6,7 @@ import {
 import { useContext } from "react";
 import AuthContext from "../context/AuthContext";
 const PrivateRoute = ({ children }) => {
-  const { tokens } = useContext(AuthContext);
-  const [authTokens, setAuthTokens] = tokens;
+  const { authTokens } = useContext(AuthContext);
   const location = useLocation();
   const authed = authTokens.accessToken ? true : false; // isauth() returns true or false based on localStorage
 

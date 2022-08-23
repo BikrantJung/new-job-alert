@@ -16,6 +16,8 @@ import {
   useDisclosure,
   useColorModeValue,
   Stack,
+  SkeletonCircle,
+  Skeleton,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import ToggleMode from "../ToggleMode";
@@ -24,6 +26,10 @@ import { FiSettings } from "react-icons/fi";
 import { IoIosLogOut } from "react-icons/io";
 import AuthContext from "../../context/AuthContext";
 import { clearTokens } from "../../services/localStorage";
+import handleLogout from "../../utils/logoutUser";
+import { ProfileMenu } from "../../pages/Profile/Profile";
+import RegisterButton from "../RegisterButton";
+
 const Links = [
   {
     link: "/jobs",
@@ -35,7 +41,7 @@ const Links = [
   },
   {
     link: "/create-job-post",
-    text: "Start Hiring",
+    text: "Post a job",
   },
   {
     link: "/contact-us",
@@ -61,21 +67,25 @@ const NavLink = (props) => (
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { tokens } = useContext(AuthContext);
-  const [authTokens, setAuthTokens] = tokens;
+  const { authTokens, userProfileData } = useContext(AuthContext);
+
   const navigate = useNavigate();
+
   const handleLogout = () => {
     setTimeout(() => {
       clearTokens();
     }, 500);
   };
 
+
+
+
   return (
     <>
       <Box
         bg={useColorModeValue("gray.100", "gray.900")}
         px={4}
-        sx={{ position: "sticky", top: 0, zIndex: 1000 }}
+        sx={{ position: "sticky", top: 0, zIndex: 1500 }}
       >
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <IconButton
@@ -86,52 +96,39 @@ export default function Navbar() {
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems={"center"}>
-            <Box>Jobs Nepal</Box>
+            <Box>
+              <Link as={ReactLink} to="/">
+                Jobs Nepal
+              </Link>
+            </Box>
             <HStack
               as={"nav"}
               spacing={4}
               display={{ base: "none", md: "flex" }}
             >
-              {Links.map((link) => (
-                <NavLink key={link.link} link={link.link}>
+              {Links.map((link, index) => (
+                <NavLink key={index} link={link.link}>
                   {link.text}
                 </NavLink>
               ))}
             </HStack>
           </HStack>
-          <Flex alignItems={"center"} gap="5">
+
+          <Flex alignItems={"center"} gap={[5]}>
             <ToggleMode />
             {authTokens.accessToken ? (
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  rounded={"full"}
-                  variant={"link"}
-                  cursor={"pointer"}
-                  minW={0}
-                >
-                  <Avatar size={"sm"} src={""} />
-                </MenuButton>
-                <MenuList>
-                  <Link
-                    as={ReactLink}
-                    to="/profile"
-                    _hover={{ textDecoration: "none" }}
-                  >
-                    <MenuItem icon={<AiOutlineUser size={16} />}>
-                      Profile
-                    </MenuItem>
-                  </Link>
-                  <MenuItem icon={<FiSettings size={16} />}>Settings</MenuItem>
-                  <MenuDivider />
-                  <MenuItem
-                    icon={<IoIosLogOut size={16} />}
-                    onClick={handleLogout}
-                  >
-                    Log out
-                  </MenuItem>
-                </MenuList>
-              </Menu>
+              !userProfileData.username ? (
+                <ProfileMenu py={1} ml={3} />
+              ) : (
+                <Flex width={["auto", "auto", "100px"]} align="center" gap={1}>
+                  <SkeletonCircle size={["9", "9", "10"]} />
+                  <Skeleton
+                    height="10px"
+                    flex={1}
+                    display={["none", "none", "block"]}
+                  />
+                </Flex>
+              )
             ) : (
               <Link
                 as={ReactLink}
@@ -147,8 +144,10 @@ export default function Navbar() {
         {isOpen ? (
           <Box pb={4} display={{ md: "none" }}>
             <Stack as={"nav"} spacing={4}>
-              {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
+              {Links.map((link, index) => (
+                <NavLink key={index} link={link.link}>
+                  {link.text}
+                </NavLink>
               ))}
             </Stack>
           </Box>

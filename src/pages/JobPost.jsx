@@ -45,6 +45,7 @@ import { IoChevronDown } from "react-icons/io5";
 import { CloseIcon } from "@chakra-ui/icons";
 import Navbar from "../components/Navbar/Navbar";
 import { getTokens } from "../services/localStorage";
+import NewAxios from "../utils/newAxios";
 const CustomGridItem = ({ children }) => {
   return <GridItem colSpan={[2, 1]}>{children}</GridItem>;
 };
@@ -57,8 +58,10 @@ export default function JobPost() {
   const [filteredJobTags, setFilteredJobTags] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const toast = useToast();
-
+  const api = NewAxios();
+  const [isLoading, setIsLoading] = useState(false);
   const [categoryData, setCategoryData] = useState([]);
+  const [postError, setPostError] = useState([]);
   const [tagsOptions, setTagsOptions] = useState([
     {
       id: 1,
@@ -126,7 +129,6 @@ export default function JobPost() {
   // Controlled input fields
 
   // Get category data on first load
-  console.log("L", selectedCategory.length);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -140,6 +142,7 @@ export default function JobPost() {
           },
         });
         setCategoryData(res.data);
+        console.log(res);
       } catch (error) {
         console.log(error);
       }
@@ -149,6 +152,7 @@ export default function JobPost() {
 
   const submitJobPost = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     const data = new FormData(e.currentTarget);
     tagValues.map((item) => {
       filteredJobTags.push(item.value);
@@ -158,6 +162,7 @@ export default function JobPost() {
       user: localUserID,
       Category: selectedCategory[0].id,
       JobTitle: data.get("job_title"),
+      JobCategoryImage: selectedCategory[0].CategoryImage,
       JobEmail: data.get("job_email"),
       Location: "Nepal",
       JobRegion: data.get("job_region"),
@@ -170,19 +175,30 @@ export default function JobPost() {
       SalaryMax: data.get("max_salary"),
       ImportantInformation: data.get("job_information"),
     };
-
+    console.log(postData.JobImage);
     try {
-      const res = await axios({
-        url: "post/",
-        method: "POST",
-        data: postData,
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${accessToken}`,
-        },
-      });
-      console.log(res);
+      const res = await api.post("post/", postData);
+      setIsLoading(false);
+      window.location.reload(false);
     } catch (error) {
+      setIsLoading(false);
+
+      if (error.response.data.JobEmail) {
+        toast({
+          title: error.response.data.JobEmail[0],
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+      }
+      if (error.response.data.msg) {
+        toast({
+          title: error.response.data.msg,
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+      }
       console.log(error);
     }
   };
@@ -235,38 +251,36 @@ export default function JobPost() {
                     minH="50vh"
                   >
                     <Stack spacing={4}>
-                      <FormControl id="email" isRequired>
-                        <FormLabel>Select Job Category</FormLabel>
-                        <Select
-                          name="job_category"
-                          placeholder="Select Category"
-                          onChange={(e, value) =>
-                            handleCategoryChange(e, value)
-                          }
-                        >
-                          {categoryData.map((item) => {
-                            return (
-                              <option
-                                value={item.name}
-                                key={item.id}
-                                // onClick={() => console.log("CLICKEDDDD")}
-                              >
-                                {item.name}
-                              </option>
-                            );
-                          })}
-                        </Select>
-                      </FormControl>
+                      {categoryData.length ? (
+                        <FormControl id="email" isRequired>
+                          <FormLabel>Select Job Category</FormLabel>
+                          <Select
+                            name="job_category"
+                            placeholder="Select Category"
+                            onChange={(e, value) =>
+                              handleCategoryChange(e, value)
+                            }
+                          >
+                            {categoryData.map((item) => {
+                              return (
+                                <option
+                                  value={item.name}
+                                  key={item.id}
+                                  // onClick={() => console.log("CLICKEDDDD")}
+                                >
+                                  {item.name}
+                                </option>
+                              );
+                            })}
+                          </Select>
+                        </FormControl>
+                      ) : (
+                        <Skeleton height="100px" />
+                      )}
                     </Stack>
                   </Box>
 
-                  <Stack justify={"space-between"} direction="row">
-                    <Button
-                      isDisabled
-                      bg={useColorModeValue("gray.300", "gray.600")}
-                    >
-                      Prev
-                    </Button>
+                  <Stack justify={"end"} direction="row">
                     <Button
                       bg={useColorModeValue("gray.300", "gray.600")}
                       onClick={tabIncrement}
@@ -485,7 +499,11 @@ export default function JobPost() {
                       >
                         Prev
                       </Button>
-                      <Button type="submit" colorScheme={"messenger"}>
+                      <Button
+                        type="submit"
+                        colorScheme={"messenger"}
+                        isLoading={isLoading}
+                      >
                         POST
                       </Button>
                     </Stack>

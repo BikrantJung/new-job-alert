@@ -1,17 +1,28 @@
-import axios from "axios";
 import { createContext, useEffect, useState } from "react";
+
 import { getTokens, saveTokens } from "../services/localStorage";
-import handleLogout from "../utils/LogOutUser";
+import { saveUserID } from "../services/localStorage";
+import NewAxios from "../utils/newAxios";
+import { axiosPrivate } from "../utils/axiosPrivate";
+import axios from "axios";
 const AuthContext = createContext();
+
+
+
 export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
   const { accessToken, refreshToken, localUserID } = getTokens();
-
   const [userSubscribed, setUserSubscribed] = useState(false);
   const [userData, setUserData] = useState([]);
+
   const [userID, setUserID] = useState(localUserID ? localUserID : null);
-  const [loading, setLoading] = useState(true);
+
+  const [userProfileData, setUserProfileData] = useState([]);
+  const [isExpired, setIsExpired] = useState(true);
+  const [profileID, setProfileID] = useState(null);
+  const [allowData, setAllowData] = useState(true);
+
   const [authTokens, setAuthTokens] = useState(
     accessToken && refreshToken
       ? {
@@ -23,7 +34,31 @@ export const AuthProvider = ({ children }) => {
           refreshToken: null,
         }
   );
+
+  const api = NewAxios();
+
+  // useEffect(() => {
+  //   async function getUserProfileData() {
+  //     if (localUserID && allowData) {
+  //       console.log("I RAN");
+  //       try {
+  //         const res = await api.get(`profileSelf/${localUserID}`);
+  //         setUserProfileData([]);
+  //         setUserProfileData(res.data);
+  //         saveUserID(res.data.id);
+  //         console.log("PROFILESELF", res);
+  //         console.log(res);
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     }
+  //   }
+  //   setLoading(false);
+  //   getUserProfileData();
+  // }, [accessToken, isExpired, localUserID]);
+
   useEffect(() => {
+
     console.log("I ALSO RUN");
     async function getUserSubscribed() {
       try {
@@ -41,7 +76,8 @@ export const AuthProvider = ({ children }) => {
     }
     getUserSubscribed();
   }, [accessToken, authTokens.accessToken]);
-  console.log("AUTH TOKENS", authTokens.refreshToken);
+
+
   const updateToken = async () => {
     console.log("I RAN");
 
@@ -67,9 +103,7 @@ export const AuthProvider = ({ children }) => {
       console.log("IT IS LOADING");
     }
   };
-  console.log(loading);
-  console.log(authTokens);
-  // updateToken();
+
   useEffect(() => {
     if (loading && authTokens.accessToken) {
       console.log("1");
@@ -84,14 +118,47 @@ export const AuthProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, [accessToken, loading]);
 
-  const contextData = {
-    tokens: [authTokens, setAuthTokens],
+  useEffect( ()=>{
+    async function getUserProfileData() {
+      if (localUserID && allowData) {
+        console.log("I RAN");
+        try {
+          const res = await axiosPrivate.get(`profileSelf/${localUserID}`);
 
-    subscribed: [userSubscribed, setUserSubscribed],
-    // userid: [userID, setUserID],
+          console.log(res);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+    setLoading(false);
+    getUserProfileData();
+  },[accessToken, isExpired, localUserID])
+    
+
+
+
+
+
+  const contextData = {
+    authTokens,
+    setAuthTokens,
+    userSubscribed,
+    setUserSubscribed,
+    userData,
+    setUserData,
+    userProfileData,
+    setUserProfileData,
+    isExpired,
+    setIsExpired,
+    allowData,
+    setAllowData,
   };
 
   return (
-    <AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={contextData}>
+      {loading ? null : children}
+    </AuthContext.Provider>
   );
-};
+
+  }

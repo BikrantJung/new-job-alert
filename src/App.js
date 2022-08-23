@@ -11,21 +11,18 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import VerifyRegister from "./services/VerifyRegister";
 import PrivateRoute from "./utils/PrivateRoute";
-import Profile from "./pages/Profile";
+import Profile from "./pages/Profile/Profile";
 import RestrictLoginPage from "./utils/RestrictLoginPage";
 import Pricing from "./pages/Pricing";
 import JobPost from "./pages/JobPost";
-import Jobs from "./pages/Jobs";
-import { useContext, useEffect } from "react";
-import StateContext from "./context/StateContext";
-import { MainContent, Posts } from "./pages/Profile";
+import Jobs from "./pages/Jobs/Jobs";
+import MainContent from "./pages/Profile/MainContent";
+import Contact from "./pages/Contact";
+import CompanyJob from "./pages/Jobs/CompanyJob";
+import CandidateRegister from "./pages/Register/CandidateRegister";
+import UserEducation from "./components/UserPost/UserEducation";
+import DefaultContent from "./pages/Profile/Content/DefaultContent";
 function App() {
-  const { render_nav } = useContext(StateContext);
-  const [renderNav, setRenderNav] = render_nav;
-  useEffect(() => {
-    setRenderNav(true);
-  }, []);
-  console.log(renderNav);
   return (
     <BrowserRouter>
       <div className="App">
@@ -35,16 +32,19 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
           </Route>
+          <Route path="/contact-us" element={<Contact />} />
           <Route path="/" element={<PrivateRoute />}>
-            <Route path="/profile" element={<Profile />}>
-              <Route index element={<MainContent />} />
-              <Route path="posts" element={<Posts />} />
+            <Route path="/create-job-post" element={<JobPost />} />
+            <Route path="/profile/:id" element={<Profile />}>
+              <Route index element={<DefaultContent />} />
 
+              <Route path="education" element={<UserEducation />} />
             </Route>
           </Route>
           <Route path="/pricing" element={<Pricing />} />
-          <Route path="/create-job-post" element={<JobPost />} />
           <Route path="/jobs" element={<Jobs />} />
+          <Route path="/jobs/:id" element={<CompanyJob />} />
+          <Route path="/candidate-register" element={<CandidateRegister />} />
           <Route
             path="/api/user/verify/:id/:token"
             element={<VerifyRegister />}

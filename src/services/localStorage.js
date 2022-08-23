@@ -21,7 +21,10 @@ const getTokens = () => {
 const clearTokens = () => {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
+
   localStorage.removeItem("userID");
   window.location.reload(false)
+
+
 };
 export { saveTokens, getTokens, clearTokens, saveUserID };

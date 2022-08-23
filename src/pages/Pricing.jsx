@@ -31,6 +31,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import AuthContext from "../context/AuthContext";
 import { getTokens } from "../services/localStorage";
 import Navbar from "../components/Navbar/Navbar";
+import NewAxios from "../utils/newAxios";
 function PriceWrapper({ children }) {
   return (
     <Box
@@ -55,12 +56,9 @@ export default function Pricing() {
   const [khaltiResponse, setKhaltiResponse] = useState({});
   const [error, setError] = useState(false);
   const { accessToken } = getTokens();
-  const { tokens, subscribed } = useContext(AuthContext);
-  const [userSubscribed, setUserSubscribed] = subscribed;
-  console.log(userSubscribed);
+  const { userSubscribed, isExpired } = useContext(AuthContext);
   const toast = useToast();
-  console.log(accessToken);
-
+  const api = NewAxios();
   useEffect(() => {
     async function getPricingData() {
       try {
@@ -77,20 +75,49 @@ export default function Pricing() {
         console.log(error.response.data);
       }
     }
+
     getPricingData();
   }, []);
 
-  const openModal = (e, id) => {
-    setModalOpen(true);
-    setPricingDetail(pricingData.find((obj) => obj.id === id));
+  const checkUserVerification = async (e, id) => {
+    if (accessToken) {
+      try {
+        const data = {
+          membership_type: null,
+          amount: null,
+          token: null,
+        };
+
+        const res = await api.post("subscribe/", data);
+        console.log(res);
+        setModalOpen(true);
+        setPricingDetail(pricingData.find((obj) => obj.id === id));
+      } catch (error) {
+        if (error.response.data.msg) {
+          toast({
+            title: "You are not verified. Check inbox for verification.",
+            status: "error",
+            duration: 4000,
+            isClosable: true,
+          });
+        }
+      }
+    } else {
+      toast({
+        title: "You are not logged in",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+    // setModalOpen(true);
+    // setPricingDetail(pricingData.find((obj) => obj.id === id));
   };
   const modalClose = () => {
     setModalOpen(false);
   };
 
   const handlePayment = () => {
-    console.log("CLICkED");
-    console.log(pricingDetail);
     let config = {
       // replace this key with yours
       publicKey: "test_public_key_4b33f92a102b4901aab413faf63178d9",
@@ -157,7 +184,6 @@ export default function Pricing() {
       });
     }
   }, [error]);
-  console.log(pricingData.length);
   return (
     <>
       <Navbar />
@@ -168,7 +194,7 @@ export default function Pricing() {
             Plans that fit your need
           </Heading>
           <Text fontSize="lg" color={"gray.500"}>
-            Start with 14-day free trial. No credit card needed. Cancel at
+            Start with 7-day free trial. No credit card needed. Cancel at
             anytime.
           </Text>
         </VStack>
@@ -270,7 +296,7 @@ export default function Pricing() {
                       <Button
                         w="full"
                         colorScheme="red"
-                        onClick={(e) => openModal(e, item.id)}
+                        onClick={(e) => checkUserVerification(e, item.id)}
                         disabled={userSubscribed}
                         variant={userSubscribed ? null : "outline"}
                       >
