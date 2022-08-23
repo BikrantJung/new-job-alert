@@ -16,6 +16,8 @@ import {
   useDisclosure,
   useColorModeValue,
   Stack,
+  SkeletonCircle,
+  Skeleton,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import ToggleMode from "../ToggleMode";
@@ -26,6 +28,7 @@ import AuthContext from "../../context/AuthContext";
 import { clearTokens } from "../../services/localStorage";
 import handleLogout from "../../utils/logoutUser";
 import { ProfileMenu } from "../../pages/Profile/Profile";
+import RegisterButton from "../RegisterButton";
 
 const Links = [
   {
@@ -65,7 +68,9 @@ const NavLink = (props) => (
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { authTokens, userProfileData } = useContext(AuthContext);
+
   const navigate = useNavigate();
+
 
   return (
     <>
@@ -101,10 +106,21 @@ export default function Navbar() {
             </HStack>
           </HStack>
 
-          <Flex alignItems={"center"} gap="5">
+          <Flex alignItems={"center"} gap={[5]}>
             <ToggleMode />
             {authTokens.accessToken ? (
-              <ProfileMenu py={1} />
+              userProfileData.username ? (
+                <ProfileMenu py={1} ml={3} />
+              ) : (
+                <Flex width={["auto", "auto", "100px"]} align="center" gap={1}>
+                  <SkeletonCircle size={["9", "9", "10"]} />
+                  <Skeleton
+                    height="10px"
+                    flex={1}
+                    display={["none", "none", "block"]}
+                  />
+                </Flex>
+              )
             ) : (
               <Link
                 as={ReactLink}

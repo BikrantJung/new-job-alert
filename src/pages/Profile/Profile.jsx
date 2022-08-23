@@ -19,6 +19,7 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
+  Stack,
 } from "@chakra-ui/react";
 import {
   FiHome,
@@ -39,17 +40,17 @@ import { AiOutlineUser } from "react-icons/ai";
 import handleLogout from "../../utils/logoutUser";
 import NewAxios from "../../utils/newAxios";
 import { getTokens } from "../../services/localStorage";
-const LinkItems = [
-  { name: "Profile", icon: FiHome, link: "" },
-  { name: "Posts", icon: FiTrendingUp, link: "posts" },
-  { name: "Favourites", icon: FiCompass, link: "favourites" },
-  { name: "Payment History", icon: FiSettings, link: "payment-history" },
-];
+import MainContent from "./MainContent";
 
 export default function Profile({ children }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { userProfileData, setUserProfileData, isExpired } =
-    useContext(AuthContext);
+  const {
+    userProfileData,
+    setUserProfileData,
+    isExpired,
+    allowData,
+    setAllowData,
+  } = useContext(AuthContext);
   const { localUserID, accessToken } = getTokens();
   const api = NewAxios();
   const { id } = useParams();
@@ -57,11 +58,12 @@ export default function Profile({ children }) {
   useEffect(() => {
     async function getUserProfileData() {
       try {
-        const res = await api.get(`profile/${localUserID}`);
-        console.log(res);
+        const res = await api.get(`profile/Bikrant`);
+        console.log("User's data", res);
         console.log("HELLO HAHA");
         setUserProfileData([]);
         setUserProfileData(res.data);
+        setAllowData(false);
       } catch (error) {
         console.log(error);
       }
@@ -69,11 +71,18 @@ export default function Profile({ children }) {
 
     getUserProfileData();
   }, [accessToken, isExpired]);
+  console.log(userProfileData);
   return (
-    <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
+    <Stack
+      minH="100vh"
+      bg={useColorModeValue("gray.100", "gray.900")}
+      direction="row"
+    >
       <SidebarContent
         onClose={() => onClose}
-        display={{ base: "none", md: "block" }}
+        height="100vh"
+        flex={1}
+        display={{ base: "none", lg: "block" }}
       />
       <Drawer
         autoFocus={false}
@@ -82,30 +91,39 @@ export default function Profile({ children }) {
         onClose={onClose}
         returnFocusOnClose={false}
         onOverlayClick={onClose}
-        size="full"
+        size="xs"
       >
         <DrawerContent>
           <SidebarContent onClose={onClose} />
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}
-      <MobileNav onOpen={onOpen} />
-      <Outlet />
+      <Stack flex={4} style={{ marginInlineStart: "0" }}>
+        <MobileNav onOpen={onOpen} />
+
+        <MainContent />
+      </Stack>
       {/* Main Content */}
-    </Box>
+    </Stack>
   );
 }
 
 const SidebarContent = ({ onClose, ...rest }) => {
+  // const[isActive,setIsActive]
+  const LinkItems = [
+    { name: "General Details", icon: FiHome, link: "" },
+    { name: "Education", icon: FiTrendingUp, link: "education" },
+    { name: "Favourites", icon: FiCompass, link: "favourites" },
+    { name: "Payment History", icon: FiSettings, link: "payment-history" },
+  ];
   return (
     <Box
-      transition="3s ease"
+      transition="200ms ease"
       bg={useColorModeValue("white", "gray.900")}
       borderRight="1px"
       borderRightColor={useColorModeValue("gray.200", "gray.700")}
-      w={{ base: "full", md: 60 }}
-      pos="fixed"
-      h="full"
+      w={{ base: "full", lg: "auto" }}
+      h="100%"
       {...rest}
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
@@ -114,7 +132,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
             Job Alert
           </Text>
         </Link>
-        <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
+        <CloseButton display={{ base: "flex", lg: "none" }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
         <Link
@@ -142,7 +160,7 @@ const NavItem = ({ icon, children, ...rest }) => {
       role="group"
       cursor="pointer"
       _hover={{
-        bg: "cyan.400",
+        bg: "rgb(29, 161, 242)",
         color: "white",
       }}
       {...rest}
@@ -165,19 +183,20 @@ const NavItem = ({ icon, children, ...rest }) => {
 const MobileNav = ({ onOpen, ...rest }) => {
   return (
     <Flex
-      ml={{ base: 0, md: 60 }}
-      px={{ base: 4, md: 4 }}
+      // ml={{ base: 0, md: 60 }}
+      // px={{ base: 4, md: 4 }}
       height="20"
       alignItems="center"
       bg={useColorModeValue("white", "gray.900")}
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue("gray.200", "gray.700")}
-      justifyContent={{ base: "space-between", md: "flex-end" }}
+      justifyContent={{ base: "space-between", lg: "flex-end" }}
+      px={4}
       {...rest}
       boxShadow={"base"}
     >
       <IconButton
-        display={{ base: "flex", md: "none" }}
+        display={{ base: "flex", lg: "none" }}
         onClick={onOpen}
         variant="outline"
         aria-label="open menu"
@@ -185,7 +204,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
       />
 
       <Text
-        display={{ base: "flex", md: "none" }}
+        display={{ base: "flex", lg: "none" }}
         fontSize="2xl"
         fontFamily="monospace"
         fontWeight="bold"
@@ -193,7 +212,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
         Logo
       </Text>
 
-      <HStack spacing={{ base: "0", md: "6" }}>
+      <HStack spacing={{ base: "0", md: "6" }} gap={3}>
         <ToggleMode />
         <Flex alignItems={"center"}>
           <ProfileMenu py={2} />
@@ -202,12 +221,12 @@ const MobileNav = ({ onOpen, ...rest }) => {
     </Flex>
   );
 };
-export const ProfileMenu = (props) => {
+export const ProfileMenu = (props, { ...rest }) => {
   const { userProfileData, setUserProfileData } = useContext(AuthContext);
   const { localUserID } = getTokens();
 
   return (
-    <Menu>
+    <Menu ml={3}>
       <MenuButton
         py={props.py}
         transition="all 0.3s"
@@ -239,7 +258,7 @@ export const ProfileMenu = (props) => {
         <Link
           as={ReactLink}
           // to={`/profile/${userProfileData.username}`}
-          to={`/profile`}
+          to={`/profile/${userProfileData.username}`}
           _hover={{ textDecoration: "none" }}
         >
           <MenuItem icon={<AiOutlineUser fontSize={18} />}>Profile</MenuItem>

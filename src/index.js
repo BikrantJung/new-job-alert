@@ -6,15 +6,19 @@ import { StateProvider } from "./context/StateContext";
 import theme from "./theme";
 import axios from "axios";
 import { AuthProvider } from "./context/AuthContext";
+import { Provider } from "react-redux";
+// import { store } from "./app/store";
 axios.defaults.baseURL = "http://192.168.1.71:8000/api/user/";
 // api/user/token/refresh
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <AuthProvider>
-    <StateProvider>
-      <ChakraProvider theme={theme}>
-        <App />
-      </ChakraProvider>
-    </StateProvider>
+    {/* <Provider store={store}> */}
+      <StateProvider>
+        <ChakraProvider theme={theme}>
+          <App />
+        </ChakraProvider>
+      </StateProvider>
+    {/* </Provider> */}
   </AuthProvider>
 );

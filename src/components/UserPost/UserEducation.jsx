@@ -1,9 +1,9 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Heading, Stack } from "@chakra-ui/react";
 import React from "react";
 import { useEffect } from "react";
 import NewAxios from "../../utils/newAxios";
 
-function UserPost() {
+function UserEducation() {
   const api = NewAxios();
   useEffect(() => {
     async function getJobs() {
@@ -20,10 +20,14 @@ function UserPost() {
   }, []);
 
   return (
-    <Box ml={{ base: 0, md: 60 }} p="4">
-      THIS IS POST
-    </Box>
+    <Stack height="100%" flex={7} style={{ marginInlineStart: 0 }}>
+      <Stack height="90%" boxShadow={"md"} p={4}>
+        <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }} textAlign='center'>
+          Education
+        </Heading>
+      </Stack>
+    </Stack>
   );
 }
 
-export default UserPost;
+export default UserEducation;

@@ -24,14 +24,14 @@ function Categories() {
       <Center>
         <Heading
           sx={{
-            my: 6,
+            my: 8,
             position: "relative",
             "&::before": {
               content: '""',
               position: "absolute",
               width: "3%",
               left: "50%",
-              transform:'translateX(-50%)',
+              transform: "translateX(-50%)",
               bottom: "0",
               height: "2px",
               opacity: 1,
@@ -42,7 +42,7 @@ function Categories() {
               position: "absolute",
               width: "8%",
               left: "55%",
-              transform:'translateX(-35%)',
+              transform: "translateX(-35%)",
               bottom: "0",
               height: "2px",
               opacity: 1,
@@ -77,6 +77,7 @@ function Categories() {
                 logo={item.img}
                 company={item.companyName}
                 post={item.jobCategory}
+                key={index}
               />
             );
           })}
@@ -98,7 +99,7 @@ function Categories() {
             >
               Top Employers
             </Text>
-            <Stack direction="row" justify={'space-evenly'}>
+            <Stack direction="row" justify={"space-evenly"}>
               <Image src={AmazonLogo} rounded="md" boxSize="50px" />
 
               <Image src={AppleLogo} rounded="md" boxSize="50px" />

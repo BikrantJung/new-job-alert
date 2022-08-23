@@ -21,6 +21,7 @@ function NewAxios() {
   });
   axiosInstance.interceptors.request.use(async (req) => {
     const user = jwtDecode(accessToken);
+    console.log("`")
     const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
     //    Wherever I use axiosInstance, they will only work if accesstoken is not expired
     //    If I use default axios, they will work anytime

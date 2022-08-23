@@ -95,7 +95,7 @@ export default function Signup() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <Flex
         minH={"100vh"}
         align={"center"}

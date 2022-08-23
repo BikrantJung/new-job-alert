@@ -39,19 +39,19 @@ export default function RecentJobCard() {
       <Box bg={useColorModeValue("gray.50", "gray.900")} px={6} py={10}>
         <List spacing={3}>
           <Stack direction="row" align={"center"}>
-            <Icon as={GoLocation} color="green.400" fontSize={20} />
+            <Icon as={GoLocation} color="blue.400" fontSize={20} />
             <Text>Maitidevi, Kathmandu</Text>
           </Stack>
           <Stack direction="row" align={"center"}>
-            <Icon as={AiOutlineDollar} color="green.400" fontSize={20} />
+            <Icon as={AiOutlineDollar} color="blue.400" fontSize={20} />
             <Text>289 - 399</Text>
           </Stack>
           <Stack direction="row" align={"center"}>
-            <Icon as={MdWorkOutline} color="green.400" fontSize={20} />
+            <Icon as={MdWorkOutline} color="blue.400" fontSize={20} />
             <Text>Full Time</Text>
           </Stack>
           <Stack direction="row" align={"center"}>
-            <Icon as={AiOutlineTag} color="green.400" fontSize={20} />
+            <Icon as={AiOutlineTag} color="blue.400" fontSize={20} />
             <Tag>
               <TagLabel>React Js</TagLabel>
             </Tag>
@@ -67,15 +67,14 @@ export default function RecentJobCard() {
         <Button
           mt={10}
           w={"full"}
-          bg={"green.400"}
+          bg={"blue.400"}
           color={"white"}
           rounded={"xl"}
-          boxShadow={"0 5px 20px 0px rgb(72 187 120 / 43%)"}
           _hover={{
-            bg: "green.500",
+            bg: "blue.500",
           }}
           _focus={{
-            bg: "green.500",
+            bg: "blue.500",
           }}
         >
           Apply

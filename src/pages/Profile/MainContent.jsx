@@ -1,59 +1,29 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import {
-  IconButton,
   Avatar,
-  Box,
-  CloseButton,
-  Flex,
-  HStack,
-  VStack,
   Icon,
   useColorModeValue,
-  Link,
-  Drawer,
-  DrawerContent,
   Text,
   useDisclosure,
-  BoxProps,
-  FlexProps,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  MenuList,
-  Divider,
-  Grid,
-  GridItem,
   Stack,
-  Badge,
-  Button,
-  MenuIcon,
   Tab,
   TabList,
   Tabs,
   TabPanels,
   TabPanel,
   Tooltip,
-  TableContainer,
-  Table,
-  TableCaption,
-  Thead,
-  Tr,
-  Th,
-  Tbody,
-  Tfoot,
-  Td,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  Skeleton,
+  Button,
+  Heading,
+  IconButton,
+  Tag,
+  Divider,
+  List,
+  ListItem,
+  ListIcon,
 } from "@chakra-ui/react";
+
 import { FaFacebook } from "react-icons/fa";
-import { IoLogoWhatsapp } from "react-icons/io";
+import { IoLogoWhatsapp, IoMdCheckmarkCircle } from "react-icons/io";
 import { EditIcon, AddIcon } from "@chakra-ui/icons";
 import { AiFillInstagram, AiFillTwitterCircle } from "react-icons/ai";
 import Avatar1 from "../../images/avatar1.png";
@@ -62,291 +32,210 @@ import { Link as ReactLink } from "react-router-dom";
 import EditProfile from "./EditProfile";
 import NewAxios from "../../utils/newAxios";
 import { getTokens } from "../../services/localStorage";
+import RegisterAlert from "../../components/RegisterAlert";
+import { Outlet } from "react-router-dom";
+import DefaultContent from "./Content/DefaultContent";
+
 function MainContent() {
   const { userProfileData, setUserProfileData } = useContext(AuthContext);
   const { userData } = useContext(AuthContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { localUserID, accessToken } = getTokens();
+  const [selectedMenu, setSelectedMenu] = useState("");
+  const handeleSelectOption = (e) => {
+    setSelectedMenu(e.target.value);
+  };
 
   return (
-    <Box ml={{ base: 0, md: 60 }} p="4">
-      <Stack px={{ base: 0, sm: 2, md: 5, lg: 10 }}>
-        <Stack direction="row" align="center" pb={3} boxShadow="md" p={5}>
+    <Stack
+      direction={{ base: "column", md: "row" }}
+      align="start"
+      justify={{ base: "center", md: "start" }}
+      style={{ marginTop: 0 }}
+      height="100%"
+    >
+      {/*  Left avatar section */}
+      <Stack
+        height={{ base: "auto", md: "100%" }}
+        width={{ base: "100%", md: "auto" }}
+        // height='20%'
+        direction={{ base: "row", md: "column" }}
+        px={{ base: 2, md: 5 }}
+        boxShadow="md"
+        bgColor={useColorModeValue("gray.200", "gray.700")}
+        pt={{ base: 2, md: 4 }}
+        flex={1}
+        align="center"
+        justify={{ base: "space-between", md: "flex-start" }}
+      >
+        <Stack
+          direction={["column"]}
+          align="center"
+          py={1}
+          justify={["center"]}
+          px={{ base: 2, md: 5 }}
+        >
           <Avatar
-            size={{ base: "md", sm: "md", md: "lg", lg: "xl" }}
+            size={{ base: "sm", sm: "lg", xl: "xl" }}
             src={userProfileData.avatar}
           />
-          <Stack align={"flex-start"}>
-            <Text
-              fontSize={{ base: 16, sm: 17, md: 18, lg: 20, xl: 22 }}
-              fontWeight={"500"}
-              style={{ marginTop: 0 }}
-            >
-              {userProfileData.username}
-              <Badge
-                colorScheme="green"
-                ml={1}
-                fontSize={{ base: 8, sm: 9, md: 11, lg: 13, xl: 14 }}
-              >
-                free
-              </Badge>
-            </Text>
-          </Stack>
-          <Stack
-            direction={["column", "column", "row"]}
-            style={{ marginLeft: "auto", alignSelf: "flex-end" }}
-            display={"flex"}
-          >
-            <Link
-              as={ReactLink}
-              to="/create-job-post"
-              _hover={{ textDecoration: "none" }}
-            >
-              <Button
-                size={["xs", "sm", "sm", "md"]}
-                leftIcon={<AddIcon fontSize={14} />}
-                bg={useColorModeValue("gray.300", "gray.700")}
-                _hover={{
-                  bg: useColorModeValue("gray.200", "gray.600"),
-                }}
-              >
-                Post a job
-              </Button>
-            </Link>
-            <Button
-              size={["xs", "sm", "sm", "md"]}
-              leftIcon={<EditIcon />}
-              bg={useColorModeValue("gray.300", "gray.700")}
-              _hover={{
-                bg: useColorModeValue("gray.200", "gray.600"),
-              }}
-              onClick={onOpen}
-            >
-              Edit profile
-            </Button>
-          </Stack>
 
-          {/* Edit profile Overlay */}
-          <EditProfile isOpen={isOpen} onClose={onClose} />
-          {/*  */}
-          <Stack
-            flex={1}
-            direction="row"
-            align="center"
-            justify={"flex-end"}
-            gap={2}
-            p={3}
-            display={["flex", "flex", "none"]}
-            sx={{
-              position: "absolute",
-              bottom: "10%",
-              left: "50%",
-              transform: "translateX(-50%)",
-            }}
-            boxShadow={"md"}
-            borderRadius={"md"}
+          <Text
+            fontSize={{ base: 16, sm: 17, md: 18, lg: 20, xl: 22 }}
+            fontWeight={"bold"}
+            style={{ marginTop: 0 }}
           >
-            <Tooltip
-              label="Facebook"
-              hasArrow
-              display={["none", "none", "block"]}
-            >
-              <span>
-                <Icon
-                  as={FaFacebook}
-                  fontSize={30}
-                  _hover={{ cursor: "pointer" }}
-                  color={useColorModeValue("blue.600", "blue.300")}
-                />
-              </span>
-            </Tooltip>
-            <Tooltip
-              label="Whatsapp"
-              hasArrow
-              display={["none", "none", "block"]}
-            >
-              <span>
-                <Icon
-                  as={IoLogoWhatsapp}
-                  fontSize={30}
-                  _hover={{ cursor: "pointer" }}
-                  color={useColorModeValue("green.500", "green.300")}
-                />
-              </span>
-            </Tooltip>
-            <Tooltip
-              label="Twitter"
-              hasArrow
-              display={["none", "none", "block"]}
-            >
-              <span>
-                <Icon
-                  as={AiFillTwitterCircle}
-                  fontSize={30}
-                  _hover={{ cursor: "pointer" }}
-                  color={useColorModeValue("blue.500", "blue.200")}
-                />
-              </span>
-            </Tooltip>
-            <Tooltip
-              label="Instagram"
-              hasArrow
-              display={["none", "none", "block"]}
-            >
-              <span>
-                <Icon
-                  as={AiFillInstagram}
-                  fontSize={30}
-                  _hover={{ cursor: "pointer" }}
-                  color={useColorModeValue("red.500", "red.300")}
-                />
-              </span>
-            </Tooltip>
-          </Stack>
+            {userProfileData.username}
+          </Text>
         </Stack>
-
-        <Stack
-          p={2}
-          my={2}
-          direction="row"
-          align={["center", "center", "stretch"]}
-          justify="center"
-          overflow={"hidden"}
+        {/* Edit and Post Job */}
+        <Button
+          mt={{ base: 0, md: 3 }}
+          colorScheme="twitter"
+          size={{ base: "sm", md: "md" }}
         >
-          <Stack
-            direction="column"
-            flex={1}
-            align="flex-start"
-            justify={"center"}
-            py={4}
-            display={["none", "none", "flex"]}
+          Post a job
+        </Button>
+
+        {/* Social Media box Mobile */}
+        <Stack
+          flex={1}
+          direction={{ base: "row", md: "column" }}
+          align="center"
+          gap={2}
+          p={3}
+          pt={{ base: 0, md: 9 }}
+          display={{ base: "none", md: "flex" }}
+        >
+          <Tooltip
+            label="Facebook"
+            hasArrow
+            display={["none", "none", "block"]}
           >
-            <Tooltip label="Facebook" hasArrow>
-              <span>
-                <Link
-                  href={`https://www.facebook.com/${userProfileData.facebook}`}
-                  color="blue.400"
-                  target="_blank"
-                >
-                  <Icon
-                    as={FaFacebook}
-                    fontSize={30}
-                    _hover={{ cursor: "pointer" }}
-                    color={useColorModeValue("blue.600", "blue.300")}
-                  />
-                </Link>
-              </span>
-            </Tooltip>
-            <Tooltip label={userProfileData.whatsapp} hasArrow>
-              <span>
-                <Icon
-                  as={IoLogoWhatsapp}
-                  fontSize={30}
-                  _hover={{ cursor: "pointer" }}
-                  color={useColorModeValue("green.500", "green.300")}
-                />
-              </span>
-            </Tooltip>
-            <Tooltip label="Twitter" hasArrow>
-              <span>
-                <Link
-                  href={`https://www.twitter.com/${userProfileData.twitter}`}
-                  color="blue.400"
-                  target="_blank"
-                >
-                  <Icon
-                    as={AiFillTwitterCircle}
-                    fontSize={30}
-                    _hover={{ cursor: "pointer" }}
-                    color={useColorModeValue("blue.500", "blue.200")}
-                  />
-                </Link>
-              </span>
-            </Tooltip>
-            <Tooltip label="Instagram" hasArrow>
-              <span>
-                <Link
-                  href={`https://www.instagram.com/${userProfileData.instagram}`}
-                  color="blue.400"
-                  target="_blank"
-                >
-                  <Icon
-                    as={AiFillInstagram}
-                    fontSize={30}
-                    _hover={{ cursor: "pointer" }}
-                    color={useColorModeValue("red.500", "red.300")}
-                  />
-                </Link>
-              </span>
-            </Tooltip>
-          </Stack>
-          <Stack flex={3}>
-            <Tabs align="center" variant="enclosed">
-              <TabList>
-                <Tab
-                  _selected={{ bg: useColorModeValue("gray.300", "gray.600") }}
-                  bg={useColorModeValue("gray.200", "gray.500")}
-                  mx={2}
-                >
-                  General Details
-                </Tab>
-                <Tab
-                  _selected={{ bg: useColorModeValue("gray.300", "gray.600") }}
-                  bg={useColorModeValue("gray.200", "gray.500")}
-                  mx={2}
-                >
-                  Contact Details
-                </Tab>
-              </TabList>
-              <TabPanels boxShadow={"md"}>
-                <TabPanel px={[2, 4, 6, 8, 10]}>
-                  <TableContainer>
-                    <Table variant="simple">
-                      <Tbody>
-                        <Tr>
-                          <Td style={{ padding: 0 }}>Username</Td>
-                          <Td>{userProfileData.username}</Td>
-                        </Tr>
-                        <Tr>
-                          <Td style={{ padding: 0 }}>Current city</Td>
-                          <Td>{userProfileData.location}</Td>
-                        </Tr>
-                        <Tr>
-                          <Td style={{ padding: 0 }}>Home town</Td>
-                          <Td>{userProfileData.birthPlace}</Td>
-                        </Tr>
-                        <Tr>
-                          <Td style={{ padding: 0 }}>Date of Birth</Td>
-                          <Td>{userProfileData.DateOfBirth}</Td>
-                        </Tr>
-                      </Tbody>
-                    </Table>
-                  </TableContainer>
-                </TabPanel>
-                <TabPanel px={[2, 4, 6, 8, 10]}>
-                  <Table variant="simple">
-                    <Tbody>
-                      <Tr>
-                        <Td style={{ padding: 0 }}>Phone number</Td>
-                        <Td>{userProfileData.phNumber}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td style={{ padding: 0 }}>Contact email</Td>
-                        <Td>{userProfileData.contactEmail}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td style={{ padding: 0 }}>Contact tel no.</Td>
-                        <Td>{userProfileData.contactTel}</Td>
-                      </Tr>
-                    </Tbody>
-                  </Table>
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          </Stack>
+            <span>
+              <Icon
+                as={FaFacebook}
+                fontSize={30}
+                _hover={{ cursor: "pointer" }}
+                color={useColorModeValue("blue.600", "blue.300")}
+              />
+            </span>
+          </Tooltip>
+          <Tooltip
+            label="Whatsapp"
+            hasArrow
+            display={["none", "none", "block"]}
+          >
+            <span>
+              <Icon
+                as={IoLogoWhatsapp}
+                fontSize={30}
+                _hover={{ cursor: "pointer" }}
+                color={useColorModeValue("green.500", "green.300")}
+              />
+            </span>
+          </Tooltip>
+          <Tooltip label="Twitter" hasArrow display={["none", "none", "block"]}>
+            <span>
+              <Icon
+                as={AiFillTwitterCircle}
+                fontSize={30}
+                _hover={{ cursor: "pointer" }}
+                color={useColorModeValue("blue.500", "blue.200")}
+              />
+            </span>
+          </Tooltip>
+          <Tooltip
+            label="Instagram"
+            hasArrow
+            display={["none", "none", "block"]}
+          >
+            <span>
+              <Icon
+                as={AiFillInstagram}
+                fontSize={30}
+                _hover={{ cursor: "pointer" }}
+                color={useColorModeValue("red.500", "red.300")}
+              />
+            </span>
+          </Tooltip>
         </Stack>
       </Stack>
-    </Box>
+
+      {/* Right profile panel */}
+      <Outlet />
+    </Stack>
+  );
+}
+
+function General() {
+  return (
+    <Stack
+      height="70vh"
+      overflow="auto"
+      p={3}
+      boxShadow={"md"}
+      style={{ marginLeft: "0" }}
+    >
+      <Stack p={3}>
+        <Stack direction="row" align="center" width="100%">
+          <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
+            Frontend Developer | Graphics Designer
+          </Heading>
+          <IconButton icon={<EditIcon />} style={{ marginLeft: "auto" }} />
+        </Stack>
+        <Text fontSize={{ base: 13, md: 15 }}>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industry's standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book.
+        </Text>
+      </Stack>
+      <Divider borderTop="1px solid gray" />
+      <Stack p={3} gap={1}>
+        <Stack direction="row" align="center" width="100%">
+          <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
+            Skills
+          </Heading>
+          <IconButton icon={<EditIcon />} style={{ marginLeft: "auto" }} />
+        </Stack>
+        <Stack direction="row">
+          <Tag colorScheme={"twitter"}>Webs</Tag>
+          <Tag colorScheme={"twitter"}>Graphics</Tag>
+          <Tag colorScheme={"twitter"}>Editing</Tag>
+        </Stack>
+      </Stack>
+      <Divider borderTop="1px solid gray" />
+      <Stack p={3} gap={3}>
+        <Stack direction="row" align="center" width="100%">
+          <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
+            Work Experience
+          </Heading>
+          <IconButton icon={<EditIcon />} style={{ marginLeft: "auto" }} />
+        </Stack>
+        <Stack direction="row">
+          <List spacing={3}>
+            <ListItem>
+              <ListIcon as={IoMdCheckmarkCircle} color="rgb(29, 161, 242)" />
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit
+            </ListItem>
+            <ListItem>
+              <ListIcon as={IoMdCheckmarkCircle} color="rgb(29, 161, 242)" />
+              Assumenda, quia temporibus eveniet a libero incidunt suscipit
+            </ListItem>
+            <ListItem>
+              <ListIcon as={IoMdCheckmarkCircle} color="rgb(29, 161, 242)" />
+              Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
+            </ListItem>
+            {/* You can also use custom icons from react-icons */}
+            <ListItem>
+              <ListIcon as={IoMdCheckmarkCircle} color="rgb(29, 161, 242)" />
+              Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
+            </ListItem>
+          </List>
+        </Stack>
+      </Stack>
+    </Stack>
   );
 }
 

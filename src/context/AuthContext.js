@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
   const [userProfileData, setUserProfileData] = useState([]);
   const [isExpired, setIsExpired] = useState(true);
   const [profileID, setProfileID] = useState(null);
+  const [allowData, setAllowData] = useState(true);
   const [authTokens, setAuthTokens] = useState(
     accessToken && refreshToken
       ? {
@@ -25,17 +26,19 @@ export const AuthProvider = ({ children }) => {
           refreshToken: null,
         }
   );
-        
+
   const api = NewAxios();
 
   useEffect(() => {
     async function getUserProfileData() {
-      if (localUserID) {
+      if (localUserID && allowData) {
+        console.log("I RAN");
         try {
           const res = await api.get(`profileSelf/${localUserID}`);
           setUserProfileData([]);
           setUserProfileData(res.data);
           saveUserID(res.data.id);
+          console.log("PROFILESELF", res);
           console.log(res);
         } catch (error) {
           console.log(error);
@@ -45,6 +48,8 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
     getUserProfileData();
   }, [accessToken, isExpired, localUserID]);
+
+  console.log("ALLOW DATA ?", allowData);
 
   const contextData = {
     authTokens,
@@ -57,6 +62,8 @@ export const AuthProvider = ({ children }) => {
     setUserProfileData,
     isExpired,
     setIsExpired,
+    allowData,
+    setAllowData,
   };
 
   return (

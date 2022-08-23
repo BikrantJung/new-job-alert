@@ -4,6 +4,7 @@ import Hero from "../components/Hero/Hero";
 import Navbar from "../components/Navbar/Navbar";
 import Categories from "../components/Popular Category/Categories";
 import RecentJobs from "../components/Recent Jobs/RecentJobs";
+import SignUpComp from "../components/Sign up/SignUpComp";
 
 function Home() {
   return (
@@ -12,6 +13,7 @@ function Home() {
       <Hero />
       <Categories />
       <RecentJobs />
+      {/* <SignUpComp/> */}
       <Footer />
     </div>
   );

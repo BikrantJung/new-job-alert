@@ -16,11 +16,12 @@ import RestrictLoginPage from "./utils/RestrictLoginPage";
 import Pricing from "./pages/Pricing";
 import JobPost from "./pages/JobPost";
 import Jobs from "./pages/Jobs/Jobs";
-// import { MainContent, Posts } from "./pages/Profile/Profile";
 import MainContent from "./pages/Profile/MainContent";
-import UserPost from "./components/UserPost/UserPost";
 import Contact from "./pages/Contact";
 import CompanyJob from "./pages/Jobs/CompanyJob";
+import CandidateRegister from "./pages/Register/CandidateRegister";
+import UserEducation from "./components/UserPost/UserEducation";
+import DefaultContent from "./pages/Profile/Content/DefaultContent";
 function App() {
   return (
     <BrowserRouter>
@@ -34,14 +35,16 @@ function App() {
           <Route path="/contact-us" element={<Contact />} />
           <Route path="/" element={<PrivateRoute />}>
             <Route path="/create-job-post" element={<JobPost />} />
-            <Route path="/profile" element={<Profile />}>
-              <Route index element={<MainContent />} />
-              <Route path="posts" element={<UserPost />} />
+            <Route path="/profile/:id" element={<Profile />}>
+              <Route index element={<DefaultContent />} />
+
+              <Route path="education" element={<UserEducation />} />
             </Route>
           </Route>
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/jobs/:id" element={<CompanyJob />} />
+          <Route path="/candidate-register" element={<CandidateRegister />} />
           <Route
             path="/api/user/verify/:id/:token"
             element={<VerifyRegister />}
