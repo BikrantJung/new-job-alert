@@ -71,8 +71,8 @@ export default function Login() {
       // window.location.reload(false);
 
       saveUserID(res.data.id);
-      localStorage.setItem("session", JSON.stringify(res.data.token));
-      window.location.reload(false);
+      // localStorage.setItem("session", JSON.stringify(res.data.token));
+      // window.location.reload(false);
 
     } catch (error) {
       setIsLoading(false);

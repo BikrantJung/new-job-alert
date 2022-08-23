@@ -3,11 +3,8 @@ import { createContext, useEffect, useState } from "react";
 import { getTokens, saveTokens } from "../services/localStorage";
 import { saveUserID } from "../services/localStorage";
 import NewAxios from "../utils/newAxios";
-import { axiosPrivate } from "../utils/axiosPrivate";
 import axios from "axios";
 const AuthContext = createContext();
-
-
 
 export default AuthContext;
 
@@ -17,7 +14,7 @@ export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState([]);
 
   const [userID, setUserID] = useState(localUserID ? localUserID : null);
-
+  const [loading, setLoading] = useState(true);
   const [userProfileData, setUserProfileData] = useState([]);
   const [isExpired, setIsExpired] = useState(true);
   const [profileID, setProfileID] = useState(null);
@@ -37,28 +34,27 @@ export const AuthProvider = ({ children }) => {
 
   const api = NewAxios();
 
-  // useEffect(() => {
-  //   async function getUserProfileData() {
-  //     if (localUserID && allowData) {
-  //       console.log("I RAN");
-  //       try {
-  //         const res = await api.get(`profileSelf/${localUserID}`);
-  //         setUserProfileData([]);
-  //         setUserProfileData(res.data);
-  //         saveUserID(res.data.id);
-  //         console.log("PROFILESELF", res);
-  //         console.log(res);
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-  //     }
-  //   }
-  //   setLoading(false);
-  //   getUserProfileData();
-  // }, [accessToken, isExpired, localUserID]);
+  useEffect(() => {
+    async function getUserProfileData() {
+      if (localUserID && allowData) {
+        console.log("I RAN");
+        try {
+          const res = await api.get(`profileSelf/${localUserID}`);
+          setUserProfileData([]);
+          setUserProfileData(res.data);
+          saveUserID(res.data.id);
+          
+          console.log(res);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+    setLoading(false);
+    getUserProfileData();
+  }, [accessToken, isExpired, localUserID]);
 
   useEffect(() => {
-
     console.log("I ALSO RUN");
     async function getUserSubscribed() {
       try {
@@ -76,7 +72,6 @@ export const AuthProvider = ({ children }) => {
     }
     getUserSubscribed();
   }, [accessToken, authTokens.accessToken]);
-
 
   const updateToken = async () => {
     console.log("I RAN");
@@ -104,26 +99,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    if (loading && authTokens.accessToken) {
-      console.log("1");
-      updateToken();
-    }
-    let interval = setInterval(() => {
-      if (authTokens.accessToken && authTokens.refreshToken) {
-        console.log("2");
-        updateToken();
-      }
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [accessToken, loading]);
+  // useEffect(() => {
+  //   if (loading && authTokens.accessToken) {
+  //     console.log("1");
+  //     updateToken();
+  //   }
+  //   let interval = setInterval(() => {
+  //     if (authTokens.accessToken && authTokens.refreshToken) {
+  //       console.log("2");
+  //       updateToken();
+  //     }
+  //   }, 5000);
+  //   return () => clearInterval(interval);
+  // }, [accessToken, loading]);
 
-  useEffect( ()=>{
+  useEffect(() => {
     async function getUserProfileData() {
       if (localUserID && allowData) {
         console.log("I RAN");
         try {
-          const res = await axiosPrivate.get(`profileSelf/${localUserID}`);
+          const res = await api.get(`profileSelf/${localUserID}`);
 
           console.log(res);
         } catch (error) {
@@ -133,12 +128,7 @@ export const AuthProvider = ({ children }) => {
     }
     setLoading(false);
     getUserProfileData();
-  },[accessToken, isExpired, localUserID])
-    
-
-
-
-
+  }, [accessToken, isExpired, localUserID]);
 
   const contextData = {
     authTokens,
@@ -160,5 +150,4 @@ export const AuthProvider = ({ children }) => {
       {loading ? null : children}
     </AuthContext.Provider>
   );
-
-  }
+};

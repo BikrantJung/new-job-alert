@@ -179,7 +179,7 @@ export default function JobPost() {
     try {
       const res = await api.post("post/", postData);
       setIsLoading(false);
-      window.location.reload(false);
+      // window.location.reload(false);
     } catch (error) {
       setIsLoading(false);
 

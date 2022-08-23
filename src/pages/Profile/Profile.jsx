@@ -58,7 +58,7 @@ export default function Profile({ children }) {
   useEffect(() => {
     async function getUserProfileData() {
       try {
-        const res = await api.get(`profile/Bikrant`);
+        const res = await api.get(`profile/Ramu`);
         console.log("User's data", res);
         console.log("HELLO HAHA");
         setUserProfileData([]);
@@ -258,7 +258,11 @@ export const ProfileMenu = (props, { ...rest }) => {
         <Link
           as={ReactLink}
           // to={`/profile/${userProfileData.username}`}
-          to={`/profile/${userProfileData.username}`}
+          to={
+            userProfileData.username
+              ? `/profile/${userProfileData.username}`
+              : "/profile/error"
+          }
           _hover={{ textDecoration: "none" }}
         >
           <MenuItem icon={<AiOutlineUser fontSize={18} />}>Profile</MenuItem>

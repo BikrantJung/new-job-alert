@@ -8,7 +8,6 @@ import { saveTokens, getTokens, saveUserID } from "../services/localStorage";
 
 function NewAxios() {
   const { accessToken, refreshToken } = getTokens();
-  const { setIsExpired } = useContext(AuthContext);
   //   const [authTokens, setAuthTokens] = tokens;
   const baseURL = "http://192.168.1.71:8000/api/user/";
 
@@ -43,8 +42,7 @@ function NewAxios() {
       req.headers.authorization = `Bearer ${response.data.access}`;
       saveTokens(response.data);
       console.log(response.data);
-      setIsExpired(false);
-    } catch (error) {
+      } catch (error) {
       console.log("NEW AXIOS", error);
     }
 
