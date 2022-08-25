@@ -20,6 +20,9 @@ import {
   List,
   ListItem,
   ListIcon,
+  Skeleton,
+  Box,
+  SkeletonCircle,
 } from "@chakra-ui/react";
 
 import { FaFacebook } from "react-icons/fa";
@@ -30,21 +33,30 @@ import Avatar1 from "../../images/avatar1.png";
 import AuthContext from "../../context/AuthContext";
 import { Link as ReactLink } from "react-router-dom";
 import EditProfile from "./EditProfile";
-import NewAxios from "../../utils/newAxios";
 import { getTokens } from "../../services/localStorage";
 import RegisterAlert from "../../components/RegisterAlert";
 import { Outlet } from "react-router-dom";
 import DefaultContent from "./Content/DefaultContent";
 
 function MainContent() {
-  const { userProfileData, setUserProfileData } = useContext(AuthContext);
+  const { userProfileData, initialUserData, urlID, encodedID } =
+    useContext(AuthContext);
+  const { localUserID } = getTokens();
   const { userData } = useContext(AuthContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { localUserID, accessToken } = getTokens();
   const [selectedMenu, setSelectedMenu] = useState("");
   const handeleSelectOption = (e) => {
     setSelectedMenu(e.target.value);
   };
+
+  const checkID =
+    window.btoa(
+      window.btoa(window.btoa(window.btoa(window.btoa(userProfileData?.user))))
+    ) ||
+    window.btoa(
+      window.btoa(window.btoa(window.btoa(window.btoa(initialUserData?.user))))
+    );
+  console.log(checkID === encodedID, "I");
 
   return (
     <Stack
@@ -53,7 +65,11 @@ function MainContent() {
       justify={{ base: "center", md: "start" }}
       style={{ marginTop: 0 }}
       height="100%"
+      // align='center'
     >
+      {/* {userProfileData?.username || initialUserData?.username ? : */}
+
+      {/* { userProfileData?.username || initialUserData?.username } */}
       {/*  Left avatar section */}
       <Stack
         height={{ base: "auto", md: "100%" }}
@@ -68,36 +84,63 @@ function MainContent() {
         align="center"
         justify={{ base: "space-between", md: "flex-start" }}
       >
-        <Stack
-          direction={["column"]}
-          align="center"
-          py={1}
-          justify={["center"]}
-          px={{ base: 2, md: 5 }}
-        >
-          <Avatar
-            size={{ base: "sm", sm: "lg", xl: "xl" }}
-            src={userProfileData.avatar}
-          />
-
-          <Text
-            fontSize={{ base: 16, sm: 17, md: 18, lg: 20, xl: 22 }}
-            fontWeight={"bold"}
-            style={{ marginTop: 0 }}
+        {userProfileData?.username || initialUserData?.username ? (
+          <Stack
+            direction={["column"]}
+            align="center"
+            py={1}
+            justify={["center"]}
+            px={{ base: 2, md: 5 }}
           >
-            {userProfileData.username}
-          </Text>
-        </Stack>
+            <Avatar
+              size={{ base: "sm", sm: "lg", xl: "xl" }}
+              src={
+                urlID === initialUserData?.username
+                  ? initialUserData?.avatar
+                  : userProfileData?.avatar
+              }
+            />
+
+            <Text
+              fontSize={{ base: 16, sm: 17, md: 18, lg: 20, xl: 22 }}
+              fontWeight={"bold"}
+              style={{ marginTop: 0 }}
+            >
+              {urlID === initialUserData.username
+                ? initialUserData?.username
+                : userProfileData?.username}
+            </Text>
+          </Stack>
+        ) : (
+          <Stack
+            direction={["column"]}
+            align="center"
+            py={1}
+            justify={["center"]}
+            px={{ base: 2, md: 5 }}
+          >
+            <SkeletonCircle size="20" />
+            <Skeleton height="20px" width="100%" />
+          </Stack>
+        )}
+
         {/* Edit and Post Job */}
-        <Button
-          mt={{ base: 0, md: 3 }}
-          colorScheme="twitter"
-          size={{ base: "sm", md: "md" }}
-        >
-          Post a job
-        </Button>
+        {localUserID === checkID && (
+          <Button
+            mt={{ base: 0, md: 3 }}
+            colorScheme="twitter"
+            size={{ base: "sm", md: "md" }}
+            variant={"ghost"}
+            onClick={onOpen}
+          >
+            Edit Profile
+          </Button>
+        )}
+
+        <EditProfile onOpen={onOpen} onClose={onClose} isOpen={isOpen} />
 
         {/* Social Media box Mobile */}
+
         <Stack
           flex={1}
           direction={{ base: "row", md: "column" }}
@@ -164,77 +207,6 @@ function MainContent() {
 
       {/* Right profile panel */}
       <Outlet />
-    </Stack>
-  );
-}
-
-function General() {
-  return (
-    <Stack
-      height="70vh"
-      overflow="auto"
-      p={3}
-      boxShadow={"md"}
-      style={{ marginLeft: "0" }}
-    >
-      <Stack p={3}>
-        <Stack direction="row" align="center" width="100%">
-          <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
-            Frontend Developer | Graphics Designer
-          </Heading>
-          <IconButton icon={<EditIcon />} style={{ marginLeft: "auto" }} />
-        </Stack>
-        <Text fontSize={{ base: 13, md: 15 }}>
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the industry's standard dummy text ever
-          since the 1500s, when an unknown printer took a galley of type and
-          scrambled it to make a type specimen book.
-        </Text>
-      </Stack>
-      <Divider borderTop="1px solid gray" />
-      <Stack p={3} gap={1}>
-        <Stack direction="row" align="center" width="100%">
-          <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
-            Skills
-          </Heading>
-          <IconButton icon={<EditIcon />} style={{ marginLeft: "auto" }} />
-        </Stack>
-        <Stack direction="row">
-          <Tag colorScheme={"twitter"}>Webs</Tag>
-          <Tag colorScheme={"twitter"}>Graphics</Tag>
-          <Tag colorScheme={"twitter"}>Editing</Tag>
-        </Stack>
-      </Stack>
-      <Divider borderTop="1px solid gray" />
-      <Stack p={3} gap={3}>
-        <Stack direction="row" align="center" width="100%">
-          <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
-            Work Experience
-          </Heading>
-          <IconButton icon={<EditIcon />} style={{ marginLeft: "auto" }} />
-        </Stack>
-        <Stack direction="row">
-          <List spacing={3}>
-            <ListItem>
-              <ListIcon as={IoMdCheckmarkCircle} color="rgb(29, 161, 242)" />
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit
-            </ListItem>
-            <ListItem>
-              <ListIcon as={IoMdCheckmarkCircle} color="rgb(29, 161, 242)" />
-              Assumenda, quia temporibus eveniet a libero incidunt suscipit
-            </ListItem>
-            <ListItem>
-              <ListIcon as={IoMdCheckmarkCircle} color="rgb(29, 161, 242)" />
-              Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
-            </ListItem>
-            {/* You can also use custom icons from react-icons */}
-            <ListItem>
-              <ListIcon as={IoMdCheckmarkCircle} color="rgb(29, 161, 242)" />
-              Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
-            </ListItem>
-          </List>
-        </Stack>
-      </Stack>
     </Stack>
   );
 }

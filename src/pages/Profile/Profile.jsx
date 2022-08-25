@@ -31,47 +31,55 @@ import {
   FiLogOut,
 } from "react-icons/fi";
 
-import { Link as ReactLink, Outlet, useParams } from "react-router-dom";
+import {
+  Link as ReactLink,
+  Outlet,
+  useParams,
+  useNavigate,
+} from "react-router-dom";
 import { useEffect } from "react";
 import { useContext } from "react";
 import AuthContext from "../../context/AuthContext";
 import ToggleMode from "../../components/ToggleMode";
 import { AiOutlineUser } from "react-icons/ai";
 import handleLogout from "../../utils/logoutUser";
-import NewAxios from "../../utils/newAxios";
 import { getTokens } from "../../services/localStorage";
 import MainContent from "./MainContent";
+import axios from "axios";
+import axiosInstance from "../../services/api";
 
 export default function Profile({ children }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    userProfileData,
-    setUserProfileData,
-    isExpired,
-    allowData,
-    setAllowData,
-  } = useContext(AuthContext);
-  const { localUserID, accessToken } = getTokens();
-  const api = NewAxios();
+  const { setUserProfileData, setAllowData, setUrlID } =
+    useContext(AuthContext);
+  const { accessToken } = getTokens();
   const { id } = useParams();
-  console.log("ID", id);
   useEffect(() => {
+    setUrlID(id);
+  }, []);
+  console.log("ID", id);
+
+  useEffect(() => {
+    setAllowData(false);
     async function getUserProfileData() {
+      console.log("I RUN PROFILE");
+
       try {
-        const res = await api.get(`profile/Ramu`);
+        const res = await axiosInstance.get(`profile/${id}`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
         console.log("User's data", res);
-        console.log("HELLO HAHA");
         setUserProfileData([]);
         setUserProfileData(res.data);
-        setAllowData(false);
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     }
 
     getUserProfileData();
-  }, [accessToken, isExpired]);
-  console.log(userProfileData);
+  }, []);
+
   return (
     <Stack
       minH="100vh"
@@ -99,7 +107,7 @@ export default function Profile({ children }) {
       </Drawer>
       {/* mobilenav */}
       <Stack flex={4} style={{ marginInlineStart: "0" }}>
-        <MobileNav onOpen={onOpen} />
+        {/* <MobileNav onOpen={onOpen} /> */}
 
         <MainContent />
       </Stack>
@@ -109,12 +117,25 @@ export default function Profile({ children }) {
 }
 
 const SidebarContent = ({ onClose, ...rest }) => {
+  const { userProfileData } = useContext(AuthContext);
   // const[isActive,setIsActive]
   const LinkItems = [
-    { name: "General Details", icon: FiHome, link: "" },
-    { name: "Education", icon: FiTrendingUp, link: "education" },
-    { name: "Favourites", icon: FiCompass, link: "favourites" },
-    { name: "Payment History", icon: FiSettings, link: "payment-history" },
+    { name: "General Details", icon: FiHome, link: userProfileData?.username },
+    {
+      name: "Education",
+      icon: FiTrendingUp,
+      link: `${userProfileData?.username}/education `,
+    },
+    {
+      name: "Favourites",
+      icon: FiCompass,
+      link: `${userProfileData?.username}/favourites `,
+    },
+    {
+      name: "Payment History",
+      icon: FiSettings,
+      link: `${userProfileData?.username}/education `,
+    },
   ];
   return (
     <Box
@@ -183,8 +204,6 @@ const NavItem = ({ icon, children, ...rest }) => {
 const MobileNav = ({ onOpen, ...rest }) => {
   return (
     <Flex
-      // ml={{ base: 0, md: 60 }}
-      // px={{ base: 4, md: 4 }}
       height="20"
       alignItems="center"
       bg={useColorModeValue("white", "gray.900")}
@@ -222,9 +241,10 @@ const MobileNav = ({ onOpen, ...rest }) => {
   );
 };
 export const ProfileMenu = (props, { ...rest }) => {
-  const { userProfileData, setUserProfileData } = useContext(AuthContext);
+  const { userProfileData, setUserProfileData, initialUserData } =
+    useContext(AuthContext);
   const { localUserID } = getTokens();
-
+  console.log("FRON PROFILE MENU", initialUserData);
   return (
     <Menu ml={3}>
       <MenuButton
@@ -233,14 +253,14 @@ export const ProfileMenu = (props, { ...rest }) => {
         _focus={{ boxShadow: "none" }}
       >
         <HStack>
-          <Avatar size={"sm"} src={userProfileData.avatar} />
+          <Avatar size={"sm"} src={initialUserData.avatar} />
           <VStack
             display={{ base: "none", md: "flex" }}
             alignItems="flex-start"
             spacing="1px"
             ml="2"
           >
-            <Text fontSize="sm">{userProfileData.username}</Text>
+            <Text fontSize="sm">{initialUserData.username}</Text>
 
             {/* <Text fontSize="xs" color="gray.600">
               {props.isAdmin ? "Admin" : ""}
@@ -259,8 +279,8 @@ export const ProfileMenu = (props, { ...rest }) => {
           as={ReactLink}
           // to={`/profile/${userProfileData.username}`}
           to={
-            userProfileData.username
-              ? `/profile/${userProfileData.username}`
+            initialUserData?.username
+              ? `/profile/${initialUserData?.username}`
               : "/profile/error"
           }
           _hover={{ textDecoration: "none" }}

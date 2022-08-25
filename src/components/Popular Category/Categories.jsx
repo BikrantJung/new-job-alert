@@ -18,7 +18,6 @@ import AppleLogo from "../../images/apple.png";
 import CokeLogo from "../../images/coke.png";
 import { categoryData } from "./CategoryData";
 function Categories() {
-  console.log("DATA", categoryData);
   return (
     <Box sx={{ py: 6, mb: 3 }}>
       <Center>

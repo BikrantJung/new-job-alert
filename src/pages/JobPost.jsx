@@ -45,7 +45,6 @@ import { IoChevronDown } from "react-icons/io5";
 import { CloseIcon } from "@chakra-ui/icons";
 import Navbar from "../components/Navbar/Navbar";
 import { getTokens } from "../services/localStorage";
-import NewAxios from "../utils/newAxios";
 const CustomGridItem = ({ children }) => {
   return <GridItem colSpan={[2, 1]}>{children}</GridItem>;
 };
@@ -58,7 +57,6 @@ export default function JobPost() {
   const [filteredJobTags, setFilteredJobTags] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const toast = useToast();
-  const api = NewAxios();
   const [isLoading, setIsLoading] = useState(false);
   const [categoryData, setCategoryData] = useState([]);
   const [postError, setPostError] = useState([]);
@@ -142,7 +140,6 @@ export default function JobPost() {
           },
         });
         setCategoryData(res.data);
-        console.log(res);
       } catch (error) {
         console.log(error);
       }
@@ -175,9 +172,8 @@ export default function JobPost() {
       SalaryMax: data.get("max_salary"),
       ImportantInformation: data.get("job_information"),
     };
-    console.log(postData.JobImage);
     try {
-      const res = await api.post("post/", postData);
+      const res = await axios.post("post/", postData);
       setIsLoading(false);
       // window.location.reload(false);
     } catch (error) {

@@ -27,11 +27,10 @@ import { IoLogoWhatsapp } from "react-icons/io";
 import { AiFillInstagram, AiFillTwitterCircle } from "react-icons/ai";
 
 import AuthContext from "../../context/AuthContext";
-import NewAxios from "../../utils/newAxios";
+import axios from "axios";
 
 function SocialMeidaDetails(props) {
   const toast = useToast();
-  const api = NewAxios();
   const { localUserID, accessToken } = getTokens();
   const { userProfileData, setUserProfileData } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -50,7 +49,7 @@ function SocialMeidaDetails(props) {
       subscription: userProfileData.subscription,
     };
     try {
-      const res = await api.put(`profileSelf/${localUserID}`, socialData, {
+      const res = await axios.put(`profileSelf/${localUserID}`, socialData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

@@ -31,7 +31,6 @@ import { FaCheckCircle } from "react-icons/fa";
 import AuthContext from "../context/AuthContext";
 import { getTokens } from "../services/localStorage";
 import Navbar from "../components/Navbar/Navbar";
-import NewAxios from "../utils/newAxios";
 function PriceWrapper({ children }) {
   return (
     <Box
@@ -58,7 +57,6 @@ export default function Pricing() {
   const { accessToken } = getTokens();
   const { userSubscribed, isExpired } = useContext(AuthContext);
   const toast = useToast();
-  const api = NewAxios();
   useEffect(() => {
     async function getPricingData() {
       try {
@@ -88,8 +86,7 @@ export default function Pricing() {
           token: null,
         };
 
-        const res = await api.post("subscribe/", data);
-        console.log(res);
+        const res = await axios.post("subscribe/", data);
         setModalOpen(true);
         setPricingDetail(pricingData.find((obj) => obj.id === id));
       } catch (error) {

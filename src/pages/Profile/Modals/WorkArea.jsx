@@ -1,6 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
 import {
-  Avatar,
   Button,
   Divider,
   FormControl,
@@ -16,46 +14,38 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
-import StateContext from "../../context/StateContext";
-import { getTokens } from "../../services/localStorage";
 import axios from "axios";
-import AuthContext from "../../context/AuthContext";
-import axiosInstance from "../../services/api";
-function Biography(props) {
+import React, { useContext, useState } from "react";
+import MultiSelect from "../../../components/Multi Select/MultiSelect";
+import AuthContext from "../../../context/AuthContext";
+import { getTokens } from "../../../services/localStorage";
+function WorkArea(props) {
   const toast = useToast();
   const { localUserID, accessToken } = getTokens();
-  const {
-    userProfileData,
-    setUserProfileData,
-    initialUserData,
-    setInitialUserData,
-    decodedID,
-  } = useContext(AuthContext);
+  const { userProfileData, setUserProfileData } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
-  const handleFormSubmit = async (e) => {
+
+  async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
     const data = new FormData(e.currentTarget);
     const biographyData = {
-      user: decodedID,
+      user: localUserID,
       bio: data.get("biography"),
       subscription: userProfileData.subscription,
     };
 
     try {
-      const res = await axiosInstance.put(
-        `profileSelf/${decodedID}`,
-        biographyData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await axios.put(`profileSelf/${localUserID}`, biographyData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       setLoading(false);
+
       setAllowClose(true);
-      setInitialUserData(res.data);
+
       setUserProfileData([]);
       setUserProfileData(res.data);
     } catch (error) {
@@ -68,27 +58,14 @@ function Biography(props) {
         isClosable: true,
       });
     }
-  };
-  useEffect(() => {
-    const handleClose = () => {
-      if (allowClose) {
-        setAllowClose(false);
-        setLoading(false);
-        props.onClose();
-      }
-    };
-    handleClose();
-  }, [allowClose]);
+  }
 
   return (
     <Modal
       preserveScrollBarGap
       isCentered
       isOpen={props.isOpen}
-      onClose={() => {
-        setLoading(false);
-        props.onClose();
-      }}
+      onClose={props.onClose}
     >
       <ModalOverlay />
       <ModalContent
@@ -96,36 +73,29 @@ function Biography(props) {
         w={["100vw", "100vw", "80vw"]}
         m={0}
         as="form"
-        onSubmit={(e) => handleFormSubmit(e)}
+        onSubmit={(e) => handleSubmit(e)}
         noValidate
       >
         <Stack mb={25}>
-          <ModalHeader textAlign={"center"}>Update biography</ModalHeader>
+          <ModalHeader textAlign={"center"}>Tell us who are you</ModalHeader>
           <ModalCloseButton />
           <Divider />
         </Stack>
         <ModalBody>
-          <Stack align="center" justify={"center"}>
+          <Stack align="center" justify={"center"} direction='row'>
             <FormControl id="biography">
-              <FormLabel>Your biography</FormLabel>
+              <FormLabel>Your field of work</FormLabel>
               <Textarea
                 type="text"
                 name="biography"
-                defaultValue={initialUserData?.bio || userProfileData?.bio}
+                defaultValue={userProfileData.bio}
               />
             </FormControl>
           </Stack>
         </ModalBody>
 
         <ModalFooter>
-          <Button
-            variant="ghost"
-            mr={3}
-            onClose={() => {
-              setLoading(false);
-              props.onClose();
-            }}
-          >
+          <Button variant="ghost" mr={3} onClick={props.onClose}>
             Close
           </Button>
           <Button type="submit" isLoading={loading}>
@@ -137,4 +107,4 @@ function Biography(props) {
   );
 }
 
-export default Biography;
+export default WorkArea;

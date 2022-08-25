@@ -20,6 +20,15 @@ import Navbar from "../components/Navbar/Navbar";
 import AuthContext from "../context/AuthContext";
 import StateContext from "../context/StateContext";
 import { saveTokens, saveUserID } from "../services/localStorage";
+import axiosInstance from "../services/api";
+
+import {
+  encode,
+  decode,
+  trim,
+  isBase64,
+  isUrlSafeBase64,
+} from "url-safe-base64";
 export default function Login() {
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -31,8 +40,6 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("I RAM");
-    console.log(justRegistered);
     justRegistered &&
       toast({
         title:
@@ -51,29 +58,33 @@ export default function Login() {
       password: data.get("password"),
     };
     try {
-      const res = await axios({
+      const res = await axiosInstance({
         method: "POST",
         url: "login/",
         data: loginData,
         headers: {
           "Content-type": "application/json",
+          Authorization: null,
         },
       });
-      console.log(res);
       setIsLoading(false);
       saveTokens(res.data.token);
-
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${res.data.token.access}`;
       setAuthTokens({
         accessToken: res.data.token.access,
         refreshToken: res.data.token.refresh,
       });
 
-      // window.location.reload(false);
+      window.location.reload(false);
+      const encodedID = window.btoa(
+        window.btoa(window.btoa(window.btoa(window.btoa(res.data.id))))
+      );
+      saveUserID(encodedID);
+      window.location.reload(false);
 
-      saveUserID(res.data.id);
       // localStorage.setItem("session", JSON.stringify(res.data.token));
-      // window.location.reload(false);
-
     } catch (error) {
       setIsLoading(false);
       console.log(error);

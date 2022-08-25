@@ -23,13 +23,13 @@ import { getTokens } from "../../services/localStorage";
 import StateContext from "../../context/StateContext";
 import axios from "axios";
 import AuthContext from "../../context/AuthContext";
-import NewAxios from "../../utils/newAxios";
+import axiosInstance from "../../services/api";
 
 function ContactDetails(props) {
   const toast = useToast();
-  const api = NewAxios();
   const { localUserID, accessToken } = getTokens();
-  const { userProfileData, setUserProfileData } = useContext(AuthContext);
+  const { userProfileData, setUserProfileData, decodedID, initialUserData } =
+    useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
   const handleFormSubmit = async (e) => {
@@ -37,18 +37,22 @@ function ContactDetails(props) {
     setLoading(true);
     const data = new FormData(e.currentTarget);
     const contactData = {
-      user: localUserID,
+      user: decodedID,
       phNumber: data.get("phone_number"),
       contactEmail: data.get("contact_email"),
       contactTel: data.get("tel_no"),
       subscription: userProfileData.subscription,
     };
     try {
-      const res = await api.put(`profileSelf/${localUserID}`, contactData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await axiosInstance.put(
+        `profileSelf/${decodedID}`,
+        contactData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       setLoading(false);
 
       setAllowClose(true);
@@ -81,7 +85,10 @@ function ContactDetails(props) {
       preserveScrollBarGap
       isCentered
       isOpen={props.isOpen}
-      onClose={props.onClose}
+      onClose={() => {
+        setLoading(false);
+        props.onClose();
+      }}
     >
       <ModalOverlay />
       <ModalContent
@@ -104,7 +111,9 @@ function ContactDetails(props) {
               <Input
                 type="number"
                 name="phone_number"
-                defaultValue={userProfileData.phNumber}
+                defaultValue={
+                  userProfileData?.phNumber || initialUserData?.phNumber
+                }
               />
             </FormControl>
             <FormControl id="contact-email">
@@ -112,7 +121,9 @@ function ContactDetails(props) {
               <Input
                 type="email"
                 name="contact_email"
-                defaultValue={userProfileData.contactEmail}
+                defaultValue={
+                  userProfileData?.contactEmail || initialUserData?.contactEmail
+                }
               />
             </FormControl>
             <FormControl id="tel-no">
@@ -120,14 +131,23 @@ function ContactDetails(props) {
               <Input
                 type="number"
                 name="tel_no"
-                defaultValue={userProfileData.contactTel}
+                defaultValue={
+                  userProfileData?.contactTel || initialUserData?.contactTel
+                }
               />
             </FormControl>
           </Stack>
         </ModalBody>
 
         <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={props.onClose}>
+          <Button
+            variant="ghost"
+            mr={3}
+            onClose={() => {
+              setLoading(false);
+              props.onClose();
+            }}
+          >
             Close
           </Button>
           <Button type="submit" isLoading={loading}>

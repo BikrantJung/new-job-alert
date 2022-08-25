@@ -23,13 +23,19 @@ import StateContext from "../../context/StateContext";
 import { getTokens } from "../../services/localStorage";
 import axios from "axios";
 import AuthContext from "../../context/AuthContext";
-import { addPointerEvent } from "framer-motion";
-import NewAxios from "../../utils/newAxios";
+import axiosInstance from "../../services/api";
+
 function ProfilePicture(props) {
   const toast = useToast();
-  const api = NewAxios();
   const { localUserID, accessToken } = getTokens();
-  const { userProfileData, setUserProfileData } = useContext(AuthContext);
+  const {
+    userProfileData,
+    setUserProfileData,
+    initialUserData,
+    setInitialUserData,
+    decodedID,
+    urlID,
+  } = useContext(AuthContext);
   const [localImage, setLocalImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
@@ -47,21 +53,23 @@ function ProfilePicture(props) {
     setLoading(true);
     const data = new FormData(e.currentTarget);
     const imgData = {
-      user: localUserID,
+      user: decodedID,
       avatar: data.get("image"),
-      subscription:userProfileData.subscription
+      subscription: initialUserData.subscription,
     };
-    console.log(imgData.avatar);
 
     try {
-      const res = await api.put(`profileSelf/${localUserID}`, imgData, {
+      const res = await axiosInstance.put(`profileSelf/${decodedID}`, imgData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
       setLoading(false);
       setAllowClose(true);
-      setUserProfileData(res.data);
+      console.log("RES IS ", res);
+      // setInitialUserData([]);
+      setInitialUserData(res.data);
+      console.log("Fucking Data", initialUserData);
       setLocalImage(null);
     } catch (error) {
       console.log(error);
@@ -90,11 +98,11 @@ function ProfilePicture(props) {
 
   const removePhoto = async () => {
     const data = {
-      user: localUserID,
+      user: decodedID,
       avatar: null,
     };
     try {
-      const res = await api.put(`profile/${localUserID}`, data, {
+      const res = await axios.put(`profile/${decodedID}`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -107,6 +115,7 @@ function ProfilePicture(props) {
     } catch (error) {
       setAllowClose(false);
       setLoading(false);
+      setAllowUpdate(true);
       toast({
         title: "Server Error. Please try again later.",
         status: "error",
@@ -121,7 +130,10 @@ function ProfilePicture(props) {
       preserveScrollBarGap
       isCentered
       isOpen={props.isOpen}
-      onClose={props.onClose}
+      onClose={() => {
+        setLoading(false);
+        props.onClose();
+      }}
     >
       <ModalOverlay />
       <ModalContent
@@ -139,7 +151,14 @@ function ProfilePicture(props) {
         </Stack>
         <ModalBody>
           <Stack align="center" justify={"center"}>
-            <Avatar src={localImage || userProfileData.avatar} size="xl" />
+            <Avatar
+              src={
+                localImage ||
+                initialUserData?.avatar ||
+                `http://192.168.1.71:8000${userProfileData?.avatar}`
+              }
+              size="xl"
+            />
           </Stack>
           <Stack my={10}>
             <Input
@@ -168,7 +187,14 @@ function ProfilePicture(props) {
         </ModalBody>
 
         <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={props.onClose}>
+          <Button
+            variant="ghost"
+            mr={3}
+            onClose={() => {
+              setLoading(false);
+              props.onClose();
+            }}
+          >
             Close
           </Button>
           <Button type="submit" isLoading={loading} disabled={!allowUpdate}>

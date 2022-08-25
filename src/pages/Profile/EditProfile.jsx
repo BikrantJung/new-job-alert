@@ -30,12 +30,16 @@ import Avatar1 from "../../images/avatar1.png";
 import Biography from "./Biography";
 import ContactDetails from "./ContactDetails";
 import GeneralDetails from "./GeneralDetails";
+import WorkArea from "./Modals/WorkArea";
 import ProfilePicture from "./ProfilePicture";
+import SkillsModal from "./SkillsModal";
 import SocialMeidaDetails from "./SocialMediaDetails";
+import WorkAreaModal from "./WorkAreaModal";
 
 function EditProfile(props) {
   const [selectedModal, setSelectedModal] = useState("");
-  const { userProfileData, setUserProfileData } = useContext(AuthContext);
+  const { userProfileData, setUserProfileData, initialUserData, urlID } =
+    useContext(AuthContext);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleClick = (e) => {
@@ -48,8 +52,12 @@ function EditProfile(props) {
       isOpen={props.isOpen}
       onClose={props.onClose}
       scrollBehavior="inside"
+      size="xl"
     >
-      <ModalOverlay />
+      <ModalOverlay
+        bg="blackAlpha.300"
+        backdropFilter="blur(10px) hue-rotate(90deg)"
+      />
       <ModalContent>
         <Stack>
           <ModalHeader textAlign={"center"}>Edit profile</ModalHeader>
@@ -88,11 +96,102 @@ function EditProfile(props) {
                 </Button>
               </Stack>
               <Stack align="center" justify={"center"}>
-                <Avatar src={userProfileData.avatar} size="xl" />
+                <Avatar
+                  src={
+                    urlID === initialUserData?.username
+                      ? initialUserData?.avatar
+                      : userProfileData?.avatar
+                  }
+                  size="xl"
+                />
               </Stack>
               {selectedModal === "picture" && (
                 <ProfilePicture isOpen={isOpen} onClose={onClose} />
               )}
+            </Box>
+            <Box>
+              {/* Edit Your Work */}
+              <Stack
+                direction="row"
+                align="center"
+                justify={"space-between"}
+                boxShadow="md"
+                p={2}
+                mb={2}
+              >
+                <Text
+                  fontSize={[16, 17, 18, 19, 20]}
+                  fontWeight={500}
+                  color={useColorModeValue("blue", "cyan.400")}
+                >
+                  Your profession/skill
+                </Text>
+                <Button
+                  variant="ghost"
+                  colorScheme={"blue"}
+                  value="work_area"
+                  onClick={(e) => {
+                    handleClick(e);
+                    onOpen();
+                  }}
+                >
+                  Edit
+                </Button>
+                {selectedModal === "work_area" && (
+                  <WorkAreaModal isOpen={isOpen} onClose={onClose} />
+                )}
+              </Stack>
+              <Center
+                px={4}
+                my={3}
+                color={useColorModeValue("gray.800", "gray.400")}
+                fontWeight={700}
+              >
+                {initialUserData?.profession || userProfileData?.profession}
+              </Center>
+            </Box>
+            <Box>
+              {/* Edit Your Work */}
+              <Stack
+                direction="row"
+                align="center"
+                justify={"space-between"}
+                boxShadow="md"
+                p={2}
+                mb={2}
+              >
+                <Text
+                  fontSize={[16, 17, 18, 19, 20]}
+                  fontWeight={500}
+                  color={useColorModeValue("blue", "cyan.400")}
+                >
+                  Other skills
+                </Text>
+                <Button
+                  variant="ghost"
+                  colorScheme={"blue"}
+                  value="skills"
+                  onClick={(e) => {
+                    handleClick(e);
+                    onOpen();
+                  }}
+                >
+                  Edit
+                </Button>
+                {selectedModal === "skills" && (
+                  <SkillsModal isOpen={isOpen} onClose={onClose} />
+                )}
+              </Stack>
+              <Center
+                px={4}
+                my={3}
+                color={useColorModeValue("gray.800", "gray.400")}
+                fontWeight={700}
+              >
+                {urlID === initialUserData?.username
+                  ? initialUserData?.workArea
+                  : userProfileData?.workArea}
+              </Center>
             </Box>
             <Box>
               {/* Edit Bio */}
@@ -131,9 +230,10 @@ function EditProfile(props) {
                 my={3}
                 color={useColorModeValue("gray.800", "gray.400")}
               >
-                {userProfileData.bio}
+                {userProfileData?.bio}
               </Center>
             </Box>
+
             {/* Edit general details */}
             <Box>
               <Stack
@@ -173,19 +273,19 @@ function EditProfile(props) {
                       <Td style={{ padding: 0 }}>Current city</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
                         {" "}
-                        {userProfileData.location}
+                        {userProfileData?.location}
                       </Td>
                     </Tr>
                     <Tr>
                       <Td style={{ padding: 0 }}>Home town</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {userProfileData.birthPlace}
+                        {userProfileData?.birthPlace}
                       </Td>
                     </Tr>
                     <Tr>
                       <Td style={{ padding: 0 }}>Date of Birth</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {userProfileData.DateOfBirth}
+                        {userProfileData?.DateOfBirth}
                       </Td>
                     </Tr>
                   </Tbody>
@@ -231,19 +331,21 @@ function EditProfile(props) {
                     <Tr>
                       <Td style={{ padding: 0 }}>Phone number</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {userProfileData.phNumber}
+                        {userProfileData?.phNumber || initialUserData?.phNumber}
                       </Td>
                     </Tr>
                     <Tr>
                       <Td style={{ padding: 0 }}>Contact email</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {userProfileData.contactEmail}
+                        {userProfileData?.contactEmail ||
+                          initialUserData?.phNumber}
                       </Td>
                     </Tr>
                     <Tr>
                       <Td style={{ padding: 0 }}>Tel no.</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {userProfileData.contactTel}
+                        {userProfileData?.contactTel ||
+                          initialUserData?.phNumber}
                       </Td>
                     </Tr>
                   </Tbody>
@@ -290,30 +392,30 @@ function EditProfile(props) {
                       <Td style={{ padding: 0 }}>Facebook</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
                         <Link
-                          href={`https://www.facebook.com/${userProfileData.facebook}`}
+                          href={`https://www.facebook.com/${userProfileData?.facebook}`}
                           color="blue.400"
                           target="_blank"
                         >
-                          {userProfileData.facebook}
+                          {userProfileData?.facebook}
                         </Link>
                       </Td>
                     </Tr>
                     <Tr>
                       <Td style={{ padding: 0 }}>Whatsapp</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {userProfileData.whatsapp}
+                        {userProfileData?.whatsapp}
                       </Td>
                     </Tr>
                     <Tr>
                       <Td style={{ padding: 0 }}>Twitter</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {userProfileData.twitter && (
+                        {userProfileData?.twitter && (
                           <Link
-                            href={`https://www.twitter.com/${userProfileData.twitter}`}
+                            href={`https://www.twitter.com/${userProfileData?.twitter}`}
                             color="blue.400"
                             target="_blank"
                           >
-                            {userProfileData.twitter}
+                            {userProfileData?.twitter}
                           </Link>
                         )}
                       </Td>
@@ -321,13 +423,13 @@ function EditProfile(props) {
                     <Tr>
                       <Td style={{ padding: 0 }}>Instagram</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {userProfileData.instagram && (
+                        {userProfileData?.instagram && (
                           <Link
-                            href={`https://www.instagram.com/${userProfileData.instagram}`}
+                            href={`https://www.instagram.com/${userProfileData?.instagram}`}
                             color="blue.400"
                             target="_blank"
                           >
-                            {userProfileData.instagram}
+                            {userProfileData?.instagram}
                           </Link>
                         )}
                       </Td>

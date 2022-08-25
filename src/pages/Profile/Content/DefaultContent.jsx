@@ -20,11 +20,16 @@ import {
   List,
   ListItem,
   ListIcon,
+  Skeleton,
 } from "@chakra-ui/react";
 import { IoLogoWhatsapp, IoMdCheckmarkCircle } from "react-icons/io";
 import { EditIcon, AddIcon } from "@chakra-ui/icons";
+import EditIconBtn from "../../../components/EditIconBtn";
+import WorkArea from "../Modals/WorkArea";
+import AuthContext from "../../../context/AuthContext";
 
 function DefaultContent() {
+  const { userProfileData, initialUserData } = useContext(AuthContext);
   return (
     <Stack flex={7} style={{ marginInlineStart: 0 }} w="100%">
       <Stack height="100%">
@@ -37,9 +42,10 @@ function DefaultContent() {
               Contact
             </Tab>
             <Tab borderRadius="0" fontWeight={"bold"}>
-              Three
+              About {userProfileData?.username || initialUserData?.username}
             </Tab>
           </TabList>
+
           <TabPanels>
             <TabPanel>
               <General />
@@ -57,31 +63,55 @@ function DefaultContent() {
   );
 }
 function General() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedModal, setSelectedModal] = useState("");
+  const { initialUserData, urlID, userProfileData, decodedID } =
+    useContext(AuthContext);
+
   return (
     <Stack
-      height="70vh"
+      // height="70vh"
       overflow="auto"
       p={3}
       boxShadow={"md"}
       style={{ marginLeft: "0" }}
     >
-      <Stack p={3}>
-        <Stack direction="row" align="center" width="100%">
-          <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
-            Add your work area 
-          </Heading>
-          <IconButton icon={<EditIcon />} style={{ marginLeft: "none" }} />
+      {userProfileData?.username || initialUserData?.username ? (
+        <Stack p={3}>
+          <Stack direction="row" align="center" width="100%">
+            <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
+              {initialUserData?.username
+                ? initialUserData?.profession
+                  ? initialUserData?.profession
+                  : "Add your profession"
+                : parseInt(decodedID) === userProfileData?.user
+                ? userProfileData?.profession
+                  ? userProfileData?.profession
+                  : "Add your profession"
+                : "No profession to show"}
+            </Heading>
+          </Stack>
+          {selectedModal === "work_area" && (
+            <WorkArea onOpen={onOpen} onClose={onClose} isOpen={isOpen} />
+          )}
+          <Text fontSize={{ base: 13, md: 15 }}>
+            {urlID === initialUserData?.username
+              ? initialUserData?.bio
+              : userProfileData?.bio}
+          </Text>
         </Stack>
-
-        <Text fontSize={{ base: 13, md: 15 }}>Add bio</Text>
-      </Stack>
+      ) : (
+        <Stack p={3}>
+          <Skeleton width="50%" height="30px" />
+          <Skeleton width="30%" height="10px" />
+        </Stack>
+      )}
       <Divider borderTop="1px solid gray" />
       <Stack p={3} gap={1}>
         <Stack direction="row" align="center" width="100%">
           <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
             Skills
           </Heading>
-          <IconButton icon={<EditIcon />} style={{ marginLeft: "auto" }} />
         </Stack>
         <Stack direction="row">
           <Tag colorScheme={"twitter"}>Webs</Tag>
@@ -95,7 +125,6 @@ function General() {
           <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
             Work Experience
           </Heading>
-          <IconButton icon={<EditIcon />} style={{ marginLeft: "auto" }} />
         </Stack>
         <Stack direction="row">
           <List spacing={3}>
@@ -137,8 +166,8 @@ function Contact() {
           <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
             Contact Information
           </Heading>
-          <IconButton icon={<EditIcon />} style={{ marginLeft: "auto" }} />
         </Stack>
+
         <Stack direction="row" w="100%">
           <Stack flex={1}>
             <Text fontWeight={"bold"} fontSize={{ base: 13, md: 16 }}>
@@ -150,7 +179,7 @@ function Contact() {
             </Text>
             <Divider borderTop="1px solid gray" />
             <Text fontWeight={"bold"} fontSize={{ base: 13, md: 16 }}>
-              Location
+              Telephone
             </Text>
             <Divider borderTop="1px solid gray" />
           </Stack>
@@ -159,7 +188,7 @@ function Contact() {
             <Divider borderTop="1px solid gray" />
             <Text fontSize={{ base: 13, md: 16 }}>9848015700</Text>
             <Divider borderTop="1px solid gray" />
-            <Text fontSize={{ base: 13, md: 16 }}>Matidevi Kathmand</Text>
+            <Text fontSize={{ base: 13, md: 16 }}>03125487</Text>
             <Divider borderTop="1px solid gray" />
           </Stack>
         </Stack>
@@ -169,7 +198,6 @@ function Contact() {
           <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
             Social Media
           </Heading>
-          <IconButton icon={<EditIcon />} style={{ marginLeft: "auto" }} />
         </Stack>
         <Stack direction="row" w="100%">
           <Stack flex={1}>

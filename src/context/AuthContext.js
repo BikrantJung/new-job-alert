@@ -2,8 +2,8 @@ import { createContext, useEffect, useState } from "react";
 
 import { getTokens, saveTokens } from "../services/localStorage";
 import { saveUserID } from "../services/localStorage";
-import NewAxios from "../utils/newAxios";
 import axios from "axios";
+import axiosInstance from "../services/api";
 const AuthContext = createContext();
 
 export default AuthContext;
@@ -19,7 +19,10 @@ export const AuthProvider = ({ children }) => {
   const [isExpired, setIsExpired] = useState(true);
   const [profileID, setProfileID] = useState(null);
   const [allowData, setAllowData] = useState(true);
-
+  const [initialUserData, setInitialUserData] = useState([]);
+  const [urlID, setUrlID] = useState("");
+  const [encodedID, setEncodedID] = useState("");
+  const [decodedID, setDecodedID] = useState("");
   const [authTokens, setAuthTokens] = useState(
     accessToken && refreshToken
       ? {
@@ -32,104 +35,37 @@ export const AuthProvider = ({ children }) => {
         }
   );
 
-  const api = NewAxios();
-
+  useEffect(() => {
+    if (localUserID) {
+      const decoded = window.atob(
+        window.atob(window.atob(window.atob(window.atob(localUserID))))
+      );
+      setEncodedID(
+        window.btoa(window.btoa(window.btoa(window.btoa(window.btoa(decoded)))))
+      );
+      setDecodedID(decoded);
+    }
+  }, [localUserID]);
+  console.log("ENCODED", encodedID);
+  console.log("DECODED", decodedID);
   useEffect(() => {
     async function getUserProfileData() {
-      if (localUserID && allowData) {
-        console.log("I RAN");
+      console.log("AUTHCONTEXT");
+      if (allowData && decodedID) {
+        console.log("LOL I AM ALOWED");
+
         try {
-          const res = await api.get(`profileSelf/${localUserID}`);
-          setUserProfileData([]);
-          setUserProfileData(res.data);
-          saveUserID(res.data.id);
-          
-          console.log(res);
+          const res = await axiosInstance.get(`profileSelf/${decodedID}`);
+          setInitialUserData(res.data);
+          console.log("Initial User Data", res);
         } catch (error) {
           console.log(error);
         }
       }
     }
-    setLoading(false);
     getUserProfileData();
-  }, [accessToken, isExpired, localUserID]);
-
-  useEffect(() => {
-    console.log("I ALSO RUN");
-    async function getUserSubscribed() {
-      try {
-        const res = await axios({
-          url: "profile/",
-          method: "GET",
-          headers: {
-            authorization: `Bearer ${authTokens.accessToken}`,
-          },
-        });
-        console.log(res);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getUserSubscribed();
-  }, [accessToken, authTokens.accessToken]);
-
-  const updateToken = async () => {
-    console.log("I RAN");
-
-    const res = await axios({
-      url: "token/refresh/",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: {
-        refresh: authTokens?.refreshToken,
-      },
-    });
-
-    console.log(res);
-    saveTokens(res.data);
-    setAuthTokens({
-      accessToken: res.data.access,
-      refreshToken: res.data.refresh,
-    });
-    if (loading) {
-      setLoading(false);
-      console.log("IT IS LOADING");
-    }
-  };
-
-  // useEffect(() => {
-  //   if (loading && authTokens.accessToken) {
-  //     console.log("1");
-  //     updateToken();
-  //   }
-  //   let interval = setInterval(() => {
-  //     if (authTokens.accessToken && authTokens.refreshToken) {
-  //       console.log("2");
-  //       updateToken();
-  //     }
-  //   }, 5000);
-  //   return () => clearInterval(interval);
-  // }, [accessToken, loading]);
-
-  useEffect(() => {
-    async function getUserProfileData() {
-      if (localUserID && allowData) {
-        console.log("I RAN");
-        try {
-          const res = await api.get(`profileSelf/${localUserID}`);
-
-          console.log(res);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    }
     setLoading(false);
-    getUserProfileData();
-  }, [accessToken, isExpired, localUserID]);
-
+  }, [accessToken, decodedID]);
   const contextData = {
     authTokens,
     setAuthTokens,
@@ -143,11 +79,17 @@ export const AuthProvider = ({ children }) => {
     setIsExpired,
     allowData,
     setAllowData,
+    loading,
+    setLoading,
+    initialUserData,
+    setInitialUserData,
+    urlID,
+    setUrlID,
+    decodedID,
+    encodedID,
   };
 
   return (
-    <AuthContext.Provider value={contextData}>
-      {loading ? null : children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>
   );
 };

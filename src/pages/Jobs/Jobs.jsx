@@ -25,7 +25,6 @@ function Jobs() {
             "Content-Type": "application/json",
           },
         });
-        console.log(res);
         setJobData(res.data);
       } catch (error) {}
     }

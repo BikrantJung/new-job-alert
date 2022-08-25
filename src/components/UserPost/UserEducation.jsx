@@ -1,15 +1,14 @@
 import { Box, Heading, Stack } from "@chakra-ui/react";
+import axios from "axios";
 import React from "react";
 import { useEffect } from "react";
-import NewAxios from "../../utils/newAxios";
 
 function UserEducation() {
-  const api = NewAxios();
   useEffect(() => {
     async function getJobs() {
       console.log("I RAN");
       try {
-        const res = await api.get("jobs/");
+        const res = await axios.get("jobs/");
 
         console.log(res);
       } catch (error) {

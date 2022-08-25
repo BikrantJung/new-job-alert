@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Avatar,
   Button,
@@ -6,6 +6,10 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -14,37 +18,80 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
+  Tag,
+  TagLabel,
+  TagRightIcon,
+  Textarea,
   useToast,
 } from "@chakra-ui/react";
-import { useContext } from "react";
 import { getTokens } from "../../services/localStorage";
-import axios from "axios";
-import { useEffect } from "react";
 import AuthContext from "../../context/AuthContext";
 import axiosInstance from "../../services/api";
-
-function GeneralDetails(props) {
+import { CloseIcon } from "@chakra-ui/icons";
+import { IoChevronDown } from "react-icons/io5";
+function SkillsModal(props) {
   const toast = useToast();
   const { localUserID, accessToken } = getTokens();
-  const { userProfileData, setUserProfileData, isExpired } =
-    useContext(AuthContext);
+  const {
+    userProfileData,
+    setUserProfileData,
+    initialUserData,
+    setInitialUserData,
+    decodedID,
+  } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
+  const [tagValues, setTagValues] = useState([]);
+
+  const [tagsOptions, setTagsOptions] = useState([
+    {
+      id: 1,
+      value: "Web",
+    },
+    {
+      id: 2,
+      value: "Graphics",
+    },
+    {
+      id: 3,
+      value: "Internet",
+    },
+  ]);
+  const [skillsValue, setSkillsValue] = useState("");
+
+  const handleInputChange = (e) => {
+    // setSkillsValue(e.target.value);
+  };
+  //   console.log(skillsValue);
+
+  // Remove job tags and add to array
+  const removeTags = (id) => {
+    const removedItem = tagValues.filter((obj) => {
+      return obj.id === id;
+    });
+    setTagsOptions((prevOptions) => {
+      return [...prevOptions, ...removedItem];
+    });
+    setTagValues(
+      tagValues.filter((obj) => {
+        return obj.id !== id;
+      })
+    );
+  };
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     const data = new FormData(e.currentTarget);
-    const generalData = {
-      user: localUserID,
-      location: data.get("current_city"),
-      birthPlace: data.get("home_town"),
-      DateOfBirth: data.get("date_of_birth") || null,
+    const skillsData = {
+      user: decodedID,
+      skills: "bikrant,jung",
       subscription: userProfileData.subscription,
     };
+    console.log("SKILLS", skillsData.skills);
     try {
       const res = await axiosInstance.put(
-        `profileSelf/${localUserID}`,
-        generalData,
+        `profileSelf/${decodedID}`,
+        skillsData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -52,13 +99,12 @@ function GeneralDetails(props) {
         }
       );
       setLoading(false);
-
       setAllowClose(true);
-
+      //   setInitialUserData(res.data);
+      setUserProfileData([]);
       setUserProfileData(res.data);
     } catch (error) {
       setAllowClose(false);
-      console.log(error);
       setLoading(false);
       toast({
         title: "Server Error. Please try again later.",
@@ -68,7 +114,7 @@ function GeneralDetails(props) {
       });
     }
   };
-
+  console.log(userProfileData);
   useEffect(() => {
     const handleClose = () => {
       if (allowClose) {
@@ -100,36 +146,25 @@ function GeneralDetails(props) {
         noValidate
       >
         <Stack mb={25}>
-          <ModalHeader textAlign={"center"}>Update general details</ModalHeader>
+          <ModalHeader textAlign={"center"}>Update your skills</ModalHeader>
           <ModalCloseButton />
           <Divider />
         </Stack>
         <ModalBody>
-          <Stack align="center" justify={"center"}>
-            <FormControl id="biography">
-              <FormLabel>Current city</FormLabel>
-              <Input
-                type="text"
-                name="current_city"
-                defaultValue={userProfileData.location}
-              />
-            </FormControl>
-            <FormControl id="biography">
-              <FormLabel>Home town</FormLabel>
-              <Input
-                type="text"
-                name="home_town"
-                defaultValue={userProfileData.birthPlace}
-              />
-            </FormControl>
-            <FormControl id="biography">
-              <FormLabel>Date of birth</FormLabel>
-              <Input
-                type="date"
-                name="date_of_birth"
-                defaultValue={userProfileData.DateOfBirth}
-              />
-            </FormControl>
+          <Stack gap={2}>
+            <Stack align="center" justify={"center"}>
+              <FormControl id="biography">
+                <FormLabel fontSize={[12, 13, 14, 15, 16, 17, 18]} as={"p"}>
+                  Enter your skills separated by commas(e.g. Video
+                  Editing,Designing,Web,Graphics )
+                </FormLabel>
+                <Input
+                  type="text"
+                  name="skills"
+                  onChange={(e) => handleInputChange(e)}
+                />
+              </FormControl>
+            </Stack>
           </Stack>
         </ModalBody>
 
@@ -137,7 +172,7 @@ function GeneralDetails(props) {
           <Button
             variant="ghost"
             mr={3}
-            onClose={() => {
+            onClick={() => {
               setLoading(false);
               props.onClose();
             }}
@@ -153,4 +188,4 @@ function GeneralDetails(props) {
   );
 }
 
-export default GeneralDetails;
+export default SkillsModal;

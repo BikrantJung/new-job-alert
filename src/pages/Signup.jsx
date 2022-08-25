@@ -24,6 +24,7 @@ import axios from "axios";
 import StateContext from "../context/StateContext";
 import { useToast } from "@chakra-ui/react";
 import Navbar from "../components/Navbar/Navbar";
+import axiosInstance from "../services/api";
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +38,6 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log(e.currentTarget);
     const data = new FormData(e.currentTarget);
     const registerData = {
       name: data.get("userName"),
@@ -46,20 +46,20 @@ export default function Signup() {
       password2: data.get("password2"),
       tc: hasAcceptedPolicy ? "True" : "False",
     };
+    console.log(registerData);
     try {
-      const res = await axios({
+      const res = await axiosInstance({
         method: "POST",
         url: "register/",
         data: registerData,
         headers: {
           "Content-type": "application/json",
+          Authorization: null,
         },
       });
       setJustRegistered(true);
-      console.log(res);
       setIsLoading(false);
       navigate("/login");
-      console.log("SIGNUP", justRegistered);
     } catch (error) {
       setIsLoading(false);
 

@@ -67,20 +67,16 @@ const NavLink = (props) => (
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { authTokens, userProfileData } = useContext(AuthContext);
+  const { authTokens, userProfileData, initialUserData } =
+    useContext(AuthContext);
 
   const navigate = useNavigate();
-
 
   const handleLogout = () => {
     setTimeout(() => {
       clearTokens();
     }, 500);
   };
-
-
-
-
 
   return (
     <>
@@ -118,8 +114,8 @@ export default function Navbar() {
 
           <Flex alignItems={"center"} gap={[5]}>
             <ToggleMode />
-            {authTokens.accessToken ? (
-              !userProfileData.username ? (
+            {authTokens?.accessToken ? (
+              initialUserData?.username ? (
                 <ProfileMenu py={1} ml={3} />
               ) : (
                 <Flex width={["auto", "auto", "100px"]} align="center" gap={1}>

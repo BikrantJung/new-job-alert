@@ -1,7 +1,9 @@
 import { clearTokens } from "../services/localStorage";
 
 function handleLogout() {
-  clearTokens();
-//   window.location.reload(false);
+  setTimeout(() => {
+    clearTokens();
+    window.location.reload(false);
+  }, 500);
 }
 export default handleLogout;

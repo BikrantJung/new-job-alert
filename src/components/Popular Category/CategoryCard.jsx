@@ -15,7 +15,6 @@ import { Link } from "@chakra-ui/react";
 function CategoryCard(props) {
   const [name, setName] = useState("");
 
-  console.log(name);
   return (
     <LinkBox>
       <LinkOverlay as={ReactLink} to={`/jobs/${props.company}`}>

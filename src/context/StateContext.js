@@ -1,5 +1,4 @@
 import { createContext, useEffect, useState } from "react";
-import NewAxios from "../utils/newAxios";
 import { getTokens } from "../services/localStorage";
 const StateContext = createContext();
 export default StateContext;
@@ -13,7 +12,6 @@ export const StateProvider = ({ children }) => {
     just_registered: [justRegistered, setJustRegistered],
     render_nav: [renderNav, setRenderNav],
   };
-  const api = NewAxios();
 
   return (
     <StateContext.Provider value={contextData}>
