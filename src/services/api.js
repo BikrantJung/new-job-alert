@@ -43,7 +43,6 @@ const axiosInstance = axios.create({
   headers: {
     Authorization: `Bearer ${accessToken}`,
     "Content-Type": "application/json",
- 
   },
 });
 
@@ -59,7 +58,7 @@ axiosInstance.interceptors.response.use(
     ) {
       window.location.href = "/login/";
       refresh = true;
-      console.log("originalRequest",originalRequest)
+      console.log("originalRequest", originalRequest);
       return Promise.reject(error);
     }
 
@@ -83,7 +82,7 @@ axiosInstance.interceptors.response.use(
             .then((response) => {
               saveTokens(response.data);
 
-              console.log("RESPONSE",response)
+              console.log("RESPONSE", response);
               axiosInstance.defaults.headers["Authorization"] =
                 "Bearer " + response.data.access;
               originalRequest.headers["Authorization"] =
@@ -92,7 +91,7 @@ axiosInstance.interceptors.response.use(
               return axiosInstance(originalRequest);
             })
             .catch((err) => {
-              console.log("err",err);
+              console.log("err", err);
             });
         } else {
           console.log("Refresh token is expired", tokenParts.exp, now);
@@ -108,4 +107,5 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 export default axiosInstance;

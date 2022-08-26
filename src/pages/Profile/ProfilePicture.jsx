@@ -104,7 +104,7 @@ function ProfilePicture(props) {
     try {
       const res = await axios.put(`profile/${decodedID}`, data, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
         },
       });
       setLoading(false);
@@ -155,7 +155,7 @@ function ProfilePicture(props) {
               src={
                 localImage ||
                 initialUserData?.avatar ||
-                `http://192.168.1.71:8000${userProfileData?.avatar}`
+                `${userProfileData?.avatar}`
               }
               size="xl"
             />

@@ -32,13 +32,8 @@ import { IoChevronDown } from "react-icons/io5";
 function SkillsModal(props) {
   const toast = useToast();
   const { localUserID, accessToken } = getTokens();
-  const {
-    userProfileData,
-    setUserProfileData,
-    initialUserData,
-    setInitialUserData,
-    decodedID,
-  } = useContext(AuthContext);
+  const { userProfileData, setUserProfileData, decodedID } =
+    useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
   const [tagValues, setTagValues] = useState([]);
@@ -84,14 +79,26 @@ function SkillsModal(props) {
     const data = new FormData(e.currentTarget);
     const skillsData = {
       user: decodedID,
-      skills: "bikrant,jung",
+      skills: "sdf,sakdf",
       subscription: userProfileData.subscription,
     };
-    console.log("SKILLS", skillsData.skills);
+    let skillsArray = [];
+
+    for (let index = 0; index < skillsData.skills.length; index++) {
+      const element = skillsData.skills[index];
+      skillsArray.push(element);
+    }
+    console.log("OLD ARRAY", skillsData.skills);
+    console.log("NEW ARRAY", skillsArray);
+
     try {
       const res = await axiosInstance.put(
         `profileSelf/${decodedID}`,
-        skillsData,
+        {
+          user: decodedID,
+          skills: skillsArray,
+          subscription: userProfileData.subscription,
+        },
         {
           headers: {
             "Content-Type": "multipart/form-data",

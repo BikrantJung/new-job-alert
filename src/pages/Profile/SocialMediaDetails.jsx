@@ -28,11 +28,13 @@ import { AiFillInstagram, AiFillTwitterCircle } from "react-icons/ai";
 
 import AuthContext from "../../context/AuthContext";
 import axios from "axios";
+import axiosInstance from "../../services/api";
 
 function SocialMeidaDetails(props) {
   const toast = useToast();
   const { localUserID, accessToken } = getTokens();
-  const { userProfileData, setUserProfileData } = useContext(AuthContext);
+  const { userProfileData, setUserProfileData, initialUserData, decodedID } =
+    useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
   console.log("ALLOW", allowClose);
@@ -41,7 +43,7 @@ function SocialMeidaDetails(props) {
     setLoading(true);
     const data = new FormData(e.currentTarget);
     const socialData = {
-      user: localUserID,
+      user: decodedID,
       facebook: data.get("facebook_link"),
       whatsapp: data.get("whatsapp_num"),
       twitter: data.get("twitter_link"),
@@ -49,11 +51,15 @@ function SocialMeidaDetails(props) {
       subscription: userProfileData.subscription,
     };
     try {
-      const res = await axios.put(`profileSelf/${localUserID}`, socialData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await axiosInstance.put(
+        `profileSelf/${decodedID}`,
+        socialData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       setLoading(false);
 
       setAllowClose(true);
@@ -86,7 +92,11 @@ function SocialMeidaDetails(props) {
       preserveScrollBarGap
       isCentered
       isOpen={props.isOpen}
-      onClose={props.onClose}
+      onClose={() => {
+        setLoading(false);
+        props.onClose();
+      }}
+      size="xl"
     >
       <ModalOverlay />
       <ModalContent
@@ -112,10 +122,12 @@ function SocialMeidaDetails(props) {
                 fontSize={30}
                 _hover={{ cursor: "pointer" }}
                 color={useColorModeValue("blue.600", "blue.300")}
+                flex={1}
               />
 
-              <Text>facebook.com/</Text>
+              <Text flex={2}>facebook.com/</Text>
               <Input
+                flex={3}
                 type="text"
                 name="facebook_link"
                 focusBorderColor="inherit"
@@ -126,7 +138,9 @@ function SocialMeidaDetails(props) {
                   borderRadius: 0,
                   paddingLeft: 0,
                 }}
-                defaultValue={userProfileData.facebook}
+                defaultValue={
+                  initialUserData?.facebook || userProfileData?.facebook
+                }
               />
             </Stack>
             <Stack boxShadow="lg" p={3} direction="row" align="center">
@@ -135,10 +149,12 @@ function SocialMeidaDetails(props) {
                 fontSize={30}
                 _hover={{ cursor: "pointer" }}
                 color={useColorModeValue("green.500", "green.300")}
+                flex={1}
               />
 
-              <Text>Whatsapp num:</Text>
+              <Text flex={2}>Whatsapp num:</Text>
               <Input
+                flex={3}
                 type="number"
                 name="whatsapp_num"
                 focusBorderColor="inherit"
@@ -149,42 +165,24 @@ function SocialMeidaDetails(props) {
                   borderRadius: 0,
                   paddingLeft: 0,
                 }}
-                defaultValue={userProfileData.whatsapp}
+                defaultValue={
+                  initialUserData?.whatsapp || userProfileData?.whatsapp
+                }
               />
             </Stack>
-            <Stack boxShadow="lg" p={3} direction="row" align="center">
-              <Icon
-                as={FaTwitter}
-                fontSize={30}
-                _hover={{ cursor: "pointer" }}
-                color={useColorModeValue("blue.500", "blue.200")}
-              />
 
-              <Text>twitter.com/</Text>
-              <Input
-                type="text"
-                name="twitter_link"
-                focusBorderColor="inherit"
-                sx={{
-                  outline: "none",
-                  border: "none",
-                  borderBottom: "1px solid ",
-                  borderRadius: 0,
-                  paddingLeft: 0,
-                }}
-                defaultValue={userProfileData.twitter}
-              />
-            </Stack>
             <Stack boxShadow="lg" p={3} direction="row" align="center">
               <Icon
+                flex={1}
                 as={FaInstagram}
                 fontSize={30}
                 _hover={{ cursor: "pointer" }}
                 color={useColorModeValue("red.500", "red.300")}
               />
 
-              <Text>instagram.com/</Text>
+              <Text flex={2}>instagram.com/</Text>
               <Input
+                flex={3}
                 type="text"
                 name="instagram_link"
                 focusBorderColor="inherit"
@@ -195,14 +193,23 @@ function SocialMeidaDetails(props) {
                   borderRadius: 0,
                   paddingLeft: 0,
                 }}
-                defaultValue={userProfileData.instagram}
+                defaultValue={
+                  initialUserData?.instagram || userProfileData?.instagram
+                }
               />
             </Stack>
           </Stack>
         </ModalBody>
 
         <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={props.onClose}>
+          <Button
+            variant="ghost"
+            mr={3}
+            onClick={() => {
+              setLoading(false);
+              props.onClose();
+            }}
+          >
             Close
           </Button>
           <Button type="submit" isLoading={loading}>

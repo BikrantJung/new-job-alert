@@ -5,7 +5,12 @@ import {
   Divider,
   FormControl,
   FormLabel,
+  IconButton,
   Input,
+  Kbd,
+  List,
+  ListIcon,
+  ListItem,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -14,15 +19,19 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
+  Text,
   Textarea,
   useToast,
 } from "@chakra-ui/react";
 import StateContext from "../../context/StateContext";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { getTokens } from "../../services/localStorage";
 import axios from "axios";
 import AuthContext from "../../context/AuthContext";
 import axiosInstance from "../../services/api";
-function WorkAreaModal(props) {
+import { IoMdCheckmarkCircle } from "react-icons/io";
+
+function ExperienceModal(props) {
   const toast = useToast();
   const { localUserID, accessToken } = getTokens();
   const {
@@ -34,36 +43,47 @@ function WorkAreaModal(props) {
   } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [experienceList, setExperienceList] = useState([]);
+  const [finalSubmitList, setFinalSubmitList] = useState("");
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     const data = new FormData(e.currentTarget);
-    const professionData = {
+    if (inputValue) {
+      setExperienceList((prevValue) => {
+        return [...prevValue, inputValue];
+      });
+    }
+    setInputValue("");
+    console.log("final", experienceList);
+    const experienceData = {
       user: decodedID,
-      profession: data.get("profession"),
+      workExperience: experienceList,
       subscription: userProfileData.subscription,
     };
 
     try {
       const res = await axiosInstance.put(
         `profileSelf/${decodedID}`,
-        professionData,
+        experienceData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );
       setLoading(false);
       setAllowClose(true);
-      console.log(res)
+      console.log(res);
       setInitialUserData(res.data);
       setUserProfileData([]);
       setUserProfileData(res.data);
     } catch (error) {
       setAllowClose(false);
       setLoading(false);
+      console.log(error);
       toast({
         title: "Server Error. Please try again later.",
         status: "error",
@@ -83,6 +103,22 @@ function WorkAreaModal(props) {
     handleClose();
   }, [allowClose]);
 
+  function addList(e) {
+    if (inputValue) {
+      setExperienceList((prevValue) => {
+        return [...prevValue, inputValue];
+      });
+      setInputValue("");
+    }
+  }
+
+  function deleteItem(id) {
+    const updatedItems = experienceList.filter((elem, index) => {
+      return index !== id;
+    });
+    setExperienceList(updatedItems);
+  }
+  console.log(experienceList);
   return (
     <Modal
       preserveScrollBarGap
@@ -105,7 +141,9 @@ function WorkAreaModal(props) {
         autoComplete="off"
       >
         <Stack mb={25}>
-          <ModalHeader textAlign={"center"}>Update your title </ModalHeader>
+          <ModalHeader textAlign={"center"}>
+            Update your work experience{" "}
+          </ModalHeader>
           <ModalCloseButton />
           <Divider />
         </Stack>
@@ -113,17 +151,52 @@ function WorkAreaModal(props) {
           <Stack align="center" justify={"center"}>
             <FormControl id="biography">
               <FormLabel fontSize={[12, 13, 14, 15, 16, 17, 18]} as={"p"}>
-                Enter a single sentence description of your professional
-                skills/experience (e.g. Expert Web Designer)
+                Type a sentence and press <Kbd mx={1}>+</Kbd> icon
               </FormLabel>
-              <Input
-                type="text"
-                name="profession"
-                defaultValue={
-                  initialUserData?.profession || userProfileData?.profession
-                }
-              />
+              <Stack direction="row">
+                <Input
+                  type="text"
+                  name="experience"
+                  placeholder="Type your experience here"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                />
+                <IconButton
+                  icon={<AddIcon />}
+                  onClick={addList}
+                  disabled={loading}
+                />
+              </Stack>
             </FormControl>
+          </Stack>
+          <Stack direction="row" mt={4}>
+            <List spacing={3} w="100%">
+              {experienceList.map((item, index) => {
+                return (
+                  <ListItem
+                    display={"flex"}
+                    alignItems="center"
+                    gap={2}
+                    w="100%"
+                    key={index}
+                  >
+                    <ListIcon
+                      as={IoMdCheckmarkCircle}
+                      color="rgb(29, 161, 242)"
+                    />
+                    <Text fontSize={(10, 11, 12, 13, 14, 15)}>{item}</Text>
+                    <IconButton
+                      icon={<DeleteIcon />}
+                      fontSize={14}
+                      size="sm"
+                      marginLeft={"auto"}
+                      onClick={() => deleteItem(index)}
+                      disabled={loading}
+                    />
+                  </ListItem>
+                );
+              })}
+            </List>
           </Stack>
         </ModalBody>
 
@@ -131,7 +204,7 @@ function WorkAreaModal(props) {
           <Button
             variant="ghost"
             mr={3}
-            onClose={() => {
+            onClick={() => {
               setLoading(false);
               props.onClose();
             }}
@@ -147,4 +220,4 @@ function WorkAreaModal(props) {
   );
 }
 
-export default WorkAreaModal;
+export default ExperienceModal;

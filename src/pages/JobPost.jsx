@@ -45,6 +45,7 @@ import { IoChevronDown } from "react-icons/io5";
 import { CloseIcon } from "@chakra-ui/icons";
 import Navbar from "../components/Navbar/Navbar";
 import { getTokens } from "../services/localStorage";
+import axiosInstance from "../services/api";
 const CustomGridItem = ({ children }) => {
   return <GridItem colSpan={[2, 1]}>{children}</GridItem>;
 };
@@ -132,7 +133,7 @@ export default function JobPost() {
     window.scrollTo(0, 0);
     const getCategory = async () => {
       try {
-        const res = await axios({
+        const res = await axiosInstance({
           method: "GET",
           url: "category/",
           headers: {
@@ -156,7 +157,8 @@ export default function JobPost() {
     });
 
     const postData = {
-      user: localUserID,
+      Company: 1,
+      companyUsername:"Helo",
       Category: selectedCategory[0].id,
       JobTitle: data.get("job_title"),
       JobCategoryImage: selectedCategory[0].CategoryImage,
@@ -173,7 +175,7 @@ export default function JobPost() {
       ImportantInformation: data.get("job_information"),
     };
     try {
-      const res = await axios.post("post/", postData);
+      const res = await axiosInstance.post("post/", postData);
       setIsLoading(false);
       // window.location.reload(false);
     } catch (error) {

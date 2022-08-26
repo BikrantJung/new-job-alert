@@ -70,14 +70,6 @@ export default function Navbar() {
   const { authTokens, userProfileData, initialUserData } =
     useContext(AuthContext);
 
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    setTimeout(() => {
-      clearTokens();
-    }, 500);
-  };
-
   return (
     <>
       <Box

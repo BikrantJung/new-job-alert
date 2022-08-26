@@ -154,15 +154,9 @@ function General() {
 
 function Contact() {
   return (
-    <Stack
-      height="70vh"
-      overflow="auto"
-      p={3}
-      boxShadow={"md"}
-      style={{ marginLeft: "0" }}
-    >
+    <Stack overflow="auto" p={3} boxShadow={"md"} style={{ marginLeft: "0" }}>
       <Stack p={3}>
-        <Stack direction="row" align="center" width="100%">
+        <Stack direction="row" align="center" width="100%" mb={2}>
           <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
             Contact Information
           </Heading>
@@ -194,7 +188,7 @@ function Contact() {
         </Stack>
       </Stack>
       <Stack p={3}>
-        <Stack direction="row" align="center" width="100%">
+        <Stack direction="row" align="center" width="100%" mb={2}>
           <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
             Social Media
           </Heading>

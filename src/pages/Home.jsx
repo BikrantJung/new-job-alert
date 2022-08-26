@@ -8,6 +8,7 @@ import Categories from "../components/Popular Category/Categories";
 import RecentJobs from "../components/Recent Jobs/RecentJobs";
 import SignUpComp from "../components/Sign up/SignUpComp";
 import AuthContext from "../context/AuthContext";
+import axiosInstance from "../services/api";
 import { getTokens } from "../services/localStorage";
 function Home() {
   const {
@@ -17,11 +18,30 @@ function Home() {
     setLoading,
     initialUserData,
     setInitialUserData,
+    decodedID,
   } = useContext(AuthContext);
   const { localUserID, accessToken } = getTokens();
   console.log("HOME");
- 
+  useEffect(() => {
+    async function getUserProfileData() {
+      console.log("AUTHCONTEXT");
+      if (decodedID) {
+        console.log("LOL I AM ALOWED");
 
+        try {
+          const res = await axiosInstance.get(`profileSelf/${decodedID}`);
+          setInitialUserData(res.data);
+          console.log("Initial User Data", res);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+    getUserProfileData();
+    setLoading(false);
+  }, [accessToken, decodedID]);
+
+    
   return (
     <div>
       <Navbar />

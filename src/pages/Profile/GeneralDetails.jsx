@@ -26,8 +26,14 @@ import axiosInstance from "../../services/api";
 function GeneralDetails(props) {
   const toast = useToast();
   const { localUserID, accessToken } = getTokens();
-  const { userProfileData, setUserProfileData, isExpired } =
-    useContext(AuthContext);
+  const {
+    userProfileData,
+    setUserProfileData,
+    isExpired,
+    initialUserData,  
+    setInitialUserData,
+    decodedID,
+  } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
   const handleFormSubmit = async (e) => {
@@ -35,7 +41,7 @@ function GeneralDetails(props) {
     setLoading(true);
     const data = new FormData(e.currentTarget);
     const generalData = {
-      user: localUserID,
+      user: decodedID,
       location: data.get("current_city"),
       birthPlace: data.get("home_town"),
       DateOfBirth: data.get("date_of_birth") || null,
@@ -43,7 +49,7 @@ function GeneralDetails(props) {
     };
     try {
       const res = await axiosInstance.put(
-        `profileSelf/${localUserID}`,
+        `profileSelf/${decodedID}`,
         generalData,
         {
           headers: {
@@ -56,6 +62,7 @@ function GeneralDetails(props) {
       setAllowClose(true);
 
       setUserProfileData(res.data);
+      setInitialUserData(res.data);
     } catch (error) {
       setAllowClose(false);
       console.log(error);
@@ -111,7 +118,9 @@ function GeneralDetails(props) {
               <Input
                 type="text"
                 name="current_city"
-                defaultValue={userProfileData.location}
+                defaultValue={
+                  userProfileData?.location || initialUserData?.location
+                }
               />
             </FormControl>
             <FormControl id="biography">
@@ -119,7 +128,9 @@ function GeneralDetails(props) {
               <Input
                 type="text"
                 name="home_town"
-                defaultValue={userProfileData.birthPlace}
+                defaultValue={
+                  userProfileData?.birthPlace || initialUserData?.birthPlace
+                }
               />
             </FormControl>
             <FormControl id="biography">
@@ -127,7 +138,9 @@ function GeneralDetails(props) {
               <Input
                 type="date"
                 name="date_of_birth"
-                defaultValue={userProfileData.DateOfBirth}
+                defaultValue={
+                  userProfileData?.DateOfBirth || initialUserData?.DateOfBirth
+                }
               />
             </FormControl>
           </Stack>

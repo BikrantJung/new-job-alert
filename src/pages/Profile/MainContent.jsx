@@ -178,16 +178,7 @@ function MainContent() {
               />
             </span>
           </Tooltip>
-          <Tooltip label="Twitter" hasArrow display={["none", "none", "block"]}>
-            <span>
-              <Icon
-                as={AiFillTwitterCircle}
-                fontSize={30}
-                _hover={{ cursor: "pointer" }}
-                color={useColorModeValue("blue.500", "blue.200")}
-              />
-            </span>
-          </Tooltip>
+
           <Tooltip
             label="Instagram"
             hasArrow
