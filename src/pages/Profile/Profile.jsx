@@ -52,27 +52,23 @@ export default function Profile({ children }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { setUserProfileData, setAllowData, setUrlID } =
     useContext(AuthContext);
-  const { accessToken } = getTokens();
   const { id } = useParams();
   useEffect(() => {
     setUrlID(id);
   }, []);
-  console.log("ID", id);
 
   useEffect(() => {
     setAllowData(false);
     async function getUserProfileData() {
-      console.log("I RUN PROFILE");
 
       try {
-        const res = await axiosInstance.get(`profile/${id}`, {
+        const res = await axios.get(`profile/${id}`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: null,
           },
         });
 
-        console.log("User's data", res);
         setUserProfileData([]);
         setUserProfileData(res.data);
       } catch (error) {}

@@ -4,11 +4,14 @@ import { getTokens, saveTokens } from "../services/localStorage";
 import { saveUserID } from "../services/localStorage";
 import axios from "axios";
 import axiosInstance from "../services/api";
+import handleLogout from "../utils/logoutUser";
+import { useToast } from "@chakra-ui/react";
 const AuthContext = createContext();
 
 export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
+  const toast = useToast();
   const { accessToken, refreshToken, localUserID } = getTokens();
   const [userSubscribed, setUserSubscribed] = useState(false);
   const [userData, setUserData] = useState([]);
@@ -16,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [userProfileData, setUserProfileData] = useState([]);
   const [isExpired, setIsExpired] = useState(true);
-  const [allowData, setAllowData] = useState(true);
+  const [allowData, setAllowData] = useState(false);
   const [initialUserData, setInitialUserData] = useState([]);
   const [urlID, setUrlID] = useState("");
   const [encodedID, setEncodedID] = useState("");
@@ -34,7 +37,7 @@ export const AuthProvider = ({ children }) => {
           refreshToken: null,
         }
   );
-
+  axios.defaults.headers["Authorization"] = `Bearer ${authTokens?.accessToken}`;
   useEffect(() => {
     if (localUserID) {
       const decoded = window.atob(
@@ -48,20 +51,77 @@ export const AuthProvider = ({ children }) => {
   }, [localUserID]);
   useEffect(() => {
     async function getUserProfileData() {
-      console.log("AUTH");
       if (allowData && decodedID && !initialUserData.length) {
         try {
-          const res = await axiosInstance.get(`profileSelf/${decodedID}`);
+          const res = await axios.get(`profileSelf/${decodedID}`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
           setInitialUserData(res.data);
-          console.log("Initial User Data", res);
         } catch (error) {
-          console.log(error);
+          if (error.response?.status === 0) {
+            toast({
+              position: "bottom-left",
+              title: "Connection timed out",
+              status: "error",
+              duration: 10000,
+              // isClosable: true,
+            });
+          }
         }
       }
     }
     getUserProfileData();
+
     setLoading(false);
-  }, [accessToken, decodedID]);
+  }, [decodedID, allowData]);
+
+  const updateToken = async () => {
+    try {
+      const res = await axios.post(
+        "token/refresh/",
+        { refresh: authTokens?.refreshToken },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: null,
+          },
+        }
+      );
+
+      saveTokens(res.data);
+      setAuthTokens({
+        accessToken: res.data.access,
+        refreshToken: res.data.refresh,
+      });
+    } catch (error) {
+      if (error.response?.status === 0) {
+        toast({
+          position: "bottom-left",
+          title: "Connection timed out",
+          status: "error",
+          duration: 10000,
+          // isClosable: true,
+        });
+      }
+    }
+    setAllowData(true);
+  };
+
+  useEffect(() => {
+    if (loading) {
+      updateToken();
+    }
+    let time = 50 * 1000;
+    let interval = setInterval(() => {
+      if (authTokens.accessToken && authTokens.refreshToken) {
+        updateToken();
+      }
+    }, time);
+    return () => clearInterval(interval);
+  }, [authTokens, loading]);
+
   const contextData = {
     authTokens,
     setAuthTokens,
@@ -90,6 +150,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={contextData}>
+      {loading ? null : children}
+    </AuthContext.Provider>
   );
 };

@@ -58,7 +58,6 @@ function SkillsModal(props) {
     e.preventDefault();
     setLoading(true);
 
-    console.log("SKILLS LIST", skillsList);
     const data = new FormData(e.currentTarget);
     const skillsData = {
       user: decodedID,
@@ -79,7 +78,6 @@ function SkillsModal(props) {
       setLoading(false);
       setAllowClose(true);
       setInitialUserData(res.data);
-      console.log("SKILLS", res);
       setUserProfileData(res.data);
     } catch (error) {
       setAllowClose(false);

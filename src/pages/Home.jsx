@@ -12,24 +12,23 @@ import axiosInstance from "../services/api";
 import { getTokens } from "../services/localStorage";
 function Home() {
   const {
-    allowData,
-    userProfileData,
-    setUserProfileData,
     setLoading,
     initialUserData,
     setInitialUserData,
     decodedID,
+    authTokens,
   } = useContext(AuthContext);
-  const { localUserID, accessToken } = getTokens();
+  const { accessToken } = getTokens();
   useEffect(() => {
     async function getUserProfileData() {
-      console.log("HOME")
-      if (decodedID) {
-
+      if (decodedID && !initialUserData) {
         try {
-          const res = await axiosInstance.get(`profileSelf/${decodedID}`);
+          const res = await axios.get(`profileSelf/${decodedID}`, {
+            headers: {
+              Authorization: `Bearer ${authTokens?.accessToken}`,
+            },
+          });
           setInitialUserData(res.data);
-          console.log("Initial User Data", res);
         } catch (error) {
           console.log(error);
         }
@@ -39,7 +38,6 @@ function Home() {
     setLoading(false);
   }, [accessToken, decodedID]);
 
-    
   return (
     <div>
       <Navbar />

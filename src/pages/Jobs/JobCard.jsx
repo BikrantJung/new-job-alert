@@ -30,7 +30,6 @@ function JobCard(props) {
     setSelectedModal(e.target.value);
   };
   const handleProfileClick = (name) => {
-    console.log("name", name);
   };
   return (
     <Stack

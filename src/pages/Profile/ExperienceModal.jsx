@@ -39,11 +39,14 @@ function ExperienceModal(props) {
     initialUserData,
     setInitialUserData,
     decodedID,
+    authTokens,
   } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [experienceList, setExperienceList] = useState([]);
+  const [experienceList, setExperienceList] = useState(
+    [...userProfileData?.workExperience] || []
+  );
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -69,6 +72,7 @@ function ExperienceModal(props) {
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${authTokens?.accessToken}`,
           },
         }
       );
@@ -116,7 +120,6 @@ function ExperienceModal(props) {
     });
     setExperienceList(updatedItems);
   }
-  console.log(experienceList);
   return (
     <Modal
       preserveScrollBarGap

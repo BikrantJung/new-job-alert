@@ -28,8 +28,13 @@ import axiosInstance from "../../services/api";
 function ContactDetails(props) {
   const toast = useToast();
   const { localUserID, accessToken } = getTokens();
-  const { userProfileData, setUserProfileData, decodedID, initialUserData } =
-    useContext(AuthContext);
+  const {
+    userProfileData,
+    setUserProfileData,
+    decodedID,
+    initialUserData,
+    authTokens,
+  } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
   const handleFormSubmit = async (e) => {
@@ -44,15 +49,12 @@ function ContactDetails(props) {
       subscription: userProfileData.subscription,
     };
     try {
-      const res = await axiosInstance.put(
-        `profileSelf/${decodedID}`,
-        contactData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await axios.put(`profileSelf/${decodedID}`, contactData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens?.accessToken}`,
+        },
+      });
       setLoading(false);
 
       setAllowClose(true);
@@ -61,15 +63,24 @@ function ContactDetails(props) {
     } catch (error) {
       setAllowClose(false);
       setLoading(false);
+      console.log(error);
+      if (error.response?.data?.contactEmail) {
+        toast({
+          title: "Enter a valid email address",
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+        return;
+      }
       toast({
-        title: "Server Error. Please try again later.",
+        title: "Server error. Please try again later.",
         status: "error",
         duration: 4000,
         isClosable: true,
       });
     }
   };
-  console.log(userProfileData);
   useEffect(() => {
     const handleClose = () => {
       if (allowClose) {

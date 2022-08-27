@@ -35,6 +35,7 @@ function ProfilePicture(props) {
     setInitialUserData,
     decodedID,
     urlID,
+    authTokens
   } = useContext(AuthContext);
   const [localImage, setLocalImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -43,9 +44,7 @@ function ProfilePicture(props) {
   const handleChange = (e) => {
     setAllowUpdate(true);
     setLocalImage(URL.createObjectURL(e.target.files[0]));
-    console.log(e.target.files[0]);
   };
-  console.log("LOCAL ", localImage?.name);
 
   async function handleFormSubmit(e) {
     e.preventDefault();
@@ -59,22 +58,21 @@ function ProfilePicture(props) {
     };
 
     try {
-      const res = await axiosInstance.put(`profileSelf/${decodedID}`, imgData, {
+      const res = await axios.put(`profileSelf/${decodedID}`, imgData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization:`Bearer ${authTokens?.accessToken}`
+
         },
       });
       setLoading(false);
       setAllowClose(true);
-      console.log("RES IS ", res);
 
       setInitialUserData(res.data);
       setUserProfileData([]);
       setUserProfileData(res.data);
-      console.log("Fucking Data", initialUserData);
       setLocalImage(null);
     } catch (error) {
-      console.log(error);
       setAllowUpdate(true);
       setAllowClose(false);
       setLoading(false);
@@ -104,9 +102,11 @@ function ProfilePicture(props) {
       avatar: null,
     };
     try {
-      const res = await axios.put(`profile/${decodedID}`, data, {
+      const res = await axios.put(`profileSelf/${decodedID}`, data, {
         headers: {
           "Content-Type": "application/json",
+          Authorization:`Bearer ${authTokens?.accessToken}`
+
         },
       });
       setLoading(false);

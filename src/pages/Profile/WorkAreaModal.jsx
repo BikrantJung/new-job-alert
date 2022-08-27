@@ -45,12 +45,12 @@ function WorkAreaModal(props) {
     };
 
     try {
-      const res = await axiosInstance.put(
+      const res = await axios.put(
         `profileSelf/${decodedID}`,
         professionData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );

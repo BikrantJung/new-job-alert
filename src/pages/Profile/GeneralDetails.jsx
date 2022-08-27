@@ -33,6 +33,7 @@ function GeneralDetails(props) {
     initialUserData,  
     setInitialUserData,
     decodedID,
+    authTokens
   } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
@@ -48,12 +49,14 @@ function GeneralDetails(props) {
       subscription: userProfileData.subscription,
     };
     try {
-      const res = await axiosInstance.put(
+      const res = await axios.put(
         `profileSelf/${decodedID}`,
         generalData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
+            Authorization:`Bearer ${authTokens?.accessToken}`
+
           },
         }
       );

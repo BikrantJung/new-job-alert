@@ -56,7 +56,6 @@ function MainContent() {
     window.btoa(
       window.btoa(window.btoa(window.btoa(window.btoa(initialUserData?.user))))
     );
-  console.log(checkID === encodedID, "I");
 
   return (
     <Stack

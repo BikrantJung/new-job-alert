@@ -46,7 +46,6 @@ export default function Signup() {
       password2: data.get("password2"),
       tc: hasAcceptedPolicy ? "True" : "False",
     };
-    console.log(registerData);
     try {
       const res = await axiosInstance({
         method: "POST",

@@ -6,10 +6,12 @@ import { StateProvider } from "./context/StateContext";
 import theme from "./theme";
 import axios from "axios";
 import { AuthProvider } from "./context/AuthContext";
+
 import { Provider } from "react-redux";
 // import { store } from "./app/store";
-// api/user/token/refresh
-import "./services/api";
+
+
+axios.defaults.baseURL = "http://192.168.1.71:8000/api/user/";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <AuthProvider>

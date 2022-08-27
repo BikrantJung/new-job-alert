@@ -2,27 +2,21 @@ import axios from "axios";
 import { getTokens, saveTokens } from "../services/localStorage";
 
 const { refreshToken, accessToken } = getTokens();
-// console.log("refresh", refreshToken);
 // axios.defaults.baseURL = "http://192.168.1.71:8000/api/user/";
 // let refresh = false;
 // axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
-// console.log("HELLO WORLD ");
 
 // axios.interceptors.response.use(
 //   (res) => res,
 //   async (error) => {
 //     // const originalRequest = error.config;
-//     console.log("ERROR FOUND", error);
 //     if (error.response.status === 401 && !refresh) {
 //       // originalRequest._retry = true;
-//       console.log("GOTCHA first", error);
-//       console.log("REFRESH 2", refresh);
 
 //       refresh = true;
 //       const response = await axios.post("token/refresh/", {
 //         refresh: refreshToken,
 //       });
-//       console.log(response);
 //       saveTokens(response.data);
 //       if (response.status === 200) {
 //         axios.defaults.headers.common[
@@ -46,123 +40,67 @@ const axiosInstance = axios.create({
   },
 });
 
-// axiosInstance.interceptors.request.use(
-//   async (request) => {
-//     console.log("Requset", request);
-//     // const originalRequest = request.config;
-
-//     if (refreshToken) {
-//       const tokenParts = JSON.parse(window.atob(refreshToken.split(".")[1]));
-
-//       // exp date in token is expressed in seconds, while now() returns milliseconds:
-//       const now = Math.ceil(Date.now() / 1000);
-//       console.log(tokenParts.exp);
-
-//       if (!(tokenParts.exp > now)) {
-//         return request;
-//       }
-//       try {
-//         const res = await axios.post(`${baseURL}token/refresh/`, {
-//           refresh: refreshToken,
-//         });
-//         saveTokens(res.data);
-//         console.log("FROM REQUEST");
-//         axiosInstance.defaults.headers["Authorization"] =
-//           "Bearer " + res.data.access;
-//         request.headers["Authorization"] = "Bearer " + res.data.access;
-//         return request;
-//       } catch (error) {
-//         console.log("REQUEST ERROR", error);
-//       }
-
-//       // if (tokenParts.exp > now) {
-//       //   refresh = true;
-//       //   return axiosInstance
-//       //     .post("token/refresh/", { refresh: refreshToken })
-//       //     .then((response) => {
-//       //       saveTokens(response.data);
-
-//       //       console.log("RESPONSE", response);
-//       //       axiosInstance.defaults.headers["Authorization"] =
-//       //         "Bearer " + response.data.access;
-//       //       originalRequest.headers["Authorization"] =
-//       //         "Bearer " + response.data.access;
-
-//       //       return axiosInstance(originalRequest);
-//       //     })
-//       //     .catch((err) => {
-//       //       console.log("err", err);
-//       //     });
-//       // } else {
-//       //   return request;
-//       // }
-//     } else {
-//       return request;
-//     }
-//   },
-//   (err) => Promise.reject(err)
-// );
 
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
-    // refresh = false;
-    console.log("ORGI",originalRequest.url)
+    // const originalRequest = error.config;
+    // // refresh = false;
+    // console.log("ORGI",originalRequest.url)
 
-    // Prevent infinite loops
-    if (
-      error.response.status === 401 &&
-      originalRequest.url === baseURL + "token/refresh/"
-    ) {
+    // // Prevent infinite loops
+    // if (
+    //   error.response.status === 401 &&
+    //   originalRequest.url === baseURL + "token/refresh/"
+    // ) {
       
-      window.location.href = "/login/";
-      refresh = true;
-      console.log("originalRequest", originalRequest);
-      return Promise.reject(error);
-    }
+    //   window.location.href = "/login/";
+    //   refresh = true;
+    //   console.log("originalRequest", originalRequest);
+    //   return Promise.reject(error);
+    // }
 
-    if (
-      error.response.data.code === "token_not_valid" &&
-      error.response.status === 401 &&
-      error.response.statusText === "Unauthorized" &&
-      !refresh
-    ) {
-      console.log("Original Request",originalRequest)
-      refresh = true;
-      if (refreshToken) {
-        const tokenParts = JSON.parse(window.atob(refreshToken.split(".")[1]));
+    // if (
+    //   error.response.data.code === "token_not_valid" &&
+    //   error.response.status === 401 &&
+    //   error.response.statusText === "Unauthorized" &&
+    //   !refresh
+    // ) {
+    //   console.log("Original Request",originalRequest)
+    //   refresh = true;
+    //   if (refreshToken) {
+    //     const tokenParts = JSON.parse(window.atob(refreshToken.split(".")[1]));
 
-        // exp date in token is expressed in seconds, while now() returns milliseconds:
-        const now = Math.ceil(Date.now() / 1000);
-        console.log(tokenParts.exp);
+    //     // exp date in token is expressed in seconds, while now() returns milliseconds:
+    //     const now = Math.ceil(Date.now() / 1000);
+    //     console.log(tokenParts.exp);
 
-        if (tokenParts.exp > now) {
-          return axiosInstance
-            .post("token/refresh/", { refresh: refreshToken })
-            .then((response) => {
-              saveTokens(response.data);
+    //     if (tokenParts.exp > now) {
+    //       return axiosInstance
+    //         .post("token/refresh/", { refresh: refreshToken })
+    //         .then((response) => {
+    //           saveTokens(response.data);
 
-              console.log("RESPONSE", response);
-              axiosInstance.defaults.headers["Authorization"] =
-                "Bearer " + response.data.access;
-              originalRequest.headers["Authorization"] =
-                "Bearer " + response.data.access;
+    //           console.log("RESPONSE", response);
+    //           axiosInstance.defaults.headers["Authorization"] =
+    //             "Bearer " + response.data.access;
+    //           originalRequest.headers["Authorization"] =
+    //             "Bearer " + response.data.access;
 
-              return axiosInstance(originalRequest);
-            })
-            .catch((err) => {
-              console.log("err", err);
-            });
-        } else {
-          console.log("Refresh token is expired", tokenParts.exp, now);
-          // window.location.href = "/login/";
-        }
-      } else {
-        console.log("Refresh token not available.");
-        // window.location.href = "/login/";
-      }
-    }
+    //           return axiosInstance(originalRequest);
+    //         })
+    //         .catch((err) => {
+    //           console.log("err", err);
+    //         });
+    //     } else {
+    //       console.log("Refresh token is expired", tokenParts.exp, now);
+    //       // window.location.href = "/login/";
+    //     }
+    //   } else {
+    //     console.log("Refresh token not available.");
+    //     // window.location.href = "/login/";
+    //   }
+    // }
 
     // specific error handling done elsewhere
     return Promise.reject(error);

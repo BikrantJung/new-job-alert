@@ -33,11 +33,10 @@ import axiosInstance from "../../services/api";
 function SocialMeidaDetails(props) {
   const toast = useToast();
   const { localUserID, accessToken } = getTokens();
-  const { userProfileData, setUserProfileData, initialUserData, decodedID } =
+  const { userProfileData, setUserProfileData, initialUserData, decodedID,authTokens } =
     useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
-  console.log("ALLOW", allowClose);
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -51,12 +50,13 @@ function SocialMeidaDetails(props) {
       subscription: userProfileData.subscription,
     };
     try {
-      const res = await axiosInstance.put(
+      const res = await axios.put(
         `profileSelf/${decodedID}`,
         socialData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
+            Authorization:`Bearer ${authTokens?.accessToken}`
           },
         }
       );
@@ -76,7 +76,6 @@ function SocialMeidaDetails(props) {
       });
     }
   };
-  console.log(userProfileData);
   useEffect(() => {
     const handleClose = () => {
       if (allowClose) {

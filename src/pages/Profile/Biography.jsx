@@ -30,6 +30,7 @@ function Biography(props) {
     initialUserData,
     setInitialUserData,
     decodedID,
+    authTokens,
   } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
@@ -44,15 +45,11 @@ function Biography(props) {
     };
 
     try {
-      const res = await axiosInstance.put(
-        `profileSelf/${decodedID}`,
-        biographyData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await axios.put(`profileSelf/${decodedID}`, biographyData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       setLoading(false);
       setAllowClose(true);
       setInitialUserData(res.data);

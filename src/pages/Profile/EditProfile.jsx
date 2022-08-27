@@ -5,6 +5,9 @@ import {
   Center,
   Divider,
   Link,
+  List,
+  ListIcon,
+  ListItem,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -24,10 +27,10 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
+import { useMemo } from "react";
 import { useState } from "react";
+import { IoMdCheckmarkCircle } from "react-icons/io";
 import AuthContext from "../../context/AuthContext";
-import StateContext from "../../context/StateContext";
-import Avatar1 from "../../images/avatar1.png";
 import Biography from "./Biography";
 import ContactDetails from "./ContactDetails";
 import ExperienceModal from "./ExperienceModal";
@@ -73,9 +76,7 @@ function EditProfile(props) {
                 direction="row"
                 align="center"
                 justify={"space-between"}
-                boxShadow="md"
                 p={2}
-                mb={2}
               >
                 <Text
                   fontSize={[16, 17, 18, 19, 20]}
@@ -96,7 +97,8 @@ function EditProfile(props) {
                   Edit
                 </Button>
               </Stack>
-              <Stack align="center" justify={"center"}>
+              <Divider />
+              <Stack align="center" justify={"center"} my={3}>
                 <Avatar
                   src={initialUserData?.avatar || userProfileData?.avatar}
                   size="xl"
@@ -112,9 +114,7 @@ function EditProfile(props) {
                 direction="row"
                 align="center"
                 justify={"space-between"}
-                boxShadow="md"
                 p={2}
-                mb={2}
               >
                 <Text
                   fontSize={[16, 17, 18, 19, 20]}
@@ -138,6 +138,7 @@ function EditProfile(props) {
                   <Biography isOpen={isOpen} onClose={onClose} />
                 )}
               </Stack>
+              <Divider />
               <Center
                 px={4}
                 my={3}
@@ -154,9 +155,7 @@ function EditProfile(props) {
                 direction="row"
                 align="center"
                 justify={"space-between"}
-                boxShadow="md"
                 p={2}
-                mb={2}
               >
                 <Text
                   fontSize={[16, 17, 18, 19, 20]}
@@ -180,6 +179,7 @@ function EditProfile(props) {
                   <WorkAreaModal isOpen={isOpen} onClose={onClose} />
                 )}
               </Stack>
+              <Divider />
               <Center
                 px={4}
                 my={3}
@@ -197,9 +197,7 @@ function EditProfile(props) {
                 direction="row"
                 align="center"
                 justify={"space-between"}
-                boxShadow="md"
                 p={2}
-                mb={2}
               >
                 <Text
                   fontSize={[16, 17, 18, 19, 20]}
@@ -223,6 +221,7 @@ function EditProfile(props) {
                   <SkillsModal isOpen={isOpen} onClose={onClose} />
                 )}
               </Stack>
+              <Divider />
               <Center
                 px={4}
                 my={3}
@@ -244,7 +243,6 @@ function EditProfile(props) {
                 direction="row"
                 align="center"
                 justify={"space-between"}
-                boxShadow="md"
                 p={2}
                 mb={2}
               >
@@ -270,16 +268,34 @@ function EditProfile(props) {
                   <ExperienceModal isOpen={isOpen} onClose={onClose} />
                 )}
               </Stack>
-              <Center
-                px={4}
-                my={3}
-                color={useColorModeValue("gray.800", "gray.400")}
-                fontWeight={userProfileData?.profession ? 700 : "inherit"}
-              >
-                {userProfileData?.profession
-                  ? userProfileData?.profession
-                  : "No profession to show"}
-              </Center>
+              <Divider />
+              {userProfileData?.workExperience?.length ? (
+                <Stack my={3}>
+                  <List>
+                    {userProfileData?.workExperience?.map((item, index) => {
+                      return (
+                        <ListItem
+                          display={"flex"}
+                          alignItems="center"
+                          gap={2}
+                          w="100%"
+                          key={index}
+                        >
+                          <ListIcon
+                            as={IoMdCheckmarkCircle}
+                            color="rgb(29, 161, 242)"
+                          />
+                          <Text fontSize={(10, 11, 12, 13, 14, 15)}>
+                            {item}
+                          </Text>
+                        </ListItem>
+                      );
+                    })}
+                  </List>
+                </Stack>
+              ) : (
+                <Center my={3}>No work experience to show</Center>
+              )}
             </Box>
             {/* Edit general details */}
             <Box>
@@ -287,9 +303,7 @@ function EditProfile(props) {
                 direction="row"
                 align="center"
                 justify={"space-between"}
-                boxShadow="md"
                 p={2}
-                mb={2}
               >
                 <Text
                   fontSize={[16, 17, 18, 19, 20]}
@@ -313,7 +327,8 @@ function EditProfile(props) {
                   <GeneralDetails isOpen={isOpen} onClose={onClose} />
                 )}
               </Stack>
-              <TableContainer px={3}>
+              <Divider />
+              <TableContainer px={3} my={3}>
                 <Table variant="simple">
                   <Tbody>
                     <Tr>
@@ -348,9 +363,7 @@ function EditProfile(props) {
                 direction="row"
                 align="center"
                 justify={"space-between"}
-                boxShadow="md"
                 p={2}
-                mb={2}
               >
                 <Text
                   fontSize={[16, 17, 18, 19, 20]}
@@ -374,7 +387,8 @@ function EditProfile(props) {
                   <ContactDetails isOpen={isOpen} onClose={onClose} />
                 )}
               </Stack>
-              <TableContainer px={3}>
+              <Divider />
+              <TableContainer px={3} my={3}>
                 <Table variant="simple">
                   <Tbody>
                     <Tr>
@@ -408,9 +422,7 @@ function EditProfile(props) {
                 direction="row"
                 align="center"
                 justify={"space-between"}
-                boxShadow="md"
                 p={2}
-                mb={2}
               >
                 <Text
                   fontSize={[16, 17, 18, 19, 20]}
@@ -434,7 +446,8 @@ function EditProfile(props) {
                   <SocialMeidaDetails isOpen={isOpen} onClose={onClose} />
                 )}
               </Stack>
-              <TableContainer px={3}>
+              <Divider />
+              <TableContainer px={3} my={3}>
                 <Table variant="simple">
                   <Tbody>
                     <Tr>
