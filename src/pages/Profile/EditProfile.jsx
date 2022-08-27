@@ -226,15 +226,17 @@ function EditProfile(props) {
                 px={4}
                 my={3}
                 color={useColorModeValue("gray.800", "gray.400")}
-                fontWeight={700}
+                fontWeight={userProfileData?.skills?.length ? 700 : "inherit"}
               >
-                {userProfileData?.skills?.map((item, index) => {
-                  return (
-                    <Tag key={index} m={1}>
-                      {item}
-                    </Tag>
-                  );
-                })}
+                {userProfileData?.skills?.length
+                  ? userProfileData?.skills?.map((item, index) => {
+                      return (
+                        <Tag key={index} m={1}>
+                          {item}
+                        </Tag>
+                      );
+                    })
+                  : "Not available"}
               </Center>
             </Box>
             <Box>
@@ -294,7 +296,7 @@ function EditProfile(props) {
                   </List>
                 </Stack>
               ) : (
-                <Center my={3}>No work experience to show</Center>
+                <Center my={3}>Not available</Center>
               )}
             </Box>
             {/* Edit general details */}
@@ -334,22 +336,25 @@ function EditProfile(props) {
                     <Tr>
                       <Td style={{ padding: 0 }}>Current city</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {" "}
-                        {userProfileData?.location || initialUserData?.location}
+                        {userProfileData?.location
+                          ? userProfileData?.location
+                          : "Not available"}
                       </Td>
                     </Tr>
                     <Tr>
                       <Td style={{ padding: 0 }}>Home town</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {userProfileData?.birthPlace ||
-                          initialUserData?.birthplace}
+                        {userProfileData?.birthPlace
+                          ? userProfileData?.birthPlace
+                          : "Not available"}
                       </Td>
                     </Tr>
                     <Tr>
                       <Td style={{ padding: 0 }}>Date of Birth</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {userProfileData?.DateOfBirth ||
-                          initialUserData?.DateOfBirth}
+                        {userProfileData?.DateOfBirth
+                          ? userProfileData?.DateOfBirth
+                          : "Not available"}
                       </Td>
                     </Tr>
                   </Tbody>
@@ -394,21 +399,25 @@ function EditProfile(props) {
                     <Tr>
                       <Td style={{ padding: 0 }}>Phone number</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {userProfileData?.phNumber || initialUserData?.phNumber}
+                        {userProfileData?.phNumber
+                          ? userProfileData?.phNumber
+                          : "Not available"}
                       </Td>
                     </Tr>
                     <Tr>
                       <Td style={{ padding: 0 }}>Contact email</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {userProfileData?.contactEmail ||
-                          initialUserData?.phNumber}
+                        {userProfileData?.contactEmail
+                          ? userProfileData?.contactEmail
+                          : "Not available"}
                       </Td>
                     </Tr>
                     <Tr>
                       <Td style={{ padding: 0 }}>Tel no.</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {userProfileData?.contactTel ||
-                          initialUserData?.phNumber}
+                        {userProfileData?.contactTel
+                          ? userProfileData?.contactTel
+                          : "Not available"}
                       </Td>
                     </Tr>
                   </Tbody>
@@ -452,41 +461,67 @@ function EditProfile(props) {
                   <Tbody>
                     <Tr>
                       <Td style={{ padding: 0 }}>Facebook</Td>
-                      <Td color={useColorModeValue("gray.800", "gray.400")}>
+                      <Td>
                         <Link
                           href={`https://www.facebook.com/${
-                            initialUserData?.facebook ||
+                            userProfileData?.facebook ||
                             userProfileData?.facebook
                           }`}
-                          color="blue.400"
+                          color={
+                            userProfileData?.facebook ? "blue.400" : "gray.900"
+                          }
                           target="_blank"
+                          _hover={
+                            userProfileData?.facebook
+                              ? {
+                                  textDecoration: "underline",
+                                  cursor: "pointer",
+                                }
+                              : { textDecoration: "none", cursor: "auto" }
+                          }
                         >
-                          {initialUserData?.facebook ||
-                            userProfileData?.facebook}
+                          {userProfileData?.facebook
+                            ? userProfileData?.facebook
+                            : "Not available"}
                         </Link>
                       </Td>
                     </Tr>
                     <Tr>
                       <Td style={{ padding: 0 }}>Whatsapp</Td>
                       <Td color={useColorModeValue("gray.800", "gray.400")}>
-                        {initialUserData?.whatsapp || userProfileData?.whatsapp}
+                        {userProfileData?.whatsapp
+                          ? userProfileData?.whatsapp
+                          : "Not available"}
                       </Td>
                     </Tr>
 
                     <Tr>
                       <Td style={{ padding: 0 }}>Instagram</Td>
-                      <Td color={useColorModeValue("gray.800", "gray.400")}>
+                      <Td>
                         {userProfileData?.instagram && (
                           <Link
                             href={`https://www.instagram.com/${
-                              initialUserData?.instagram ||
+                              userProfileData?.instagram ||
                               userProfileData?.instagram
                             }`}
-                            color="blue.400"
+                            color={
+                              userProfileData?.instagram
+                                ? "blue.400"
+                                : "gray.900"
+                            }
                             target="_blank"
+                            _hover={
+                              userProfileData?.instagram
+                                ? {
+                                    textDecoration: "underline",
+                                    cursor: "pointer",
+                                  }
+                                : { textDecoration: "none", cursor: "auto" }
+                            }
                           >
-                            {initialUserData?.instagram ||
-                              userProfileData?.instagram}
+                            {userProfileData?.instagram
+                              ? userProfileData?.instagram
+                              : "Not available"}
                           </Link>
                         )}
                       </Td>

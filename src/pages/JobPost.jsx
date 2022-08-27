@@ -51,7 +51,7 @@ const CustomGridItem = ({ children }) => {
 };
 
 export default function JobPost() {
-  const { accessToken, localUserID } = getTokens();
+  const { authTokens } = useContext(AuthContext);
   const { colorMode } = useColorMode();
   const [tabIndex, setTabIndex] = useState(0);
   const [tagValues, setTagValues] = useState([]);
@@ -133,11 +133,12 @@ export default function JobPost() {
     window.scrollTo(0, 0);
     const getCategory = async () => {
       try {
-        const res = await axiosInstance({
+        const res = await axios({
           method: "GET",
           url: "category/",
           headers: {
             "Content-Type": "application/json",
+            Authorization: null,
           },
         });
         setCategoryData(res.data);
@@ -158,7 +159,7 @@ export default function JobPost() {
 
     const postData = {
       Company: 1,
-      companyUsername:"Helo",
+      companyUsername: "Helo",
       Category: selectedCategory[0].id,
       JobTitle: data.get("job_title"),
       JobCategoryImage: selectedCategory[0].CategoryImage,
@@ -175,7 +176,12 @@ export default function JobPost() {
       ImportantInformation: data.get("job_information"),
     };
     try {
-      const res = await axiosInstance.post("post/", postData);
+      const res = await axios.post("post/", postData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens?.accessToken}`,
+        },
+      });
       setIsLoading(false);
       // window.location.reload(false);
     } catch (error) {
@@ -412,6 +418,14 @@ export default function JobPost() {
                         <FormControl id="description" isRequired>
                           <FormLabel>Job Description</FormLabel>
                           <Textarea type="text" name="job_description" />
+                        </FormControl>
+                      </GridItem>
+                      <GridItem colSpan={2}>
+                        <FormControl id="job-image">
+                          <FormLabel>
+                            Provide a cover image for your job post
+                          </FormLabel>
+                          <Textarea type="text" name="job_image" />
                         </FormControl>
                       </GridItem>
                     </Grid>

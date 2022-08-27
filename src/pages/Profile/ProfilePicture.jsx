@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Avatar,
   Button,
   Divider,
@@ -27,6 +33,9 @@ import axiosInstance from "../../services/api";
 
 function ProfilePicture(props) {
   const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef();
+
   const { localUserID, accessToken } = getTokens();
   const {
     userProfileData,
@@ -35,7 +44,7 @@ function ProfilePicture(props) {
     setInitialUserData,
     decodedID,
     urlID,
-    authTokens
+    authTokens,
   } = useContext(AuthContext);
   const [localImage, setLocalImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -61,8 +70,7 @@ function ProfilePicture(props) {
       const res = await axios.put(`profileSelf/${decodedID}`, imgData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization:`Bearer ${authTokens?.accessToken}`
-
+          Authorization: `Bearer ${authTokens?.accessToken}`,
         },
       });
       setLoading(false);
@@ -97,6 +105,7 @@ function ProfilePicture(props) {
   }, [allowClose]);
 
   const removePhoto = async () => {
+    setLocalImage(null);
     const data = {
       user: decodedID,
       avatar: null,
@@ -105,14 +114,14 @@ function ProfilePicture(props) {
       const res = await axios.put(`profileSelf/${decodedID}`, data, {
         headers: {
           "Content-Type": "application/json",
-          Authorization:`Bearer ${authTokens?.accessToken}`
-
+          Authorization: `Bearer ${authTokens?.accessToken}`,
         },
       });
       setLoading(false);
 
       setAllowClose(true);
-
+      setInitialUserData(res.data);
+      setUserProfileData([]);
       setUserProfileData(res.data);
     } catch (error) {
       setAllowClose(false);
@@ -182,10 +191,50 @@ function ProfilePicture(props) {
               Upload photo
             </Button>
 
-            <Button leftIcon={<DeleteIcon />} onClick={removePhoto}>
+            <Button
+              leftIcon={<DeleteIcon />}
+              onClick={onOpen}
+              disabled={!(localImage || userProfileData?.avatar)}
+            >
               Remove photo
             </Button>
           </Stack>
+          <>
+            <AlertDialog
+              isOpen={isOpen}
+              leastDestructiveRef={cancelRef}
+              onClose={onClose}
+            >
+              <AlertDialogOverlay>
+                <AlertDialogContent>
+                  <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                    Remove Profile Photo
+                  </AlertDialogHeader>
+
+                  <AlertDialogBody>
+                    Are you sure you want to remove profile photo
+                  </AlertDialogBody>
+
+                  <AlertDialogFooter>
+                    <Button ref={cancelRef} onClick={onClose}>
+                      Cancel
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      onClick={() => {
+                        removePhoto();
+                        onClose();
+                      }}
+                      ml={3}
+                      leftIcon={<DeleteIcon />}
+                    >
+                      Remove
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogOverlay>
+            </AlertDialog>
+          </>
         </ModalBody>
 
         <ModalFooter>

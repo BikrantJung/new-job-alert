@@ -45,23 +45,15 @@ function ExperienceModal(props) {
   const [allowClose, setAllowClose] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [experienceList, setExperienceList] = useState(
-    [...userProfileData?.workExperience] || []
+    userProfileData?.workExperience ? [...userProfileData?.workExperience] : []
   );
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const data = new FormData(e.currentTarget);
-    if (inputValue) {
-      setExperienceList((prevValue) => {
-        return [...prevValue, inputValue];
-      });
-    }
-    setInputValue("");
-    console.log("final", experienceList);
     const experienceData = {
       user: decodedID,
-      workExperience: experienceList,
+      workExperience: experienceList?.length ? experienceList : null,
       subscription: userProfileData.subscription,
     };
 
@@ -152,8 +144,9 @@ function ExperienceModal(props) {
           <Stack align="center" justify={"center"}>
             <FormControl id="biography">
               <FormLabel fontSize={[12, 13, 14, 15, 16, 17, 18]} as={"p"}>
-                Type a sentence and press <Kbd mx={1}>+</Kbd> icon
+                Don't forgot to press <Kbd mx={1}>+</Kbd> icon before updating
               </FormLabel>
+
               <Stack direction="row">
                 <Input
                   type="text"

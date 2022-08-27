@@ -60,7 +60,6 @@ export default function Profile({ children }) {
   useEffect(() => {
     setAllowData(false);
     async function getUserProfileData() {
-
       try {
         const res = await axios.get(`profile/${id}`, {
           headers: {
@@ -71,6 +70,7 @@ export default function Profile({ children }) {
 
         setUserProfileData([]);
         setUserProfileData(res.data);
+        console.log(res.data);
       } catch (error) {}
     }
 

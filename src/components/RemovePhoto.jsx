@@ -1,3 +1,4 @@
+import { DeleteIcon } from "@chakra-ui/icons";
 import {
   AlertDialog,
   AlertDialogBody,
@@ -10,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { useRef } from "react";
 
-export default function RegisterAlert(props) {
+export default function RemovePhoto(props) {
   const cancelRef = useRef();
 
   return (
@@ -23,19 +24,24 @@ export default function RegisterAlert(props) {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Register as company
+              Remove Profile Photo
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Please register as company to start posting job
+              Are you sure you want to remove profile photo
             </AlertDialogBody>
 
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={props.onClose}>
                 Cancel
               </Button>
-              <Button colorScheme="green" onClick={props.onClose} ml={3}>
-                Register
+              <Button
+                colorScheme="green"
+                onClick={props.onClose}
+                ml={3}
+                startIcon={<DeleteIcon />}
+              >
+                Remove
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>

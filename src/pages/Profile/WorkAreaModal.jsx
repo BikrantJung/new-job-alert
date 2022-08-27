@@ -63,6 +63,7 @@ function WorkAreaModal(props) {
     } catch (error) {
       setAllowClose(false);
       setLoading(false);
+      console.log(error)
       toast({
         title: "Server Error. Please try again later.",
         status: "error",

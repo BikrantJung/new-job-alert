@@ -6,48 +6,27 @@ import {
   Text,
   useDisclosure,
   Stack,
-  Tab,
-  TabList,
-  Tabs,
-  TabPanels,
-  TabPanel,
   Tooltip,
   Button,
-  Heading,
-  IconButton,
-  Tag,
-  Divider,
-  List,
-  ListItem,
-  ListIcon,
   Skeleton,
-  Box,
   SkeletonCircle,
+  Link,
 } from "@chakra-ui/react";
 
 import { FaFacebook } from "react-icons/fa";
-import { IoLogoWhatsapp, IoMdCheckmarkCircle } from "react-icons/io";
-import { EditIcon, AddIcon } from "@chakra-ui/icons";
-import { AiFillInstagram, AiFillTwitterCircle } from "react-icons/ai";
-import Avatar1 from "../../images/avatar1.png";
+import { IoLogoWhatsapp } from "react-icons/io";
+import { AiFillInstagram } from "react-icons/ai";
 import AuthContext from "../../context/AuthContext";
-import { Link as ReactLink } from "react-router-dom";
 import EditProfile from "./EditProfile";
 import { getTokens } from "../../services/localStorage";
-import RegisterAlert from "../../components/RegisterAlert";
 import { Outlet } from "react-router-dom";
-import DefaultContent from "./Content/DefaultContent";
 
 function MainContent() {
   const { userProfileData, initialUserData, urlID, encodedID } =
     useContext(AuthContext);
   const { localUserID } = getTokens();
-  const { userData } = useContext(AuthContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedMenu, setSelectedMenu] = useState("");
-  const handeleSelectOption = (e) => {
-    setSelectedMenu(e.target.value);
-  };
 
   const checkID =
     window.btoa(
@@ -66,9 +45,6 @@ function MainContent() {
       height="100%"
       // align='center'
     >
-      {/* {userProfileData?.username || initialUserData?.username ? : */}
-
-      {/* { userProfileData?.username || initialUserData?.username } */}
       {/*  Left avatar section */}
       <Stack
         height={{ base: "auto", md: "100%" }}
@@ -123,7 +99,7 @@ function MainContent() {
           </Stack>
         )}
 
-        {/* Edit and Post Job */}
+        {/* Edit Profile*/}
         {localUserID === checkID && (
           <Button
             mt={{ base: 0, md: 3 }}
@@ -150,21 +126,35 @@ function MainContent() {
           display={{ base: "none", md: "flex" }}
         >
           <Tooltip
-            label="Facebook"
+            label={
+              userProfileData?.facebook
+                ? userProfileData?.facebook
+                : "No link found"
+            }
             hasArrow
             display={["none", "none", "block"]}
           >
             <span>
-              <Icon
-                as={FaFacebook}
-                fontSize={30}
-                _hover={{ cursor: "pointer" }}
-                color={useColorModeValue("blue.600", "blue.300")}
-              />
+              <Link
+                href={`https://www.facebook.com/${userProfileData?.facebook}`}
+                color="blue.400"
+                target="_blank"
+              >
+                <Icon
+                  as={FaFacebook}
+                  fontSize={30}
+                  _hover={{ cursor: "pointer" }}
+                  color={useColorModeValue("blue.600", "blue.300")}
+                />
+              </Link>
             </span>
           </Tooltip>
           <Tooltip
-            label="Whatsapp"
+            label={
+              userProfileData?.whatsapp
+                ? userProfileData?.whatsapp
+                : "No number found"
+            }
             hasArrow
             display={["none", "none", "block"]}
           >
@@ -179,17 +169,27 @@ function MainContent() {
           </Tooltip>
 
           <Tooltip
-            label="Instagram"
+            label={
+              userProfileData?.instagram
+                ? userProfileData?.instagram
+                : "No link found"
+            }
             hasArrow
             display={["none", "none", "block"]}
           >
             <span>
-              <Icon
-                as={AiFillInstagram}
-                fontSize={30}
-                _hover={{ cursor: "pointer" }}
-                color={useColorModeValue("red.500", "red.300")}
-              />
+              <Link
+                href={`https://www.instagram.com/${userProfileData?.instagram}`}
+                color="blue.400"
+                target="_blank"
+              >
+                <Icon
+                  as={AiFillInstagram}
+                  fontSize={30}
+                  _hover={{ cursor: "pointer" }}
+                  color={useColorModeValue("red.500", "red.300")}
+                />
+              </Link>
             </span>
           </Tooltip>
         </Stack>

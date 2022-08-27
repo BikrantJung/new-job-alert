@@ -21,6 +21,9 @@ import {
   ListItem,
   ListIcon,
   Skeleton,
+  Center,
+  Box,
+  Link,
 } from "@chakra-ui/react";
 import { IoLogoWhatsapp, IoMdCheckmarkCircle } from "react-icons/io";
 import { EditIcon, AddIcon } from "@chakra-ui/icons";
@@ -54,7 +57,7 @@ function DefaultContent() {
               <Contact />
             </TabPanel>
             <TabPanel>
-              <p>two!</p>
+              <About />
             </TabPanel>
           </TabPanels>
         </Tabs>
@@ -97,7 +100,11 @@ function General() {
           <Text fontSize={{ base: 13, md: 15 }}>
             {urlID === initialUserData?.username
               ? initialUserData?.bio
-              : userProfileData?.bio}
+                ? initialUserData?.bio
+                : "Bio not available"
+              : userProfileData?.bio
+              ? userProfileData?.bio
+              : "Bio not available"}
           </Text>
         </Stack>
       ) : (
@@ -113,11 +120,27 @@ function General() {
             Skills
           </Heading>
         </Stack>
-        <Stack direction="row">
-          <Tag colorScheme={"twitter"}>Webs</Tag>
-          <Tag colorScheme={"twitter"}>Graphics</Tag>
-          <Tag colorScheme={"twitter"}>Editing</Tag>
-        </Stack>
+        {userProfileData?.username ? (
+          <Stack direction="row" width="100%">
+            {userProfileData?.skills ? (
+              userProfileData?.skills?.map((item, index) => {
+                return (
+                  <Tag key={index} colorScheme="twitter">
+                    {item}
+                  </Tag>
+                );
+              })
+            ) : (
+              <Text >No skills to show</Text>
+            )}
+          </Stack>
+        ) : (
+          <Stack height="2rem" direction={"row"}>
+            <Skeleton height="20px" width="10%" borderRadius={"md"} />
+            <Skeleton height="20px" width="10%" borderRadius={"md"} />
+            <Skeleton height="20px" width="10%" borderRadius={"md"} />
+          </Stack>
+        )}
       </Stack>
       <Divider borderTop="1px solid gray" />
       <Stack p={3} gap={3}>
@@ -126,33 +149,47 @@ function General() {
             Work Experience
           </Heading>
         </Stack>
-        <Stack direction="row">
-          <List spacing={3}>
-            <ListItem>
-              <ListIcon as={IoMdCheckmarkCircle} color="rgb(29, 161, 242)" />
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit
-            </ListItem>
-            <ListItem>
-              <ListIcon as={IoMdCheckmarkCircle} color="rgb(29, 161, 242)" />
-              Assumenda, quia temporibus eveniet a libero incidunt suscipit
-            </ListItem>
-            <ListItem>
-              <ListIcon as={IoMdCheckmarkCircle} color="rgb(29, 161, 242)" />
-              Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
-            </ListItem>
-            {/* You can also use custom icons from react-icons */}
-            <ListItem>
-              <ListIcon as={IoMdCheckmarkCircle} color="rgb(29, 161, 242)" />
-              Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
-            </ListItem>
-          </List>
-        </Stack>
+        {userProfileData?.username ? (
+          <Stack my={2}>
+            {userProfileData?.workExperience ? (
+              <List gap={1}>
+                {userProfileData?.workExperience?.map((item, index) => {
+                  return (
+                    <ListItem
+                      display={"flex"}
+                      alignItems="center"
+                      gap={1}
+                      w="100%"
+                      key={index}
+                    >
+                      <ListIcon
+                        as={IoMdCheckmarkCircle}
+                        color="rgb(29, 161, 242)"
+                      />
+                      <Text fontSize={(10, 11, 12, 13, 14, 15)}>{item}</Text>
+                    </ListItem>
+                  );
+                })}
+              </List>
+            ) : (
+              <Text>No work experience to show</Text>
+            )}
+          </Stack>
+        ) : (
+          <Stack height="6rem">
+            <Skeleton height="20px" width="40%" borderRadius={"md"} />
+            <Skeleton height="20px" width="40%" borderRadius={"md"} />
+            <Skeleton height="20px" width="40%" borderRadius={"md"} />
+            <Skeleton height="20px" width="40%" borderRadius={"md"} />
+          </Stack>
+        )}
       </Stack>
     </Stack>
   );
 }
 
 function Contact() {
+  const { userProfileData } = useContext(AuthContext);
   return (
     <Stack overflow="auto" p={3} boxShadow={"md"} style={{ marginLeft: "0" }}>
       <Stack p={3}>
@@ -178,11 +215,23 @@ function Contact() {
             <Divider borderTop="1px solid gray" />
           </Stack>
           <Stack flex={1}>
-            <Text fontSize={{ base: 13, md: 16 }}>user@email.com</Text>
+            <Text fontSize={{ base: 13, md: 16 }}>
+              {userProfileData?.contactEmail
+                ? userProfileData?.contactEmail
+                : "Not available"}
+            </Text>
             <Divider borderTop="1px solid gray" />
-            <Text fontSize={{ base: 13, md: 16 }}>9848015700</Text>
+            <Text fontSize={{ base: 13, md: 16 }}>
+              {userProfileData?.phNumber
+                ? userProfileData?.phNumber
+                : "Not available"}
+            </Text>
             <Divider borderTop="1px solid gray" />
-            <Text fontSize={{ base: 13, md: 16 }}>03125487</Text>
+            <Text fontSize={{ base: 13, md: 16 }}>
+              {userProfileData?.contactTel
+                ? userProfileData?.contactTel
+                : "Not available"}
+            </Text>
             <Divider borderTop="1px solid gray" />
           </Stack>
         </Stack>
@@ -209,11 +258,92 @@ function Contact() {
             <Divider borderTop="1px solid gray" />
           </Stack>
           <Stack flex={1}>
-            <Text fontSize={{ base: 13, md: 16 }}>user@email.com</Text>
+            <Text fontSize={{ base: 13, md: 16 }}>
+              {userProfileData?.facebook ? (
+                <Link
+                  href={`https://www.facebook.com/${userProfileData?.facebook}`}
+                  color="blue.400"
+                  target="_blank"
+                >
+                  {userProfileData?.facebook}
+                </Link>
+              ) : (
+                "Not available"
+              )}
+            </Text>
             <Divider borderTop="1px solid gray" />
-            <Text fontSize={{ base: 13, md: 16 }}>9848015700</Text>
+            <Text fontSize={{ base: 13, md: 16 }}>
+              {userProfileData?.instagram ? (
+                <Link
+                  href={`https://www.instagram.com/${userProfileData?.instagram}`}
+                  color="blue.400"
+                  target="_blank"
+                >
+                  {userProfileData?.instagram}
+                </Link>
+              ) : (
+                "Not available"
+              )}
+            </Text>
             <Divider borderTop="1px solid gray" />
-            <Text fontSize={{ base: 13, md: 16 }}>Matidevi Kathmandu</Text>
+            <Text fontSize={{ base: 13, md: 16 }}>
+              {userProfileData?.whatsapp
+                ? userProfileData?.whatsapp
+                : "Not available"}
+            </Text>
+            <Divider borderTop="1px solid gray" />
+          </Stack>
+        </Stack>
+      </Stack>
+    </Stack>
+  );
+}
+
+function About() {
+  const { userProfileData } = useContext(AuthContext);
+
+  return (
+    <Stack overflow="auto" p={3} boxShadow={"md"} style={{ marginLeft: "0" }}>
+      <Stack p={3}>
+        <Stack direction="row" align="center" width="100%" mb={2}>
+          <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
+            About {userProfileData?.username}
+          </Heading>
+        </Stack>
+
+        <Stack direction="row" w="100%">
+          <Stack flex={1}>
+            <Text fontWeight={"bold"} fontSize={{ base: 13, md: 16 }}>
+              Birthplace
+            </Text>
+            <Divider borderTop="1px solid gray" />
+            <Text fontWeight={"bold"} fontSize={{ base: 13, md: 16 }}>
+              Current City
+            </Text>
+            <Divider borderTop="1px solid gray" />
+            <Text fontWeight={"bold"} fontSize={{ base: 13, md: 16 }}>
+              Born in
+            </Text>
+            <Divider borderTop="1px solid gray" />
+          </Stack>
+          <Stack flex={1}>
+            <Text fontSize={{ base: 13, md: 16 }}>
+              {userProfileData?.birthPlace
+                ? userProfileData?.birthPlace
+                : "Not available"}
+            </Text>
+            <Divider borderTop="1px solid gray" />
+            <Text fontSize={{ base: 13, md: 16 }}>
+              {userProfileData?.location
+                ? userProfileData?.location
+                : "Not available"}
+            </Text>
+            <Divider borderTop="1px solid gray" />
+            <Text fontSize={{ base: 13, md: 16 }}>
+              {userProfileData?.DateOfBirth
+                ? userProfileData?.DateOfBirth
+                : "Not available"}
+            </Text>
             <Divider borderTop="1px solid gray" />
           </Stack>
         </Stack>

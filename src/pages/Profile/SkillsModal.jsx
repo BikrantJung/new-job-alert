@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
+  Accordion,
   Button,
   Divider,
   FormControl,
@@ -28,14 +29,19 @@ import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 function SkillsModal(props) {
   const toast = useToast();
 
-  const { userProfileData, setUserProfileData, decodedID, setInitialUserData } =
-    useContext(AuthContext);
+  const {
+    userProfileData,
+    setUserProfileData,
+    decodedID,
+    setInitialUserData,
+    authTokens,
+  } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
 
   const [inputValue, setInputValue] = useState("");
   const [skillsList, setSkillsList] = useState(
-    [...userProfileData.skills] || []
+    userProfileData?.skills ? [...userProfileData.skills] : []
   );
 
   function addList(e) {
@@ -58,10 +64,9 @@ function SkillsModal(props) {
     e.preventDefault();
     setLoading(true);
 
-    const data = new FormData(e.currentTarget);
     const skillsData = {
       user: decodedID,
-      skills: skillsList,
+      skills: skillsList?.length ? skillsList : null,
       subscription: userProfileData.subscription,
     };
 
@@ -72,6 +77,7 @@ function SkillsModal(props) {
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${authTokens?.accessToken}`,
           },
         }
       );
