@@ -6,7 +6,6 @@ import { useEffect } from "react";
 function UserEducation() {
   useEffect(() => {
     async function getJobs() {
-      console.log("I RAN");
       try {
         const res = await axios.get("jobs/");
 

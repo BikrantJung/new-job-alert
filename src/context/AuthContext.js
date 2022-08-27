@@ -13,16 +13,16 @@ export const AuthProvider = ({ children }) => {
   const [userSubscribed, setUserSubscribed] = useState(false);
   const [userData, setUserData] = useState([]);
 
-  const [userID, setUserID] = useState(localUserID ? localUserID : null);
   const [loading, setLoading] = useState(true);
   const [userProfileData, setUserProfileData] = useState([]);
   const [isExpired, setIsExpired] = useState(true);
-  const [profileID, setProfileID] = useState(null);
   const [allowData, setAllowData] = useState(true);
   const [initialUserData, setInitialUserData] = useState([]);
   const [urlID, setUrlID] = useState("");
   const [encodedID, setEncodedID] = useState("");
   const [decodedID, setDecodedID] = useState("");
+  const [blogData, setBlogData] = useState([]);
+  const [latestBlog, setLatestBlog] = useState([]);
   const [authTokens, setAuthTokens] = useState(
     accessToken && refreshToken
       ? {
@@ -46,14 +46,10 @@ export const AuthProvider = ({ children }) => {
       setDecodedID(decoded);
     }
   }, [localUserID]);
-  console.log("ENCODED", encodedID);
-  console.log("DECODED", decodedID);
   useEffect(() => {
     async function getUserProfileData() {
-      console.log("AUTHCONTEXT");
-      if (allowData && decodedID) {
-        console.log("LOL I AM ALOWED");
-
+      console.log("AUTH");
+      if (allowData && decodedID && !initialUserData.length) {
         try {
           const res = await axiosInstance.get(`profileSelf/${decodedID}`);
           setInitialUserData(res.data);
@@ -87,6 +83,10 @@ export const AuthProvider = ({ children }) => {
     setUrlID,
     decodedID,
     encodedID,
+    blogData,
+    setBlogData,
+    latestBlog,
+    setLatestBlog,
   };
 
   return (

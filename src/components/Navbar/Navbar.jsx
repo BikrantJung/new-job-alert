@@ -36,16 +36,20 @@ const Links = [
     text: "Jobs",
   },
   {
+    link: "/blog",
+    text: "Blog",
+  },
+  {
+    link: "/contact-us",
+    text: "Contact us",
+  },
+  {
     link: "/pricing",
     text: "Pricing",
   },
   {
     link: "/create-job-post",
     text: "Post a job",
-  },
-  {
-    link: "/contact-us",
-    text: "Contact us",
   },
 ];
 
@@ -107,7 +111,7 @@ export default function Navbar() {
           <Flex alignItems={"center"} gap={[5]}>
             <ToggleMode />
             {authTokens?.accessToken ? (
-              initialUserData?.username ? (
+              initialUserData?.username || userProfileData?.username ? (
                 <ProfileMenu py={1} ml={3} />
               ) : (
                 <Flex width={["auto", "auto", "100px"]} align="center" gap={1}>

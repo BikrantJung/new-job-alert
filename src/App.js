@@ -22,6 +22,7 @@ import CompanyJob from "./pages/Jobs/CompanyJob";
 import CandidateRegister from "./pages/Register/CandidateRegister";
 import UserEducation from "./components/UserPost/UserEducation";
 import DefaultContent from "./pages/Profile/Content/DefaultContent";
+import Blog from "./pages/Blog/Blog";
 function App() {
   return (
     <BrowserRouter>
@@ -42,6 +43,7 @@ function App() {
             </Route>
           </Route>
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/blog" element={<Blog />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/jobs/:id" element={<CompanyJob />} />
           <Route path="/candidate-register" element={<CandidateRegister />} />

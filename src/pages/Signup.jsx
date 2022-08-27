@@ -62,7 +62,7 @@ export default function Signup() {
       navigate("/login");
     } catch (error) {
       setIsLoading(false);
-
+      console.log(error)
       if (error?.response?.data?.errors?.non_field_errors) {
         toast({
           title: error?.response.data.errors.non_field_errors[0],
@@ -70,7 +70,7 @@ export default function Signup() {
           duration: 4000,
           isClosable: true,
         });
-      } else if (error?.response.data.errors.name) {
+      } else if (error?.response?.data.errors.name) {
         toast({
           title: error?.response.data.errors.name[0],
           status: "warning",

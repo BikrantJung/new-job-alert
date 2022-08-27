@@ -1,15 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
-  Avatar,
   Button,
   Divider,
   FormControl,
   FormLabel,
+  HStack,
+  IconButton,
   Input,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
+  Kbd,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -21,97 +19,71 @@ import {
   Tag,
   TagLabel,
   TagRightIcon,
-  Textarea,
+  useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
-import { getTokens } from "../../services/localStorage";
 import AuthContext from "../../context/AuthContext";
 import axiosInstance from "../../services/api";
-import { CloseIcon } from "@chakra-ui/icons";
-import { IoChevronDown } from "react-icons/io5";
+import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 function SkillsModal(props) {
   const toast = useToast();
-  const { localUserID, accessToken } = getTokens();
-  const { userProfileData, setUserProfileData, decodedID } =
+
+  const { userProfileData, setUserProfileData, decodedID, setInitialUserData } =
     useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
-  const [tagValues, setTagValues] = useState([]);
 
-  const [tagsOptions, setTagsOptions] = useState([
-    {
-      id: 1,
-      value: "Web",
-    },
-    {
-      id: 2,
-      value: "Graphics",
-    },
-    {
-      id: 3,
-      value: "Internet",
-    },
-  ]);
-  const [skillsValue, setSkillsValue] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const [skillsList, setSkillsList] = useState(
+    [...userProfileData.skills] || []
+  );
 
-  const handleInputChange = (e) => {
-    // setSkillsValue(e.target.value);
-  };
-  //   console.log(skillsValue);
+  function addList(e) {
+    if (inputValue) {
+      setSkillsList((prevValue) => {
+        return [...prevValue, inputValue];
+      });
+      setInputValue("");
+    }
+  }
 
-  // Remove job tags and add to array
-  const removeTags = (id) => {
-    const removedItem = tagValues.filter((obj) => {
-      return obj.id === id;
+  function deleteItem(id) {
+    const updatedItems = skillsList.filter((elem, index) => {
+      return index !== id;
     });
-    setTagsOptions((prevOptions) => {
-      return [...prevOptions, ...removedItem];
-    });
-    setTagValues(
-      tagValues.filter((obj) => {
-        return obj.id !== id;
-      })
-    );
-  };
+    setSkillsList(updatedItems);
+  }
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    console.log("SKILLS LIST", skillsList);
     const data = new FormData(e.currentTarget);
     const skillsData = {
       user: decodedID,
-      skills: "sdf,sakdf",
+      skills: skillsList,
       subscription: userProfileData.subscription,
     };
-    let skillsArray = [];
-
-    for (let index = 0; index < skillsData.skills.length; index++) {
-      const element = skillsData.skills[index];
-      skillsArray.push(element);
-    }
-    console.log("OLD ARRAY", skillsData.skills);
-    console.log("NEW ARRAY", skillsArray);
 
     try {
       const res = await axiosInstance.put(
         `profileSelf/${decodedID}`,
-        {
-          user: decodedID,
-          skills: skillsArray,
-          subscription: userProfileData.subscription,
-        },
+        skillsData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );
       setLoading(false);
       setAllowClose(true);
-      //   setInitialUserData(res.data);
-      setUserProfileData([]);
+      setInitialUserData(res.data);
+      console.log("SKILLS", res);
       setUserProfileData(res.data);
     } catch (error) {
       setAllowClose(false);
+      console.log(error);
       setLoading(false);
       toast({
         title: "Server Error. Please try again later.",
@@ -121,7 +93,7 @@ function SkillsModal(props) {
       });
     }
   };
-  console.log(userProfileData);
+
   useEffect(() => {
     const handleClose = () => {
       if (allowClose) {
@@ -158,21 +130,44 @@ function SkillsModal(props) {
           <Divider />
         </Stack>
         <ModalBody>
-          <Stack gap={2}>
-            <Stack align="center" justify={"center"}>
-              <FormControl id="biography">
-                <FormLabel fontSize={[12, 13, 14, 15, 16, 17, 18]} as={"p"}>
-                  Enter your skills separated by commas(e.g. Video
-                  Editing,Designing,Web,Graphics )
-                </FormLabel>
+          <Stack align="center" justify={"center"}>
+            <FormControl id="biography">
+              <FormLabel fontSize={[12, 13, 14, 15, 16, 17, 18]} as={"p"}>
+                Type a skill and press <Kbd mx={1}>+</Kbd> icon
+              </FormLabel>
+              <Stack direction="row">
                 <Input
                   type="text"
                   name="skills"
-                  onChange={(e) => handleInputChange(e)}
+                  placeholder="Type your skills here"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
                 />
-              </FormControl>
-            </Stack>
+                <IconButton
+                  icon={<AddIcon />}
+                  onClick={addList}
+                  disabled={loading}
+                />
+              </Stack>
+            </FormControl>
           </Stack>
+
+          <HStack mt={3}>
+            {skillsList?.length &&
+              skillsList?.map((item, index) => {
+                return (
+                  <Tag key={index}>
+                    <TagLabel>{item}</TagLabel>
+                    <TagRightIcon
+                      as={CloseIcon}
+                      fontSize={8}
+                      _hover={{ cursor: "pointer" }}
+                      onClick={() => deleteItem(index)}
+                    />
+                  </Tag>
+                );
+              })}
+          </HStack>
         </ModalBody>
 
         <ModalFooter>

@@ -46,16 +46,76 @@ const axiosInstance = axios.create({
   },
 });
 
+// axiosInstance.interceptors.request.use(
+//   async (request) => {
+//     console.log("Requset", request);
+//     // const originalRequest = request.config;
+
+//     if (refreshToken) {
+//       const tokenParts = JSON.parse(window.atob(refreshToken.split(".")[1]));
+
+//       // exp date in token is expressed in seconds, while now() returns milliseconds:
+//       const now = Math.ceil(Date.now() / 1000);
+//       console.log(tokenParts.exp);
+
+//       if (!(tokenParts.exp > now)) {
+//         return request;
+//       }
+//       try {
+//         const res = await axios.post(`${baseURL}token/refresh/`, {
+//           refresh: refreshToken,
+//         });
+//         saveTokens(res.data);
+//         console.log("FROM REQUEST");
+//         axiosInstance.defaults.headers["Authorization"] =
+//           "Bearer " + res.data.access;
+//         request.headers["Authorization"] = "Bearer " + res.data.access;
+//         return request;
+//       } catch (error) {
+//         console.log("REQUEST ERROR", error);
+//       }
+
+//       // if (tokenParts.exp > now) {
+//       //   refresh = true;
+//       //   return axiosInstance
+//       //     .post("token/refresh/", { refresh: refreshToken })
+//       //     .then((response) => {
+//       //       saveTokens(response.data);
+
+//       //       console.log("RESPONSE", response);
+//       //       axiosInstance.defaults.headers["Authorization"] =
+//       //         "Bearer " + response.data.access;
+//       //       originalRequest.headers["Authorization"] =
+//       //         "Bearer " + response.data.access;
+
+//       //       return axiosInstance(originalRequest);
+//       //     })
+//       //     .catch((err) => {
+//       //       console.log("err", err);
+//       //     });
+//       // } else {
+//       //   return request;
+//       // }
+//     } else {
+//       return request;
+//     }
+//   },
+//   (err) => Promise.reject(err)
+// );
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    // refresh = false;
+    console.log("ORGI",originalRequest.url)
 
     // Prevent infinite loops
     if (
       error.response.status === 401 &&
       originalRequest.url === baseURL + "token/refresh/"
     ) {
+      
       window.location.href = "/login/";
       refresh = true;
       console.log("originalRequest", originalRequest);
@@ -68,6 +128,7 @@ axiosInstance.interceptors.response.use(
       error.response.statusText === "Unauthorized" &&
       !refresh
     ) {
+      console.log("Original Request",originalRequest)
       refresh = true;
       if (refreshToken) {
         const tokenParts = JSON.parse(window.atob(refreshToken.split(".")[1]));

@@ -33,7 +33,6 @@ import { IoMdCheckmarkCircle } from "react-icons/io";
 
 function ExperienceModal(props) {
   const toast = useToast();
-  const { localUserID, accessToken } = getTokens();
   const {
     userProfileData,
     setUserProfileData,
@@ -45,7 +44,6 @@ function ExperienceModal(props) {
   const [allowClose, setAllowClose] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [experienceList, setExperienceList] = useState([]);
-  const [finalSubmitList, setFinalSubmitList] = useState("");
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();

@@ -34,7 +34,6 @@ function WorkAreaModal(props) {
   } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
-
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -57,7 +56,7 @@ function WorkAreaModal(props) {
       );
       setLoading(false);
       setAllowClose(true);
-      console.log(res)
+      console.log(res);
       setInitialUserData(res.data);
       setUserProfileData([]);
       setUserProfileData(res.data);
@@ -131,7 +130,7 @@ function WorkAreaModal(props) {
           <Button
             variant="ghost"
             mr={3}
-            onClose={() => {
+            onClick={() => {
               setLoading(false);
               props.onClose();
             }}

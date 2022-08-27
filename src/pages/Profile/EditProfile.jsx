@@ -15,6 +15,7 @@ import {
   Stack,
   Table,
   TableContainer,
+  Tag,
   Tbody,
   Td,
   Text,
@@ -228,9 +229,13 @@ function EditProfile(props) {
                 color={useColorModeValue("gray.800", "gray.400")}
                 fontWeight={700}
               >
-                {urlID === initialUserData?.username
-                  ? initialUserData?.skills
-                  : userProfileData?.skills}
+                {userProfileData?.skills?.map((item, index) => {
+                  return (
+                    <Tag key={index} m={1}>
+                      {item}
+                    </Tag>
+                  );
+                })}
               </Center>
             </Box>
             <Box>

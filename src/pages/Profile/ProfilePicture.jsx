@@ -67,13 +67,15 @@ function ProfilePicture(props) {
       setLoading(false);
       setAllowClose(true);
       console.log("RES IS ", res);
-      // setInitialUserData([]);
+
       setInitialUserData(res.data);
+      setUserProfileData([]);
+      setUserProfileData(res.data);
       console.log("Fucking Data", initialUserData);
       setLocalImage(null);
     } catch (error) {
       console.log(error);
-
+      setAllowUpdate(true);
       setAllowClose(false);
       setLoading(false);
       toast({

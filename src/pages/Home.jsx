@@ -21,12 +21,10 @@ function Home() {
     decodedID,
   } = useContext(AuthContext);
   const { localUserID, accessToken } = getTokens();
-  console.log("HOME");
   useEffect(() => {
     async function getUserProfileData() {
-      console.log("AUTHCONTEXT");
+      console.log("HOME")
       if (decodedID) {
-        console.log("LOL I AM ALOWED");
 
         try {
           const res = await axiosInstance.get(`profileSelf/${decodedID}`);

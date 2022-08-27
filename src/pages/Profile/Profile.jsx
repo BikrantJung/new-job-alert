@@ -68,6 +68,7 @@ export default function Profile({ children }) {
         const res = await axiosInstance.get(`profile/${id}`, {
           headers: {
             "Content-Type": "application/json",
+            Authorization: null,
           },
         });
 
@@ -240,11 +241,8 @@ const MobileNav = ({ onOpen, ...rest }) => {
     </Flex>
   );
 };
-export const ProfileMenu = (props, { ...rest }) => {
-  const { userProfileData, setUserProfileData, initialUserData } =
-    useContext(AuthContext);
-  const { localUserID } = getTokens();
-  console.log("FRON PROFILE MENU", initialUserData);
+export const ProfileMenu = (props) => {
+  const { userProfileData, initialUserData } = useContext(AuthContext);
   return (
     <Menu ml={3}>
       <MenuButton
@@ -253,14 +251,19 @@ export const ProfileMenu = (props, { ...rest }) => {
         _focus={{ boxShadow: "none" }}
       >
         <HStack>
-          <Avatar size={"sm"} src={initialUserData.avatar} />
+          <Avatar
+            size={"sm"}
+            src={initialUserData?.avatar || userProfileData?.username}
+          />
           <VStack
             display={{ base: "none", md: "flex" }}
             alignItems="flex-start"
             spacing="1px"
             ml="2"
           >
-            <Text fontSize="sm">{initialUserData.username}</Text>
+            <Text fontSize="sm">
+              {initialUserData?.username || userProfileData?.username}
+            </Text>
 
             {/* <Text fontSize="xs" color="gray.600">
               {props.isAdmin ? "Admin" : ""}
@@ -278,11 +281,9 @@ export const ProfileMenu = (props, { ...rest }) => {
         <Link
           as={ReactLink}
           // to={`/profile/${userProfileData.username}`}
-          to={
-            initialUserData?.username
-              ? `/profile/${initialUserData?.username}`
-              : "/profile/error"
-          }
+          to={`/profile/${
+            initialUserData?.username || userProfileData?.username
+          }`}
           _hover={{ textDecoration: "none" }}
         >
           <MenuItem icon={<AiOutlineUser fontSize={18} />}>Profile</MenuItem>
