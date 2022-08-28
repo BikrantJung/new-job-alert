@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
   const [decodedID, setDecodedID] = useState("");
   const [blogData, setBlogData] = useState([]);
   const [latestBlog, setLatestBlog] = useState([]);
+  const [isCompany, setIsCompany] = useState(true);
   const [authTokens, setAuthTokens] = useState(
     accessToken && refreshToken
       ? {
@@ -155,10 +156,9 @@ export const AuthProvider = ({ children }) => {
     setBlogData,
     latestBlog,
     setLatestBlog,
-    searchFilter,
-    setSearchFilter,
+
+    isCompany,
   };
-  console.log(searchFilter);
   return (
     <AuthContext.Provider value={contextData}>
       {loading ? null : children}

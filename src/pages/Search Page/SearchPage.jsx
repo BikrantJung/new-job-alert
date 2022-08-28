@@ -1,24 +1,14 @@
 import React, { useState } from "react";
-import { useContext } from "react";
-import AuthContext from "../../context/AuthContext";
-import { useSearchParams, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
 import {
-  Avatar,
-  Button,
-  Grid,
   Heading,
-  IconButton,
-  Input,
   Stack,
-  Text,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import axios from "axios";
 import Navbar from "../../components/Navbar/Navbar";
 import UserCard from "./UserCard";
-import { SearchIcon } from "@chakra-ui/icons";
 function SearchPage(props) {
   const [user, setUser] = useState([]);
   const query = new URLSearchParams(useLocation().search);

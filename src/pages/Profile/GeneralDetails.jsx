@@ -21,7 +21,6 @@ import { getTokens } from "../../services/localStorage";
 import axios from "axios";
 import { useEffect } from "react";
 import AuthContext from "../../context/AuthContext";
-import axiosInstance from "../../services/api";
 
 function GeneralDetails(props) {
   const toast = useToast();

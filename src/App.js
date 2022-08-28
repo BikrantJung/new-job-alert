@@ -28,6 +28,8 @@ import LoadingBar from "react-top-loading-bar";
 import { useContext, useEffect, useState } from "react";
 import SearchPage from "./pages/Search Page/SearchPage";
 import AuthContext from "./context/AuthContext";
+import CompanyDetails from "./pages/Profile/Company Details/CompanyDetails";
+import NotFound from "./pages/NotFound";
 function App() {
   const [progress, setProgress] = useState(0);
   const { searchFilter, setSearchFilter } = useContext(AuthContext);
@@ -50,13 +52,14 @@ function App() {
               <Route path="education" element={<UserEducation />} />
               <Route path="edit-profile" element={<EditProfile />} />
             </Route>
+            <Route path="/company-details" element={<CompanyDetails />} />
           </Route>
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/jobs" element={<Jobs />} />
+          <Route path="/jobs" element={<Jobs setProgress={setProgress} />} />
           <Route path="/jobs/:id" element={<CompanyJob />} />
           <Route
-            path={`/result`}
+            path={`/users`}
             element={<SearchPage setProgress={setProgress} />}
           />
           <Route path="/candidate-register" element={<CandidateRegister />} />
@@ -64,6 +67,7 @@ function App() {
             path="/api/user/verify/:id/:token"
             element={<VerifyRegister />}
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </BrowserRouter>

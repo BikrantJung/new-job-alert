@@ -26,7 +26,7 @@ function Hero() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState("");
-
+  const { isCompany } = useContext(AuthContext);
   console.log(searchParams.get("search"));
 
   return (
@@ -115,7 +115,7 @@ function Hero() {
                 position="absolute"
                 width="auto"
                 cursor="pointer"
-                placeholder="Search jobs...."
+                placeholder={isCompany ? "Search people..." : "Search jobs...."}
                 color={useColorModeValue("gray.600", "gray.200")}
                 name="search_value"
                 onChange={(e) => setQuery(e.target.value)}
@@ -123,7 +123,11 @@ function Hero() {
 
               <IconButton
                 as={ReactLink}
-                to={`result/?search=${query}`}
+                to={
+                  isCompany
+                    ? `users/?search=${query}`
+                    : `jobs/?search=${query}`
+                }
                 color="white"
                 className="search-btn"
                 width="40px"

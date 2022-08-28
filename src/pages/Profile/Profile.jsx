@@ -46,7 +46,8 @@ import handleLogout from "../../utils/logoutUser";
 import { getTokens } from "../../services/localStorage";
 import MainContent from "./MainContent";
 import axios from "axios";
-
+import { TiBusinessCard } from "react-icons/ti";
+import {BsBook} from 'react-icons/bs'
 export default function Profile(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { setUserProfileData, setAllowData, setUrlID, setInitialUserData } =
@@ -122,16 +123,16 @@ const SidebarContent = ({ onClose, ...rest }) => {
   const { userProfileData } = useContext(AuthContext);
   // const[isActive,setIsActive]
   const LinkItems = [
-    { name: "General Details", icon: FiHome, link: userProfileData?.username },
+    { name: "General Details", icon: AiOutlineUser, link: userProfileData?.username },
     {
       name: "Education",
-      icon: FiTrendingUp,
+      icon: BsBook,
       link: `${userProfileData?.username}/education `,
     },
     {
-      name: "Favourites",
-      icon: FiCompass,
-      link: `${userProfileData?.username}/favourites `,
+      name: "Company Details",
+      icon: TiBusinessCard,
+      link: `${userProfileData?.username}/company-details `,
     },
     {
       name: "Payment History",
