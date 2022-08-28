@@ -47,7 +47,7 @@ export default function Signup() {
       tc: hasAcceptedPolicy ? "True" : "False",
     };
     try {
-      const res = await axiosInstance({
+      const res = await axios({
         method: "POST",
         url: "register/",
         data: registerData,

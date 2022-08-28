@@ -18,6 +18,7 @@ import AppleLogo from "../../images/apple.png";
 import CokeLogo from "../../images/coke.png";
 import { categoryData } from "./CategoryData";
 function Categories() {
+  console.log("Categories");
   return (
     <Box sx={{ py: 6, mb: 3 }}>
       <Center>
@@ -112,4 +113,4 @@ function Categories() {
   );
 }
 
-export default Categories;
+export default React.memo(Categories);

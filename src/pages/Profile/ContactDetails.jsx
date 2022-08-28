@@ -37,6 +37,7 @@ function ContactDetails(props) {
   } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
+ 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);

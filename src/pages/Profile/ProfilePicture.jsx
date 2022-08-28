@@ -32,18 +32,17 @@ import AuthContext from "../../context/AuthContext";
 import axiosInstance from "../../services/api";
 
 function ProfilePicture(props) {
+  console.log("PP")
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef();
-
-  const { localUserID, accessToken } = getTokens();
   const {
     userProfileData,
     setUserProfileData,
     initialUserData,
     setInitialUserData,
     decodedID,
-    urlID,
+
     authTokens,
   } = useContext(AuthContext);
   const [localImage, setLocalImage] = useState(null);

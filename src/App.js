@@ -23,10 +23,18 @@ import CandidateRegister from "./pages/Register/CandidateRegister";
 import UserEducation from "./components/UserPost/UserEducation";
 import DefaultContent from "./pages/Profile/Content/DefaultContent";
 import Blog from "./pages/Blog/Blog";
+import EditProfile from "./pages/Profile/EditProfile";
+import LoadingBar from "react-top-loading-bar";
+import { useContext, useEffect, useState } from "react";
+import SearchPage from "./pages/Search Page/SearchPage";
+import AuthContext from "./context/AuthContext";
 function App() {
+  const [progress, setProgress] = useState(0);
+  const { searchFilter, setSearchFilter } = useContext(AuthContext);
   return (
     <BrowserRouter>
       <div className="App">
+        <LoadingBar color="red" progress={progress} />
         <Routes>
           <Route path="/" element={<Home />} exact />
           <Route path="/" element={<RestrictLoginPage />}>
@@ -40,12 +48,17 @@ function App() {
               <Route index element={<DefaultContent />} />
 
               <Route path="education" element={<UserEducation />} />
+              <Route path="edit-profile" element={<EditProfile />} />
             </Route>
           </Route>
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/jobs/:id" element={<CompanyJob />} />
+          <Route
+            path={`/result`}
+            element={<SearchPage setProgress={setProgress} />}
+          />
           <Route path="/candidate-register" element={<CandidateRegister />} />
           <Route
             path="/api/user/verify/:id/:token"

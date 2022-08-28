@@ -46,7 +46,7 @@ function PriceWrapper({ children }) {
   );
 }
 
-export default function Pricing() {
+export default function Pricing(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [modalOpen, setModalOpen] = useState(false);
   const [pricingData, setPricingData] = useState([]);
@@ -59,6 +59,7 @@ export default function Pricing() {
   const toast = useToast();
   useEffect(() => {
     async function getPricingData() {
+     
       try {
         const res = await axios({
           method: "GET",
@@ -67,10 +68,15 @@ export default function Pricing() {
             "Content-Type": "application/json",
           },
         });
+      
         const removedData = res.data.shift();
         setPricingData(res.data);
+      
+        console.log(res);
+       
       } catch (error) {
-        console.log(error.response.data);
+      
+        console.log(error);
       }
     }
 

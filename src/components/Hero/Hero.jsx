@@ -1,14 +1,34 @@
+import { SearchIcon } from "@chakra-ui/icons";
 import {
   Button,
   Flex,
   Heading,
+  IconButton,
   Image,
+  Input,
+  Link,
   Stack,
   Text,
   useBreakpointValue,
+  useColorModeValue,
 } from "@chakra-ui/react";
+import axios from "axios";
+import { useEffect } from "react";
+import { useContext } from "react";
+import { useState } from "react";
+import {
+  Link as ReactLink,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
+import AuthContext from "../../context/AuthContext";
+function Hero() {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [query, setQuery] = useState("");
 
-export default function Hero() {
+  console.log(searchParams.get("search"));
+
   return (
     <Stack minH={"88vh"} direction={{ base: "column", md: "row" }}>
       <Flex p={8} flex={1} align={"center"} justify={"center"}>
@@ -42,11 +62,9 @@ export default function Hero() {
           <Stack
             direction={{ base: "column", md: "row" }}
             spacing={4}
-            align={{ base: "center", md: "flex-start" }}
+            align={"center"}
           >
-            
             <Button
-              rounded={"full"}
               bg={"blue.400"}
               color={"white"}
               _hover={{
@@ -56,9 +74,76 @@ export default function Hero() {
             >
               Create post
             </Button>
-            <Button rounded={"full"} width={{ base: "40%", md: "inherit" }}>
-              Find job
-            </Button>
+            <Stack
+              className="search-box"
+              direction="row"
+              overflow="hidden"
+              bgColor="transparent"
+              position="relative"
+              padding="3px"
+              width="50px"
+              height="50px"
+              transition={"width 300ms cubic-bezier(0.18, 0.89, 0.32, 1.15)"}
+              _focusWithin={{
+                width: "50%",
+                ".search-input": {
+                  opacity: 1,
+                  outline: 0,
+                  width: "calc(100% - 50px)",
+
+                  cursor: "initial",
+                },
+                ".search-btn": {
+                  background: "blue.400",
+                  boxShadow: "none",
+                  transition: "box-shadow 150ms ease-in-out",
+                  "&:focus, &:hover": {
+                    outline: 0,
+                    boxShadow: "0 0 10px rgba(0,0,0,0.35)",
+                  },
+                },
+              }}
+            >
+              <Input
+                className="search-input"
+                aria-label="search"
+                flexGrow={1}
+                opacity={0}
+                height="40px"
+                zIndex={2}
+                borderRadius={"md"}
+                position="absolute"
+                width="auto"
+                cursor="pointer"
+                placeholder="Search jobs...."
+                color={useColorModeValue("gray.600", "gray.200")}
+                name="search_value"
+                onChange={(e) => setQuery(e.target.value)}
+              />
+
+              <IconButton
+                as={ReactLink}
+                to={`result/?search=${query}`}
+                color="white"
+                className="search-btn"
+                width="40px"
+                height="40px"
+                bgColor="blue.400"
+                _hover={{ bgColor: "blue.200" }}
+                style={{
+                  marginInlineStart: "0",
+                  padding: 0,
+                  margin: 0,
+                  marginLeft: "auto",
+                }}
+                icon={<SearchIcon />}
+                cursor="pointer"
+                borderRadius="50%"
+                transition="background 150ms ease-in-out"
+                // type="submit"
+                // onClick={() => setSearchParams({ search: "searchData" })}
+              />
+            </Stack>
           </Stack>
         </Stack>
       </Flex>
@@ -74,3 +159,4 @@ export default function Hero() {
     </Stack>
   );
 }
+export default Hero;

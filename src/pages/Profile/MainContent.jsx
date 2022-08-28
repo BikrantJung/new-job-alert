@@ -19,14 +19,12 @@ import { AiFillInstagram } from "react-icons/ai";
 import AuthContext from "../../context/AuthContext";
 import EditProfile from "./EditProfile";
 import { getTokens } from "../../services/localStorage";
-import { Outlet } from "react-router-dom";
+import { Link as ReactLink, Outlet } from "react-router-dom";
 
 function MainContent() {
   const { userProfileData, initialUserData, urlID, encodedID } =
     useContext(AuthContext);
   const { localUserID } = getTokens();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedMenu, setSelectedMenu] = useState("");
 
   const checkID =
     window.btoa(
@@ -101,18 +99,22 @@ function MainContent() {
 
         {/* Edit Profile*/}
         {localUserID === checkID && (
-          <Button
-            mt={{ base: 0, md: 3 }}
-            colorScheme="twitter"
-            size={{ base: "sm", md: "md" }}
-            variant={"ghost"}
-            onClick={onOpen}
+          <Link
+            as={ReactLink}
+            to="edit-profile"
+            textDecoration="none"
+            _hover={{ textDecoration: "none" }}
           >
-            Edit Profile
-          </Button>
+            <Button
+              mt={{ base: 0, md: 3 }}
+              colorScheme="twitter"
+              size={{ base: "sm", md: "md" }}
+              variant={"ghost"}
+            >
+              Edit Profile
+            </Button>
+          </Link>
         )}
-
-        <EditProfile onOpen={onOpen} onClose={onClose} isOpen={isOpen} />
 
         {/* Social Media box Mobile */}
 
@@ -201,4 +203,4 @@ function MainContent() {
   );
 }
 
-export default MainContent;
+export default React.memo(MainContent);

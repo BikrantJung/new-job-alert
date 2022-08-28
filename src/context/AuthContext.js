@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
   const { accessToken, refreshToken, localUserID } = getTokens();
   const [userSubscribed, setUserSubscribed] = useState(false);
   const [userData, setUserData] = useState([]);
-
+  const [searchFilter, setSearchFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [userProfileData, setUserProfileData] = useState([]);
   const [isExpired, setIsExpired] = useState(true);
@@ -68,6 +68,8 @@ export const AuthProvider = ({ children }) => {
               duration: 10000,
               // isClosable: true,
             });
+          } else if (error?.response?.status === 401) {
+            handleLogout();
           }
         }
       }
@@ -78,32 +80,38 @@ export const AuthProvider = ({ children }) => {
   }, [decodedID, allowData]);
 
   const updateToken = async () => {
-    try {
-      const res = await axios.post(
-        "token/refresh/",
-        { refresh: authTokens?.refreshToken },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: null,
-          },
-        }
-      );
+    if (authTokens?.accessToken && authTokens?.refreshToken) {
+      try {
+        const res = await axios.post(
+          "token/refresh/",
+          { refresh: authTokens?.refreshToken },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: null,
+            },
+          }
+        );
 
-      saveTokens(res.data);
-      setAuthTokens({
-        accessToken: res.data.access,
-        refreshToken: res.data.refresh,
-      });
-    } catch (error) {
-      if (error.response?.status === 0) {
-        toast({
-          position: "bottom-left",
-          title: "Connection timed out",
-          status: "error",
-          duration: 10000,
-          // isClosable: true,
+        saveTokens(res.data);
+        setAuthTokens({
+          accessToken: res.data.access,
+          refreshToken: res.data.refresh,
         });
+      } catch (error) {
+        if (error.response?.status === 0) {
+          toast({
+            position: "bottom-left",
+            title: "Connection timed out",
+            status: "error",
+            duration: 10000,
+            // isClosable: true,
+          });
+          return;
+        }
+        if (error.response?.status === 401) {
+          handleLogout();
+        }
       }
     }
     setAllowData(true);
@@ -121,7 +129,7 @@ export const AuthProvider = ({ children }) => {
     }, time);
     return () => clearInterval(interval);
   }, [authTokens, loading]);
-
+  console.log("Auth Context");
   const contextData = {
     authTokens,
     setAuthTokens,
@@ -147,8 +155,10 @@ export const AuthProvider = ({ children }) => {
     setBlogData,
     latestBlog,
     setLatestBlog,
+    searchFilter,
+    setSearchFilter,
   };
-
+  console.log(searchFilter);
   return (
     <AuthContext.Provider value={contextData}>
       {loading ? null : children}

@@ -1,15 +1,14 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+// import App from "./App";
 import { ChakraProvider } from "@chakra-ui/react";
 import { StateProvider } from "./context/StateContext";
 import theme from "./theme";
 import axios from "axios";
 import { AuthProvider } from "./context/AuthContext";
-
 import { Provider } from "react-redux";
+const App = lazy(() => import("./App"));
 // import { store } from "./app/store";
-
 
 axios.defaults.baseURL = "http://192.168.1.71:8000/api/user/";
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -18,7 +17,9 @@ root.render(
     {/* <Provider store={store}> */}
     <StateProvider>
       <ChakraProvider theme={theme}>
-        <App />
+        {/* <Suspense fallback={<div>Loading...</div>}> */}
+          <App />
+        {/* </Suspense> */}
       </ChakraProvider>
     </StateProvider>
     {/* </Provider> */}

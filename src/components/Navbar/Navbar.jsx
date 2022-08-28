@@ -18,6 +18,8 @@ import {
   Stack,
   SkeletonCircle,
   Skeleton,
+  Text,
+  Input,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import ToggleMode from "../ToggleMode";
@@ -29,7 +31,7 @@ import { clearTokens } from "../../services/localStorage";
 import handleLogout from "../../utils/logoutUser";
 import { ProfileMenu } from "../../pages/Profile/Profile";
 import RegisterButton from "../RegisterButton";
-
+import { SearchIcon } from "@chakra-ui/icons";
 const Links = [
   {
     link: "/jobs",

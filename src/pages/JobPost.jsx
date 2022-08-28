@@ -33,10 +33,19 @@ import {
   TagLabel,
   TagRightIcon,
   Skeleton,
+  Divider,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  useDisclosure,
+  AlertDialogBody,
+  Image,
 } from "@chakra-ui/react";
-import { PhoneIcon, AddIcon, WarningIcon } from "@chakra-ui/icons";
+import { PhoneIcon, AddIcon, WarningIcon, DeleteIcon } from "@chakra-ui/icons";
 import axios from "axios";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { Link as ReactLink, useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import StateContext from "../context/StateContext";
@@ -51,7 +60,11 @@ const CustomGridItem = ({ children }) => {
 };
 
 export default function JobPost() {
-  const { authTokens } = useContext(AuthContext);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = useRef();
+  const [localImage, setLocalImage] = useState(null);
+
+  const { authTokens, initialUserData } = useContext(AuthContext);
   const { colorMode } = useColorMode();
   const [tabIndex, setTabIndex] = useState(0);
   const [tagValues, setTagValues] = useState([]);
@@ -60,7 +73,6 @@ export default function JobPost() {
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [categoryData, setCategoryData] = useState([]);
-  const [postError, setPostError] = useState([]);
   const [tagsOptions, setTagsOptions] = useState([
     {
       id: 1,
@@ -76,6 +88,13 @@ export default function JobPost() {
     },
   ]);
 
+  const handleChange = (e) => {
+    setLocalImage(URL.createObjectURL(e.target.files[0]));
+  };
+  const removePhoto = async () => {
+    setLocalImage(null);
+  };
+  console.log(localImage);
   // Job tags multi select updata array
 
   const handleCategoryChange = (e, value) => {
@@ -95,7 +114,7 @@ export default function JobPost() {
       })
     );
   }
-
+  console.log(categoryData)
   // Remove job tags from array
   const removeTags = (id) => {
     const removedItem = tagValues.filter((obj) => {
@@ -110,7 +129,8 @@ export default function JobPost() {
       })
     );
   };
-
+console.log(tagValues)
+console.log(filteredJobTags)
   // Next button tab increment
   const tabIncrement = () => {
     if (selectedCategory.length) setTabIndex((prevValue) => prevValue + 1);
@@ -128,9 +148,9 @@ export default function JobPost() {
   // Controlled input fields
 
   // Get category data on first load
-
   useEffect(() => {
-    window.scrollTo(0, 0);
+    console.log("I RUN");
+    // window.scrollTo(0, 0);
     const getCategory = async () => {
       try {
         const res = await axios({
@@ -138,7 +158,7 @@ export default function JobPost() {
           url: "category/",
           headers: {
             "Content-Type": "application/json",
-            Authorization: null,
+            Authorization: `Bearer ${authTokens?.accessToken}`,
           },
         });
         setCategoryData(res.data);
@@ -158,17 +178,25 @@ export default function JobPost() {
     });
 
     const postData = {
-      Company: 1,
-      companyUsername: "Helo",
+      IdComp: initialUserData?.user,
+
       Category: selectedCategory[0].id,
       JobTitle: data.get("job_title"),
       JobCategoryImage: selectedCategory[0].CategoryImage,
+      JobImage: data.get("job_image"),
       JobEmail: data.get("job_email"),
       Location: "Nepal",
       JobRegion: data.get("job_region"),
       JobType: data.get("job_type"),
       JobCategory: data.get("job_category"),
-      JobTags: filteredJobTags,
+      JobTags: [
+        "Internet",
+        "Internet",
+        "Internet",
+        "Graphics",
+        "Internet",
+        "Graphics",
+      ],
       JobDescription: data.get("job_description"),
       JobExperience: data.get("job_experience"),
       SalaryMin: data.get("min_salary"),
@@ -178,7 +206,7 @@ export default function JobPost() {
     try {
       const res = await axios.post("post/", postData, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${authTokens?.accessToken}`,
         },
       });
@@ -206,6 +234,7 @@ export default function JobPost() {
       console.log(error);
     }
   };
+
   return (
     <>
       <Navbar />
@@ -303,7 +332,7 @@ export default function JobPost() {
                 justify={"center"}
                 bg={useColorModeValue("gray.50", "gray.800")}
               >
-                <Stack spacing={4} mx={"auto"} maxW={"lg"} p={6}>
+                <Stack spacing={4} mx={"auto"} maxW={"xl"} p={6}>
                   <Stack align={"center"}>
                     <Heading fontSize={"4xl"} textAlign="center">
                       Create Job Post
@@ -420,17 +449,97 @@ export default function JobPost() {
                           <Textarea type="text" name="job_description" />
                         </FormControl>
                       </GridItem>
+
                       <GridItem colSpan={2}>
-                        <FormControl id="job-image">
-                          <FormLabel>
-                            Provide a cover image for your job post
-                          </FormLabel>
-                          <Textarea type="text" name="job_image" />
+                        <FormControl>
+                          <Text fontSize={[14, 15, 16, 17, 18, 19]}>
+                            Provide a cover image for your job post(Optional)
+                          </Text>
+                          <Text fontSize={[11, 12, 13, 14, 15, 16]} as="cite">
+                            If not provided, default image will be used
+                          </Text>
+                          {localImage ? (
+                            <Stack align="center" justify="center" my={3}>
+                              <Image
+                                alt="Job image"
+                                objectFit="contain"
+                                width="100%"
+                                src={localImage}
+                              />
+                            </Stack>
+                          ) : (
+                            ""
+                          )}
                         </FormControl>
+                        <Stack my={2} direction="row">
+                          <Input
+                            type="file"
+                            id="file-upload"
+                            accept="image/*"
+                            name="job_image"
+                            hidden
+                            onChange={(e) => handleChange(e)}
+                          />
+
+                          <Button
+                            as={"label"}
+                            leftIcon={<AddIcon />}
+                            style={{ marginInlineStart: "0" }}
+                            htmlFor="file-upload"
+                            cursor={"pointer"}
+                          >
+                            Upload photo
+                          </Button>
+
+                          <Button
+                            leftIcon={<DeleteIcon />}
+                            onClick={onOpen}
+                            display={localImage ? "block" : "none"}
+                          >
+                            Remove photo
+                          </Button>
+                          <AlertDialog
+                            isOpen={isOpen}
+                            leastDestructiveRef={cancelRef}
+                            onClose={onClose}
+                          >
+                            <AlertDialogOverlay>
+                              <AlertDialogContent>
+                                <AlertDialogHeader
+                                  fontSize="lg"
+                                  fontWeight="bold"
+                                >
+                                  Remove Profile Photo
+                                </AlertDialogHeader>
+
+                                <AlertDialogBody>
+                                  Are you sure you want to remove profile photo
+                                </AlertDialogBody>
+
+                                <AlertDialogFooter>
+                                  <Button ref={cancelRef} onClick={onClose}>
+                                    Cancel
+                                  </Button>
+                                  <Button
+                                    colorScheme="red"
+                                    onClick={() => {
+                                      removePhoto();
+                                      onClose();
+                                    }}
+                                    ml={3}
+                                    leftIcon={<DeleteIcon />}
+                                  >
+                                    Remove
+                                  </Button>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialogOverlay>
+                          </AlertDialog>
+                        </Stack>
                       </GridItem>
                     </Grid>
                   </Box>
-                  <Stack justify={"space-between"} direction="row">
+                  <Stack justify={"flex-end"} direction="row">
                     <Button
                       onClick={tabDecrement}
                       bg={useColorModeValue("gray.300", "gray.600")}
@@ -500,11 +609,7 @@ export default function JobPost() {
                         </GridItem>
                       </Grid>
                     </Box>
-                    <Stack
-                      justify={"space-between"}
-                      direction="row"
-                      width="100%"
-                    >
+                    <Stack justify={"flex-end"} direction="row" width="100%">
                       <Button
                         onClick={tabDecrement}
                         bg={useColorModeValue("gray.300", "gray.600")}

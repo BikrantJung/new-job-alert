@@ -1,15 +1,17 @@
 import axios from "axios";
-import React, { useContext, useEffect } from "react";
+import React, { lazy, Suspense, useContext, useEffect } from "react";
 import { useState } from "react";
-import Footer from "../components/Footer/Footer";
 import Hero from "../components/Hero/Hero";
 import Navbar from "../components/Navbar/Navbar";
-import Categories from "../components/Popular Category/Categories";
-import RecentJobs from "../components/Recent Jobs/RecentJobs";
 import SignUpComp from "../components/Sign up/SignUpComp";
 import AuthContext from "../context/AuthContext";
 import axiosInstance from "../services/api";
 import { getTokens } from "../services/localStorage";
+const Categories = lazy(() =>
+  import("../components/Popular Category/Categories")
+);
+const RecentJobs = lazy(() => import("../components/Recent Jobs/RecentJobs"));
+const Footer = lazy(() => import("../components/Footer/Footer"));
 function Home() {
   const {
     setLoading,
@@ -41,11 +43,12 @@ function Home() {
   return (
     <div>
       <Navbar />
-      <Hero />
-      <Categories />
-      <RecentJobs />
-      {/* <SignUpComp/> */}
-      <Footer />
+      <Suspense fallback={<div>Loading</div>}>
+        <Hero />
+        <Categories />
+        <RecentJobs />
+        <Footer />
+      </Suspense>
     </div>
   );
 }

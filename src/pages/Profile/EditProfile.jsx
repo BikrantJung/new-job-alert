@@ -1,9 +1,12 @@
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Box,
   Button,
   Center,
   Divider,
+  Heading,
+  IconButton,
   Link,
   List,
   ListIcon,
@@ -27,7 +30,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
-import { useMemo } from "react";
 import { useState } from "react";
 import { IoMdCheckmarkCircle } from "react-icons/io";
 import AuthContext from "../../context/AuthContext";
@@ -39,36 +41,35 @@ import ProfilePicture from "./ProfilePicture";
 import SkillsModal from "./SkillsModal";
 import SocialMeidaDetails from "./SocialMediaDetails";
 import WorkAreaModal from "./WorkAreaModal";
-
+import { useNavigate } from "react-router-dom";
 function EditProfile(props) {
+  const navigate = useNavigate();
   const [selectedModal, setSelectedModal] = useState("");
-  const { userProfileData, setUserProfileData, initialUserData, urlID } =
-    useContext(AuthContext);
+  const { userProfileData, initialUserData } = useContext(AuthContext);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleClick = (e) => {
     setSelectedModal(e.target.value);
   };
+  console.log("PROFILE");
+
   return (
-    <Modal
-      preserveScrollBarGap
-      // isCentered
-      isOpen={props.isOpen}
-      onClose={props.onClose}
-      scrollBehavior="outside"
-      size="2xl"
+    <Stack
+      flex={7}
+      style={{ marginInlineStart: 0 }}
+      w="100%"
+      overflow="auto"
+      height="100vh"
     >
-      <ModalOverlay
-        bg="blackAlpha.300"
-        backdropFilter="blur(10px) hue-rotate(90deg)"
-      />
-      <ModalContent>
-        <Stack>
-          <ModalHeader textAlign={"center"}>Edit profile</ModalHeader>
-          <ModalCloseButton />
+      <Stack p={5}>
+        <Stack direction={"row"} align="center">
+          <IconButton icon={<ArrowBackIcon />} onClick={() => navigate(-1)} />
+          <Heading textAlign={"center"} style={{ margin: "0 auto" }}>
+            Edit profile
+          </Heading>
         </Stack>
         <Divider />
-        <ModalBody>
+        <Stack>
           <Stack gap={2}>
             {/* Edit profile picture */}
             <Box>
@@ -468,7 +469,7 @@ function EditProfile(props) {
                             userProfileData?.facebook
                           }`}
                           color={
-                            userProfileData?.facebook ? "blue.400" : "gray.900"
+                            userProfileData?.facebook ? "blue.400" : "gray.400"
                           }
                           target="_blank"
                           _hover={
@@ -531,17 +532,10 @@ function EditProfile(props) {
               </TableContainer>
             </Box>
           </Stack>
-        </ModalBody>
-
-        <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={props.onClose}>
-            Close
-          </Button>
-          <Button onClick={props.onClose}>Save</Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </Stack>
+      </Stack>
+    </Stack>
   );
 }
 
-export default EditProfile;
+export default React.memo(EditProfile);

@@ -46,11 +46,10 @@ import handleLogout from "../../utils/logoutUser";
 import { getTokens } from "../../services/localStorage";
 import MainContent from "./MainContent";
 import axios from "axios";
-import axiosInstance from "../../services/api";
 
-export default function Profile({ children }) {
+export default function Profile(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { setUserProfileData, setAllowData, setUrlID } =
+  const { setUserProfileData, setAllowData, setUrlID, setInitialUserData } =
     useContext(AuthContext);
   const { id } = useParams();
   useEffect(() => {
@@ -60,6 +59,7 @@ export default function Profile({ children }) {
   useEffect(() => {
     setAllowData(false);
     async function getUserProfileData() {
+      console.log("I RAN");
       try {
         const res = await axios.get(`profile/${id}`, {
           headers: {
@@ -70,8 +70,13 @@ export default function Profile({ children }) {
 
         setUserProfileData([]);
         setUserProfileData(res.data);
+
         console.log(res.data);
-      } catch (error) {}
+      } catch (error) {
+        setUserProfileData([]);
+        setInitialUserData([]);
+        console.log(error);
+      }
     }
 
     getUserProfileData();
@@ -198,45 +203,6 @@ const NavItem = ({ icon, children, ...rest }) => {
   );
 };
 
-const MobileNav = ({ onOpen, ...rest }) => {
-  return (
-    <Flex
-      height="20"
-      alignItems="center"
-      bg={useColorModeValue("white", "gray.900")}
-      borderBottomWidth="1px"
-      borderBottomColor={useColorModeValue("gray.200", "gray.700")}
-      justifyContent={{ base: "space-between", lg: "flex-end" }}
-      px={4}
-      {...rest}
-      boxShadow={"base"}
-    >
-      <IconButton
-        display={{ base: "flex", lg: "none" }}
-        onClick={onOpen}
-        variant="outline"
-        aria-label="open menu"
-        icon={<FiMenu />}
-      />
-
-      <Text
-        display={{ base: "flex", lg: "none" }}
-        fontSize="2xl"
-        fontFamily="monospace"
-        fontWeight="bold"
-      >
-        Logo
-      </Text>
-
-      <HStack spacing={{ base: "0", md: "6" }} gap={3}>
-        <ToggleMode />
-        <Flex alignItems={"center"}>
-          <ProfileMenu py={2} />
-        </Flex>
-      </HStack>
-    </Flex>
-  );
-};
 export const ProfileMenu = (props) => {
   const { userProfileData, initialUserData } = useContext(AuthContext);
   return (
