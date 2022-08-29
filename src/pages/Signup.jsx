@@ -61,8 +61,19 @@ export default function Signup() {
       navigate("/login");
     } catch (error) {
       setIsLoading(false);
-      console.log(error)
-      if (error?.response?.data?.errors?.non_field_errors) {
+      console.log(error);
+      if (
+        error.response.status === 500 &&
+        error.response.statusText === "Internal Server Error"
+      ) {
+        toast({
+          title: "Internal server error. Please try later",
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+        return;
+      } else if (error?.response?.data?.errors?.non_field_errors) {
         toast({
           title: error?.response.data.errors.non_field_errors[0],
           status: "warning",

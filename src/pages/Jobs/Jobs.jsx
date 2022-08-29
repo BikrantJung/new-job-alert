@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
 import Navbar from "../../components/Navbar/Navbar";
@@ -12,15 +12,16 @@ import {
 import { SearchIcon } from "@chakra-ui/icons";
 import JobCard from "./JobCard";
 import { Link as ReactLink, useLocation } from "react-router-dom";
-function Jobs(props) {
-  const [jobData, setJobData] = useState([]);
+import StateContext from "../../context/StateContext";
+function Jobs() {
+  const { jobData, setJobData } = useContext(StateContext);
   const [jobSearchValue, setJobSearchValue] = useState("");
   const query = new URLSearchParams(useLocation().search);
   const name = query.get("search");
 
   useEffect(() => {
     async function getJobs() {
-      if (!name) {
+      if (!name && !jobData.length) {
         try {
           const res = await axios({
             url: "jobs/",
@@ -29,6 +30,7 @@ function Jobs(props) {
               "Content-Type": "application/json",
             },
           });
+          console.log(res.data);
           setJobData(res.data);
         } catch (error) {}
       }
@@ -38,7 +40,6 @@ function Jobs(props) {
   useEffect(() => {
     const fetchUsers = async () => {
       if (name) {
-        props.setProgress(20);
         try {
           const res = await axios.get(`jobFilter/?search=${name}`, {
             headers: {
@@ -46,12 +47,10 @@ function Jobs(props) {
               Authorization: null,
             },
           });
-          props.setProgress(70);
+
           console.log(res);
           setJobData(res.data);
-          props.setProgress(100);
         } catch (error) {
-          props.setProgress(100);
           console.log(error);
         }
       }
@@ -74,7 +73,7 @@ function Jobs(props) {
           <Stack direction="row" align="center">
             <Input
               placeholder="Search jobs..."
-              background={useColorModeValue("gray.300", "gray.900")}
+              background={useColorModeValue("gray.100", "gray.900")}
               color={useColorModeValue("gray.900", "gray.300")}
               sx={{
                 "&::placeholder": {
@@ -96,6 +95,7 @@ function Jobs(props) {
           {jobData.map((item) => {
             return (
               <JobCard
+                companyName={item.companyUser}
                 key={item.id}
                 JobTitle={item.JobTitle}
                 JobLocation={item.Location}

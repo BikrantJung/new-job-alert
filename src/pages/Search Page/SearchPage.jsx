@@ -2,21 +2,17 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
-import {
-  Heading,
-  Stack,
-} from "@chakra-ui/react";
+import { Heading, Stack } from "@chakra-ui/react";
 import axios from "axios";
 import Navbar from "../../components/Navbar/Navbar";
 import UserCard from "./UserCard";
-function SearchPage(props) {
+function SearchPage() {
   const [user, setUser] = useState([]);
   const query = new URLSearchParams(useLocation().search);
   const name = query.get("search");
 
   useEffect(() => {
     const fetchUsers = async () => {
-      props.setProgress(20);
       try {
         const res = await axios.get(`profileFilter/?search=${name}`, {
           headers: {
@@ -24,18 +20,15 @@ function SearchPage(props) {
             Authorization: null,
           },
         });
-        props.setProgress(70);
+
         console.log(res);
         setUser(res.data);
-        props.setProgress(100);
       } catch (error) {
-        props.setProgress(100);
         console.log(error);
       }
     };
     fetchUsers();
   }, []);
-  console.log(user);
   return (
     <>
       <Navbar />

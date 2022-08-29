@@ -25,17 +25,15 @@ import { Link as ReactLink } from "react-router-dom";
 import JobModal from "./JobModal";
 function JobCard(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedModal, setSelectedModal] = useState("");
-  const handleClick = (e) => {
-    setSelectedModal(e.target.value);
-  };
-  const handleProfileClick = (name) => {
-  };
+
+  const handleProfileClick = (name) => {};
   return (
     <Stack
       direction={["column-reverse", "column-reverse", "row"]}
       width={["80%", "60%", "70%"]}
       boxShadow={"md"}
+      border="1px solid"
+      borderColor={useColorModeValue("gray.300", "gray.600")}
     >
       <JobModal
         onOpen={onOpen}
@@ -53,23 +51,24 @@ function JobCard(props) {
         <CustomText fontSize={[18, 19, 20, 21, 22]} fontWeight="bold">
           {props.JobTitle}
         </CustomText>
-        {/* <Link
-          as={ReactLink}
-          to={`/profile/${props.UserName}`}
-          id={props.userID}
-        >
-          <Stack direction={"row"} align="center">
-            <Icon as={AiOutlineUser} color="red" fontSize={20} />
+
+        <Stack direction={"row"} align="center">
+          <Icon as={AiOutlineUser} color="red" fontSize={20} />
+          <Link
+            as={ReactLink}
+            to={`/company/${props.companyName}/`}
+            id={props.userID}
+          >
             <CustomText
               fontSize={[11, 11, 13, 14, 15]}
               color={useColorModeValue("green")}
               as="em"
               onClick={() => handleProfileClick(props.user)}
             >
-              @{props.UserName}
+              @{props.companyName}
             </CustomText>
-          </Stack>
-        </Link> */}
+          </Link>
+        </Stack>
 
         <Stack direction={"row"} align="center">
           <Icon as={GoLocation} color="green.400" fontSize={20} />
@@ -98,14 +97,18 @@ function JobCard(props) {
         >
           {props.JobDescription}
         </CustomText>
-
-        <Button
-          style={{ marginTop: "auto", marginBottom: "1rem" }}
-          colorScheme="green"
+        <Link
+          as={ReactLink}
+          to={`/company/${props.companyName}/${props.JobTitle}`}
+          id={props.userID}
         >
-          Apply now
-        </Button>
-
+          <Button
+            style={{ marginTop: "auto", marginBottom: "1rem" }}
+            colorScheme="green"
+          >
+            View Details
+          </Button>
+        </Link>
         <Stack
           direction="row"
           align="center"
@@ -115,11 +118,10 @@ function JobCard(props) {
         >
           <Button variant="ghost">Job tags</Button>
           <Stack direction={"row"} align="center">
-            {props.JobTags.map((item) => {
+            {JSON.parse(props.JobTags).map((item) => {
               return (
                 <Badge key={item} colorScheme="facebook">
-                  {" "}
-                  {item}{" "}
+                  {item}
                 </Badge>
               );
             })}

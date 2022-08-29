@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  IconButton,
   Avatar,
   Box,
   CloseButton,
@@ -21,33 +20,20 @@ import {
   MenuList,
   Stack,
 } from "@chakra-ui/react";
-import {
-  FiHome,
-  FiTrendingUp,
-  FiCompass,
-  FiSettings,
-  FiMenu,
-  FiChevronDown,
-  FiLogOut,
-} from "react-icons/fi";
+import { FiSettings, FiChevronDown, FiLogOut } from "react-icons/fi";
 
-import {
-  Link as ReactLink,
-  Outlet,
-  useParams,
-  useNavigate,
-} from "react-router-dom";
+import { Link as ReactLink, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useContext } from "react";
 import AuthContext from "../../context/AuthContext";
-import ToggleMode from "../../components/ToggleMode";
 import { AiOutlineUser } from "react-icons/ai";
 import handleLogout from "../../utils/logoutUser";
-import { getTokens } from "../../services/localStorage";
 import MainContent from "./MainContent";
 import axios from "axios";
 import { TiBusinessCard } from "react-icons/ti";
-import {BsBook} from 'react-icons/bs'
+import { BsBook } from "react-icons/bs";
+import { BiBuildings } from "react-icons/bi";
+import StateContext from "../../context/StateContext";
 export default function Profile(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { setUserProfileData, setAllowData, setUrlID, setInitialUserData } =
@@ -55,12 +41,11 @@ export default function Profile(props) {
   const { id } = useParams();
   useEffect(() => {
     setUrlID(id);
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     setAllowData(false);
     async function getUserProfileData() {
-      console.log("I RAN");
       try {
         const res = await axios.get(`profile/${id}`, {
           headers: {
@@ -81,7 +66,7 @@ export default function Profile(props) {
     }
 
     getUserProfileData();
-  }, []);
+  }, [id]);
 
   return (
     <Stack
@@ -123,7 +108,11 @@ const SidebarContent = ({ onClose, ...rest }) => {
   const { userProfileData } = useContext(AuthContext);
   // const[isActive,setIsActive]
   const LinkItems = [
-    { name: "General Details", icon: AiOutlineUser, link: userProfileData?.username },
+    {
+      name: "General Details",
+      icon: AiOutlineUser,
+      link: userProfileData?.username,
+    },
     {
       name: "Education",
       icon: BsBook,
@@ -206,6 +195,7 @@ const NavItem = ({ icon, children, ...rest }) => {
 
 export const ProfileMenu = (props) => {
   const { userProfileData, initialUserData } = useContext(AuthContext);
+  const { hasCompany, setHasCompany } = useContext(StateContext);
   return (
     <Menu ml={3}>
       <MenuButton
@@ -250,6 +240,15 @@ export const ProfileMenu = (props) => {
           _hover={{ textDecoration: "none" }}
         >
           <MenuItem icon={<AiOutlineUser fontSize={18} />}>Profile</MenuItem>
+        </Link>
+        <Link
+          as={ReactLink}
+          to="/create-company"
+          _hover={{ textDecoration: "none" }}
+        >
+          <MenuItem icon={<BiBuildings fontSize={18} />}>
+            {hasCompany ? "My company" : "Create Company"}
+          </MenuItem>
         </Link>
         <Link as={ReactLink} to="/settings" _hover={{ textDecoration: "none" }}>
           <MenuItem icon={<FiSettings fontSize={18} />}>Settings</MenuItem>

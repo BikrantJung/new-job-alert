@@ -156,8 +156,8 @@ export const AuthProvider = ({ children }) => {
     setBlogData,
     latestBlog,
     setLatestBlog,
-
     isCompany,
+    setIsCompany,
   };
   return (
     <AuthContext.Provider value={contextData}>

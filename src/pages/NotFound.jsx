@@ -19,7 +19,12 @@ export default function NotFound() {
         The page you're looking for does not seem to exist
       </Text>
 
-      <Link as={ReactLink} to="/">
+      <Link
+        as={ReactLink}
+        to="/"
+        _hover={{ textDecoration: "none" }}
+        textDecoration="none"
+      >
         <Button
           colorScheme="red"
           bgGradient="linear(to-r, red.400, red.500, red.600)"

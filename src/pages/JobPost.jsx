@@ -45,7 +45,7 @@ import {
 } from "@chakra-ui/react";
 import { PhoneIcon, AddIcon, WarningIcon, DeleteIcon } from "@chakra-ui/icons";
 import axios from "axios";
-import { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect, useRef, useMemo } from "react";
 import { Link as ReactLink, useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import StateContext from "../context/StateContext";
@@ -55,6 +55,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 import Navbar from "../components/Navbar/Navbar";
 import { getTokens } from "../services/localStorage";
 import axiosInstance from "../services/api";
+import { useCallback } from "react";
 const CustomGridItem = ({ children }) => {
   return <GridItem colSpan={[2, 1]}>{children}</GridItem>;
 };
@@ -63,8 +64,9 @@ export default function JobPost() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef();
   const [localImage, setLocalImage] = useState(null);
-
+  const navigate = useNavigate();
   const { authTokens, initialUserData } = useContext(AuthContext);
+  const { successfulPost, setSuccessfulPost } = useContext(StateContext);
   const { colorMode } = useColorMode();
   const [tabIndex, setTabIndex] = useState(0);
   const [tagValues, setTagValues] = useState([]);
@@ -73,6 +75,7 @@ export default function JobPost() {
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [categoryData, setCategoryData] = useState([]);
+
   const [tagsOptions, setTagsOptions] = useState([
     {
       id: 1,
@@ -94,7 +97,7 @@ export default function JobPost() {
   const removePhoto = async () => {
     setLocalImage(null);
   };
-  console.log(localImage);
+
   // Job tags multi select updata array
 
   const handleCategoryChange = (e, value) => {
@@ -114,7 +117,7 @@ export default function JobPost() {
       })
     );
   }
-  console.log(categoryData)
+
   // Remove job tags from array
   const removeTags = (id) => {
     const removedItem = tagValues.filter((obj) => {
@@ -129,8 +132,7 @@ export default function JobPost() {
       })
     );
   };
-console.log(tagValues)
-console.log(filteredJobTags)
+
   // Next button tab increment
   const tabIncrement = () => {
     if (selectedCategory.length) setTabIndex((prevValue) => prevValue + 1);
@@ -149,7 +151,6 @@ console.log(filteredJobTags)
 
   // Get category data on first load
   useEffect(() => {
-    console.log("I RUN");
     // window.scrollTo(0, 0);
     const getCategory = async () => {
       try {
@@ -166,6 +167,7 @@ console.log(filteredJobTags)
         console.log(error);
       }
     };
+
     getCategory();
   }, []);
 
@@ -177,7 +179,7 @@ console.log(filteredJobTags)
       filteredJobTags.push(item.value);
     });
 
-    const postData = {
+    let postData = {
       IdComp: initialUserData?.user,
 
       Category: selectedCategory[0].id,
@@ -189,14 +191,7 @@ console.log(filteredJobTags)
       JobRegion: data.get("job_region"),
       JobType: data.get("job_type"),
       JobCategory: data.get("job_category"),
-      JobTags: [
-        "Internet",
-        "Internet",
-        "Internet",
-        "Graphics",
-        "Internet",
-        "Graphics",
-      ],
+      JobTags: JSON.stringify(filteredJobTags),
       JobDescription: data.get("job_description"),
       JobExperience: data.get("job_experience"),
       SalaryMin: data.get("min_salary"),
@@ -210,9 +205,11 @@ console.log(filteredJobTags)
           Authorization: `Bearer ${authTokens?.accessToken}`,
         },
       });
+      setFilteredJobTags([]);
       setIsLoading(false);
-      // window.location.reload(false);
+      navigate("/jobs");
     } catch (error) {
+      setFilteredJobTags([]);
       setIsLoading(false);
 
       if (error.response.data.JobEmail) {

@@ -58,7 +58,7 @@ export default function Login() {
       password: data.get("password"),
     };
     try {
-      const res = await axiosInstance({
+      const res = await axios({
         method: "POST",
         url: "login/",
         data: loginData,

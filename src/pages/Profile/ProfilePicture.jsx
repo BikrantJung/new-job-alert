@@ -32,7 +32,7 @@ import AuthContext from "../../context/AuthContext";
 import axiosInstance from "../../services/api";
 
 function ProfilePicture(props) {
-  console.log("PP")
+  console.log("PP");
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef();
@@ -49,6 +49,7 @@ function ProfilePicture(props) {
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
   const [allowUpdate, setAllowUpdate] = useState(false);
+
   const handleChange = (e) => {
     setAllowUpdate(true);
     setLocalImage(URL.createObjectURL(e.target.files[0]));

@@ -3,10 +3,15 @@ import {
   Box,
   Button,
   Divider,
+  FormControl,
+  FormLabel,
+  Grid,
+  GridItem,
   Heading,
   Icon,
   IconButton,
   Image,
+  Input,
   Stack,
   Tab,
   TabList,
@@ -14,6 +19,7 @@ import {
   TabPanels,
   Tabs,
   Text,
+  Textarea,
   useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
@@ -155,6 +161,10 @@ function CompanyDetails() {
                 <Icon as={InfoIcon} />
                 <Text fontSize={[10, 11, 12, 13, 14, 15]}>About</Text>
               </Tab>
+              <Tab gap={2} style={{ marginLeft: "auto" }}>
+                <Icon as={EditIcon} />
+                <Text fontSize={[10, 11, 12, 13, 14, 15]}>Edit</Text>
+              </Tab>
             </TabList>
             <TabPanels>
               <TabPanel>
@@ -175,6 +185,9 @@ function CompanyDetails() {
               </TabPanel>
               <TabPanel>
                 <About />
+              </TabPanel>
+              <TabPanel>
+                <EditCompanyDetails />
               </TabPanel>
             </TabPanels>
           </Tabs>
@@ -217,9 +230,11 @@ function Jobs() {
           <Icon as={EmailIcon} fontSize={[10, 11, 12, 13, 14, 15]} />
           <Text fontSize={[10, 11, 12, 13, 14, 15]}>email@gmail.com</Text>
         </Stack>
-        <Button colorScheme="twitter" size="sm">
-          Apply now
-        </Button>
+        <Stack align="flex-start" justify="center">
+          <Button colorScheme="twitter" size="sm">
+            View Details
+          </Button>
+        </Stack>
       </Stack>
       <Image
         // objectFit={"cover"}
@@ -285,6 +300,103 @@ function About() {
             <Text>Birendranagar</Text>
           </Stack>
         </Stack>
+      </Stack>
+    </Stack>
+  );
+}
+export function EditCompanyDetails() {
+  return (
+    <Stack p={2}>
+      <Stack
+        border="1px solid"
+        borderColor={useColorModeValue("gray.300", "gray.600")}
+        p={3}
+        direction="row"
+        align="center"
+      >
+        <Heading fontSize="lg">Basic info</Heading>
+        <Button
+          variant="outline"
+          colorScheme={"twitter"}
+          style={{ marginLeft: "auto" }}
+          fontWeight="inherit"
+          size="sm"
+        >
+          Cancel
+        </Button>
+        <Button
+          size="sm"
+          fontWeight="inherit"
+          colorScheme={"twitter"}
+          onClick={() => console.log("CLICKED")}
+        >
+          Save
+        </Button>
+      </Stack>
+      <Grid
+        border="1px solid"
+        borderColor={useColorModeValue("gray.300", "gray.600")}
+        p={3}
+        templateColumns="repeat(2,1fr)"
+        gap={5}
+      >
+        <GridItem colSpan={1}>
+          <FormControl isRequired>
+            <FormLabel style={{ margin: 0 }} fontSize={14}>
+              Company name
+            </FormLabel>
+            <Input placeholder="Enter your company name..." fontSize={14} />
+          </FormControl>
+        </GridItem>
+        <GridItem colSpan={1}>
+          <FormControl>
+            <FormLabel style={{ margin: 0 }} fontSize={14}>
+              Company title
+            </FormLabel>
+            <Input placeholder="Enter your company title..." fontSize={14} />
+          </FormControl>
+        </GridItem>
+        <GridItem colSpan={1}>
+          <FormControl isRequired>
+            <FormLabel style={{ margin: 0 }} fontSize={14}>
+              Company email
+            </FormLabel>
+            <Input
+              placeholder="Enter your company email..."
+              fontSize={14}
+              type="email"
+            />
+          </FormControl>
+        </GridItem>
+        <GridItem colSpan={1}>
+          <FormControl isRequired>
+            <FormLabel style={{ margin: 0 }} fontSize={14}>
+              Company location
+            </FormLabel>
+            <Input placeholder="Enter your company location..." fontSize={14} />
+          </FormControl>
+        </GridItem>
+        <GridItem colSpan={2}>
+          <FormControl isRequired>
+            <FormLabel style={{ margin: 0 }} fontSize={14}>
+              Company Description
+            </FormLabel>
+            <Textarea
+              resize="none"
+              placeholder="Describe your company..."
+              fontSize={14}
+            />
+          </FormControl>
+        </GridItem>
+      </Grid>
+      <Stack
+        border="1px solid"
+        borderColor={useColorModeValue("gray.300", "gray.600")}
+        p={3}
+        direction="row"
+        align="center"
+      >
+        <Heading fontSize="lg">Social and contact info</Heading>
       </Stack>
     </Stack>
   );
