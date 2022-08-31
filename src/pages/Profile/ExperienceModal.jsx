@@ -146,12 +146,15 @@ function ExperienceModal(props) {
               <FormLabel fontSize={[12, 13, 14, 15, 16, 17, 18]} as={"p"}>
                 Don't forgot to press <Kbd mx={1}>+</Kbd> icon before updating
               </FormLabel>
+              <FormLabel fontSize={[12, 13, 14, 15, 16, 17, 18]} as={"p"}>
+                Include organization name, work title and work year
+              </FormLabel>
 
               <Stack direction="row">
                 <Input
                   type="text"
                   name="experience"
-                  placeholder="Type your experience here"
+                  placeholder="E.x. 2 years at google as senior engineer"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                 />

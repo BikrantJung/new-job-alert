@@ -26,6 +26,7 @@ import {
 import AuthContext from "../../context/AuthContext";
 import axiosInstance from "../../services/api";
 import { AddIcon, CloseIcon } from "@chakra-ui/icons";
+import axios from "axios";
 function SkillsModal(props) {
   const toast = useToast();
 
@@ -71,16 +72,12 @@ function SkillsModal(props) {
     };
 
     try {
-      const res = await axiosInstance.put(
-        `profileSelf/${decodedID}`,
-        skillsData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authTokens?.accessToken}`,
-          },
-        }
-      );
+      const res = await axios.put(`profileSelf/${decodedID}`, skillsData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens?.accessToken}`,
+        },
+      });
       setLoading(false);
       setAllowClose(true);
       setInitialUserData(res.data);

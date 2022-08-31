@@ -1,8 +1,5 @@
 import React, { useContext, useState } from "react";
 import {
-  Avatar,
-  Icon,
-  useColorModeValue,
   Text,
   useDisclosure,
   Stack,
@@ -11,24 +8,18 @@ import {
   Tabs,
   TabPanels,
   TabPanel,
-  Tooltip,
-  Button,
   Heading,
-  IconButton,
   Tag,
   Divider,
   List,
   ListItem,
   ListIcon,
   Skeleton,
-  Center,
-  Box,
   Link,
 } from "@chakra-ui/react";
-import { IoLogoWhatsapp, IoMdCheckmarkCircle } from "react-icons/io";
-import { EditIcon, AddIcon } from "@chakra-ui/icons";
-import EditIconBtn from "../../../components/EditIconBtn";
-import WorkArea from "../Modals/WorkArea";
+import { IoMdCheckmarkCircle } from "react-icons/io";
+
+// import WorkArea from "../Modals/WorkArea";
 import AuthContext from "../../../context/AuthContext";
 
 function DefaultContent() {
@@ -72,13 +63,7 @@ function General() {
     useContext(AuthContext);
 
   return (
-    <Stack
-      // height="70vh"
-      overflow="auto"
-      p={3}
-      boxShadow={"md"}
-      style={{ marginLeft: "0" }}
-    >
+    <Stack overflow="auto" p={3} boxShadow={"md"} style={{ marginLeft: "0" }}>
       {userProfileData?.username || initialUserData?.username ? (
         <Stack p={3}>
           <Stack direction="row" align="center" width="100%">
@@ -94,9 +79,7 @@ function General() {
                 : "No profession to show"}
             </Heading>
           </Stack>
-          {selectedModal === "work_area" && (
-            <WorkArea onOpen={onOpen} onClose={onClose} isOpen={isOpen} />
-          )}
+
           <Text fontSize={{ base: 13, md: 15 }}>
             {urlID === initialUserData?.username
               ? initialUserData?.bio
@@ -131,7 +114,7 @@ function General() {
                 );
               })
             ) : (
-              <Text >No skills to show</Text>
+              <Text>No skills to show</Text>
             )}
           </Stack>
         ) : (

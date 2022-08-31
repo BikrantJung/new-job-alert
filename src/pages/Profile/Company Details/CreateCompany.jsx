@@ -1,10 +1,4 @@
 import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   Avatar,
   Box,
   Button,
@@ -20,29 +14,19 @@ import {
   Stack,
   Text,
   Textarea,
-  useColorModeValue,
-  useDisclosure,
   Link,
   useColorMode,
 } from "@chakra-ui/react";
 import React, { useRef, useState } from "react";
-import Navbar from "../../../components/Navbar/Navbar";
-import { Link as ReactLink } from "react-router-dom";
-import { AiFillFacebook, AiFillLinkedin } from "react-icons/ai";
-import {
-  AddIcon,
-  DeleteIcon,
-  EmailIcon,
-  InfoIcon,
-  PhoneIcon,
-} from "@chakra-ui/icons";
+import { Link as ReactLink, useNavigate } from "react-router-dom";
+import { AddIcon, EmailIcon, InfoIcon, PhoneIcon } from "@chakra-ui/icons";
 import { useContext } from "react";
 import AuthContext from "../../../context/AuthContext";
 import axios from "axios";
 import BrokenImage from "../../../images/broken_image.png";
-import { useEffect } from "react";
 import StateContext from "../../../context/StateContext";
 function CreateCompany() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [localAvatar, setLocalAvatar] = useState(null);
   const [localCover, setLocalCover] = useState(null);
@@ -51,7 +35,7 @@ function CreateCompany() {
 
   const { decodedID, authTokens, isCompany, setIsCompany } =
     useContext(AuthContext);
-  const { hasCompany, setHasCompany } = useContext(StateContext);
+  const { hasCompany, setHasCompany, userCompany } = useContext(StateContext);
   async function createCompany(e) {
     e.preventDefault();
     setLoading(true);
@@ -83,6 +67,9 @@ function CreateCompany() {
       });
       console.log(res);
       setLoading(false);
+      setHasCompany(true);
+      navigate(`/company/${res.data.data.companyUsername}`);
+      window.location.reload(false);
     } catch (error) {
       setLoading(false);
       console.log(error);
@@ -113,7 +100,7 @@ function CreateCompany() {
 
           <Link
             as={ReactLink}
-            to="/"
+            to={`/company/${userCompany}`}
             _hover={{ textDecoration: "none" }}
             textDecoration="none"
           >

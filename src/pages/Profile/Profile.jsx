@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Avatar,
   Box,
@@ -19,8 +19,18 @@ import {
   MenuItem,
   MenuList,
   Stack,
+  IconButton,
+  useColorMode,
+  Heading,
+  Button,
 } from "@chakra-ui/react";
-import { FiSettings, FiChevronDown, FiLogOut } from "react-icons/fi";
+import {
+  FiSettings,
+  FiChevronDown,
+  FiLogOut,
+  FiMenu,
+  FiBell,
+} from "react-icons/fi";
 
 import { Link as ReactLink, useParams } from "react-router-dom";
 import { useEffect } from "react";
@@ -34,8 +44,15 @@ import { TiBusinessCard } from "react-icons/ti";
 import { BsBook } from "react-icons/bs";
 import { BiBuildings } from "react-icons/bi";
 import StateContext from "../../context/StateContext";
+import { TbCertificate } from "react-icons/tb";
+import { PacmanLoader } from "react-spinners";
+import ServerErrorSVG from "../../components/ServerErrorSVG";
 export default function Profile(props) {
+  const { colorMode, toggleColorMode } = useColorMode();
+
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [showContent, setShowContent] = useState(false);
+  const [error, setError] = useState(false);
   const { setUserProfileData, setAllowData, setUrlID, setInitialUserData } =
     useContext(AuthContext);
   const { id } = useParams();
@@ -46,6 +63,7 @@ export default function Profile(props) {
   useEffect(() => {
     setAllowData(false);
     async function getUserProfileData() {
+      setShowContent(false);
       try {
         const res = await axios.get(`profile/${id}`, {
           headers: {
@@ -55,10 +73,14 @@ export default function Profile(props) {
         });
 
         setUserProfileData([]);
+        console.log(res);
         setUserProfileData(res.data);
-
+        setShowContent(true);
+        setError(false);
         console.log(res.data);
       } catch (error) {
+        setShowContent(true);
+        setError(true);
         setUserProfileData([]);
         setInitialUserData([]);
         console.log(error);
@@ -69,41 +91,91 @@ export default function Profile(props) {
   }, [id]);
 
   return (
-    <Stack
-      minH="100vh"
-      bg={useColorModeValue("gray.100", "gray.900")}
-      direction="row"
-    >
-      <SidebarContent
-        onClose={() => onClose}
-        height="100vh"
-        flex={1}
-        display={{ base: "none", lg: "block" }}
-      />
-      <Drawer
-        autoFocus={false}
-        isOpen={isOpen}
-        placement="left"
-        onClose={onClose}
-        returnFocusOnClose={false}
-        onOverlayClick={onClose}
-        size="xs"
-      >
-        <DrawerContent>
-          <SidebarContent onClose={onClose} />
-        </DrawerContent>
-      </Drawer>
-      {/* mobilenav */}
-      <Stack flex={4} style={{ marginInlineStart: "0" }}>
-        {/* <MobileNav onOpen={onOpen} /> */}
+    <>
+      {!showContent ? (
+        <Stack align="center" justify="center" height="100vh" wight="100vw">
+          <PacmanLoader color="rgb(54, 215, 183)" />
+        </Stack>
+      ) : error ? (
+        <ServerErrorSVG />
+      ) : (
+        <Stack
+          minH="100vh"
+          bg={colorMode === "light" ? "gray.100" : "gray.900"}
+          direction="row"
+        >
+          <SidebarContent
+            onClose={() => onClose}
+            height="100vh"
+            flex={1}
+            display={{ base: "none", lg: "block" }}
+          />
+          <Drawer
+            autoFocus={false}
+            isOpen={isOpen}
+            placement="left"
+            onClose={onClose}
+            returnFocusOnClose={false}
+            onOverlayClick={onClose}
+            size="xs"
+          >
+            <DrawerContent>
+              <SidebarContent onClose={onClose} />
+            </DrawerContent>
+          </Drawer>
+          {/* mobilenav */}
+          <Stack flex={4} style={{ marginInlineStart: "0" }}>
+            <MobileNav onOpen={onOpen} display={{ base: "flex", md: "none" }} />
 
-        <MainContent />
-      </Stack>
-      {/* Main Content */}
-    </Stack>
+            <MainContent />
+          </Stack>
+          {/* Main Content */}
+        </Stack>
+      )}
+    </>
   );
 }
+const MobileNav = ({ onOpen, ...rest }) => {
+  return (
+    <Flex
+      ml={{ base: 0, md: 60 }}
+      px={{ base: 4, md: 4 }}
+      height="20"
+      alignItems="center"
+      bg={useColorModeValue("white", "gray.900")}
+      borderBottomWidth="1px"
+      borderBottomColor={useColorModeValue("gray.200", "gray.700")}
+      justifyContent={{ base: "space-between", md: "flex-end" }}
+      {...rest}
+    >
+      <IconButton
+        display={{ base: "flex", md: "none" }}
+        onClick={onOpen}
+        variant="outline"
+        aria-label="open menu"
+        icon={<FiMenu />}
+      />
 
+      <Link as={ReactLink} to="/">
+        <Text fontSize="2xl" fontWeight="bold">
+          Job Alert
+        </Text>
+      </Link>
+
+      <HStack spacing={{ base: "0", md: "6" }}>
+        {/* <IconButton
+          size="lg"
+          variant="ghost"
+          aria-label="open menu"
+          icon={<FiBell />}
+        /> */}
+        <Flex alignItems={"center"}>
+          <ProfileMenu py={2} />
+        </Flex>
+      </HStack>
+    </Flex>
+  );
+};
 const SidebarContent = ({ onClose, ...rest }) => {
   const { userProfileData } = useContext(AuthContext);
   // const[isActive,setIsActive]
@@ -114,9 +186,14 @@ const SidebarContent = ({ onClose, ...rest }) => {
       link: userProfileData?.username,
     },
     {
-      name: "Education",
+      name: "Education & Work",
       icon: BsBook,
       link: `${userProfileData?.username}/education `,
+    },
+    {
+      name: "Certification & CV",
+      icon: TbCertificate,
+      link: `${userProfileData?.username}/certification `,
     },
     {
       name: "Company Details",
@@ -195,7 +272,9 @@ const NavItem = ({ icon, children, ...rest }) => {
 
 export const ProfileMenu = (props) => {
   const { userProfileData, initialUserData } = useContext(AuthContext);
-  const { hasCompany, setHasCompany } = useContext(StateContext);
+  const { userCompany, setUserCompany, hasCompany, setHasCompany } =
+    useContext(StateContext);
+
   return (
     <Menu ml={3}>
       <MenuButton
@@ -217,10 +296,6 @@ export const ProfileMenu = (props) => {
             <Text fontSize="sm">
               {initialUserData?.username || userProfileData?.username}
             </Text>
-
-            {/* <Text fontSize="xs" color="gray.600">
-              {props.isAdmin ? "Admin" : ""}
-            </Text> */}
           </VStack>
           <Box display={{ base: "none", md: "flex" }}>
             <FiChevronDown />
@@ -239,23 +314,40 @@ export const ProfileMenu = (props) => {
           }`}
           _hover={{ textDecoration: "none" }}
         >
-          <MenuItem icon={<AiOutlineUser fontSize={18} />}>Profile</MenuItem>
+          <MenuItem
+            icon={<AiOutlineUser fontSize={{ base: 14, md: 18 }} />}
+            fontSize={{ base: 14, md: 18 }}
+          >
+            Profile
+          </MenuItem>
         </Link>
         <Link
           as={ReactLink}
-          to="/create-company"
+          to={hasCompany ? `/company/${userCompany}` : "/create-company"}
           _hover={{ textDecoration: "none" }}
         >
-          <MenuItem icon={<BiBuildings fontSize={18} />}>
+          <MenuItem
+            icon={<BiBuildings fontSize={{ base: 14, md: 18 }} />}
+            fontSize={{ base: 14, md: 18 }}
+          >
             {hasCompany ? "My company" : "Create Company"}
           </MenuItem>
         </Link>
         <Link as={ReactLink} to="/settings" _hover={{ textDecoration: "none" }}>
-          <MenuItem icon={<FiSettings fontSize={18} />}>Settings</MenuItem>
+          <MenuItem
+            icon={<FiSettings fontSize={{ base: 14, md: 18 }} />}
+            fontSize={{ base: 14, md: 18 }}
+          >
+            Settings
+          </MenuItem>
         </Link>
 
         <MenuDivider />
-        <MenuItem icon={<FiLogOut fontSize={18} />} onClick={handleLogout}>
+        <MenuItem
+          icon={<FiLogOut fontSize={{ base: 14, md: 18 }} />}
+          onClick={handleLogout}
+          fontSize={{ base: 14, md: 18 }}
+        >
           Log Out
         </MenuItem>
       </MenuList>

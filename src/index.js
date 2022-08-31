@@ -18,7 +18,7 @@ root.render(
     <StateProvider>
       <ChakraProvider theme={theme}>
         {/* <Suspense fallback={<div>Loading...</div>}> */}
-          <App />
+        <App />
         {/* </Suspense> */}
       </ChakraProvider>
     </StateProvider>

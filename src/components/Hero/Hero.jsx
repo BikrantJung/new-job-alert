@@ -21,18 +21,17 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
-import AuthContext from "../../context/AuthContext";
-function Hero() {
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [query, setQuery] = useState("");
-  const { isCompany } = useContext(AuthContext);
-  console.log(searchParams.get("search"));
+import Typewriter from "typewriter-effect";
 
+import AuthContext from "../../context/AuthContext";
+import StateContext from "../../context/StateContext";
+function Hero() {
+  const [query, setQuery] = useState("");
+  const { hasCompany } = useContext(StateContext);
   return (
     <Stack minH={"88vh"} direction={{ base: "column", md: "row" }}>
-      <Flex p={8} flex={1} align={"center"} justify={"center"}>
-        <Stack spacing={6} w={"full"} maxW={"lg"}>
+      <Flex p={4} flex={1} align={"center"} justify={"center"}>
+        <Stack spacing={6} w={"full"}>
           <Heading fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}>
             <Text
               as={"span"}
@@ -51,12 +50,31 @@ function Hero() {
               JOBS ALLTIME
             </Text>
             <br />
-            <Text color={"blue.400"} as={"span"}>
-              GRAB NOW
-            </Text>
           </Heading>
+          <Text
+            color={"blue.400"}
+            as={"span"}
+            style={{ marginTop: 0 }}
+            fontSize={{ base: "lg", md: "3xl" }}
+            fontWeight={"bold"}
+          >
+            <Typewriter
+              options={{
+                strings: [
+                  "Search for jobs and get hired",
+                  "Create company and start hiring",
+                  "Post your own job vacancy",
+                ],
+                cursor: "_",
+                loop: true,
+                autoStart: true,
+                deleteSpeed: 50,
+                delay: 50,
+              }}
+            />
+          </Text>
           <Text fontSize={{ base: "md", lg: "lg" }} color={"gray.500"}>
-            The project board is an exclusive resource for contract work. It's
+            This website is an exclusive resource for contract work. It's
             perfect for freelancers, agencies, and moonlighters.
           </Text>
           <Stack
@@ -115,7 +133,9 @@ function Hero() {
                 position="absolute"
                 width="auto"
                 cursor="pointer"
-                placeholder={isCompany ? "Search people..." : "Search jobs...."}
+                placeholder={
+                  hasCompany ? "Search people..." : "Search jobs...."
+                }
                 color={useColorModeValue("gray.600", "gray.200")}
                 name="search_value"
                 onChange={(e) => setQuery(e.target.value)}
@@ -124,9 +144,11 @@ function Hero() {
               <IconButton
                 as={ReactLink}
                 to={
-                  isCompany
-                    ? `users/?search=${query}`
-                    : `jobs/?search=${query}`
+                  query
+                    ? hasCompany
+                      ? `users/?search=${query}`
+                      : `jobs/?search=${query}`
+                    : ""
                 }
                 color="white"
                 className="search-btn"

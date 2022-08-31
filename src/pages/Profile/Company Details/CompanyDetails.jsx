@@ -9,9 +9,10 @@ import {
   GridItem,
   Heading,
   Icon,
-  IconButton,
   Image,
   Input,
+  Link,
+  Skeleton,
   Stack,
   Tab,
   TabList,
@@ -20,17 +21,51 @@ import {
   Tabs,
   Text,
   Textarea,
-  useColorMode,
+  Tooltip,
   useColorModeValue,
 } from "@chakra-ui/react";
-import React from "react";
-import { AiFillFacebook, AiFillLinkedin } from "react-icons/ai";
+import React, { useState } from "react";
+import {
+  AiFillFacebook,
+  AiFillInstagram,
+  AiFillLinkedin,
+  AiFillTwitterCircle,
+} from "react-icons/ai";
 import Navbar from "../../../components/Navbar/Navbar";
 import { IoLocation } from "react-icons/io5";
 import { PhoneIcon, EmailIcon, InfoIcon, EditIcon } from "@chakra-ui/icons";
 import { MdWorkOutline } from "react-icons/md";
 import Footer from "../../../components/Footer/Footer";
+import { useEffect } from "react";
+import axios from "axios";
+import { Link as ReactLink, useParams } from "react-router-dom";
+import { IoLogoWhatsapp } from "react-icons/io";
 function CompanyDetails() {
+  const { id } = useParams();
+  const [companyData, setCompanyData] = useState([]);
+  const [showSkeleton, setShowSkeleton] = useState(false);
+  const [error, setError] = useState(false);
+  useEffect(() => {
+    const getCompanyDetails = async () => {
+      setShowSkeleton(true);
+      try {
+        const res = await axios.get(`company/${id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: null,
+          },
+        });
+        console.log(res);
+        setCompanyData(res.data);
+        setShowSkeleton(false);
+      } catch (error) {
+        setError(true);
+        console.log(error);
+      }
+    };
+    getCompanyDetails();
+  }, [id]);
+
   return (
     <>
       <Navbar />
@@ -65,12 +100,12 @@ function CompanyDetails() {
               //   display="none"
             >
               <Image
-                fallbackSrc="https://via.placeholder.com/150"
+                // fallbackSrc="https://via.placeholder.com/150"
                 width="100%"
                 objectFit={"cover"}
                 height="100%"
                 position="absolute"
-                src="https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                src={companyData?.companyCover}
                 // mt={100}
               />
               <Box
@@ -84,7 +119,7 @@ function CompanyDetails() {
               >
                 <Avatar
                   size="lg"
-                  src="https://images.pexels.com/photos/430205/pexels-photo-430205.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                  src={companyData?.companyLogo}
                   //   objectFit={'cover'}
                 />
               </Box>
@@ -96,50 +131,123 @@ function CompanyDetails() {
                 align="center"
                 justify={"center"}
               >
-                <Text fontWeight={"bold"} fontSize={[15, 16, 17, 18, 19, 20]}>
-                  X.COM
-                </Text>
-              </Stack>
-              <Stack direction="row">
-                <Text
-                  fontSize={[8, 9, 10, 11, 12, 13]}
-                  color={useColorModeValue("gray.700", "gray.300")}
-                >
-                  E-commerce
-                </Text>
-                <Divider orientation="vertical" />
-                <Text
-                  fontSize={[8, 9, 10, 11, 12, 13]}
-                  color={useColorModeValue("gray.700", "gray.300")}
-                >
-                  E-business
-                </Text>
+                {showSkeleton ? (
+                  <Skeleton height="20px" width="6rem" mt={15} />
+                ) : (
+                  <Text
+                    fontWeight={"bold"}
+                    fontSize={[15, 16, 17, 18, 19, 20]}
+                    mt={15}
+                  >
+                    {companyData?.companyUsername}
+                  </Text>
+                )}
               </Stack>
             </Stack>
             <Stack direction="row">
-              <Icon
-                as={AiFillFacebook}
-                cursor="pointer"
-                fontSize={{ base: 14, md: 18 }}
-              />
-              <Icon
-                as={AiFillLinkedin}
-                cursor="pointer"
-                fontSize={{ base: 14, md: 18 }}
-              />
+              {companyData?.instagram && (
+                <Tooltip
+                  label={
+                    companyData?.instagram
+                      ? companyData?.instagram
+                      : "No link found"
+                  }
+                  hasArrow
+                  display={["none", "none", "block"]}
+                >
+                  <span>
+                    <Link href={companyData?.instagram} target="_blank">
+                      <Icon
+                        as={AiFillInstagram}
+                        _hover={{ cursor: "pointer" }}
+                      />
+                    </Link>
+                  </span>
+                </Tooltip>
+              )}
+              {companyData?.facebook && (
+                <Tooltip
+                  label={
+                    companyData?.facebook
+                      ? companyData?.facebook
+                      : "No link found"
+                  }
+                  hasArrow
+                  display={["none", "none", "block"]}
+                >
+                  <span>
+                    <Link href={companyData?.facebook} target="_blank">
+                      <Icon
+                        as={AiFillFacebook}
+                        _hover={{ cursor: "pointer" }}
+                      />
+                    </Link>
+                  </span>
+                </Tooltip>
+              )}
+
+              {companyData?.twitter && (
+                <Tooltip
+                  label={
+                    companyData?.twitter
+                      ? companyData?.twitter
+                      : "No link found"
+                  }
+                  hasArrow
+                  display={["none", "none", "block"]}
+                >
+                  <span>
+                    <Link href={companyData?.twitter} target="_blank">
+                      <Icon
+                        as={AiFillTwitterCircle}
+                        _hover={{ cursor: "pointer" }}
+                      />
+                    </Link>
+                  </span>
+                </Tooltip>
+              )}
+
+              {companyData?.whatsapp && (
+                <Tooltip
+                  label={
+                    companyData?.whatsapp
+                      ? companyData?.whatsapp
+                      : "No link found"
+                  }
+                  hasArrow
+                  display={["none", "none", "block"]}
+                >
+                  <span>
+                    <Icon as={IoLogoWhatsapp} _hover={{ cursor: "pointer" }} />
+                  </span>
+                </Tooltip>
+              )}
             </Stack>
             <Stack w="100%" p={3}>
               <Stack direction="row" align="center">
                 <Icon as={InfoIcon} fontSize={[11, 12, 13, 14, 15, 16]} />
-                <Text fontSize={[10, 11, 12, 13, 14, 15]}>Birendranager</Text>
+                <Text fontSize={[10, 11, 12, 13, 14, 15]}>
+                  {companyData?.companyLocation
+                    ? companyData?.companyLocation
+                    : "No location found"}
+                </Text>
               </Stack>
               <Stack direction="row" align="center">
                 <Icon as={PhoneIcon} fontSize={[10, 11, 12, 13, 14, 15]} />
-                <Text fontSize={[10, 11, 12, 13, 14, 15]}>98480254</Text>
+                <Text fontSize={[10, 11, 12, 13, 14, 15]}>
+                  {companyData?.companyTel
+                    ? companyData?.companyTel
+                    : "No number found"}
+                </Text>
               </Stack>
               <Stack direction="row" align="center">
                 <Icon as={EmailIcon} fontSize={[10, 11, 12, 13, 14, 15]} />
-                <Text fontSize={[10, 11, 12, 13, 14, 15]}>email@gmail.com</Text>
+                <Text fontSize={[10, 11, 12, 13, 14, 15]}>
+                  {" "}
+                  {companyData?.companyEmail
+                    ? companyData?.companyEmail
+                    : "No email found"}
+                </Text>
               </Stack>
             </Stack>
           </Stack>

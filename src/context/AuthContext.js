@@ -56,11 +56,12 @@ export const AuthProvider = ({ children }) => {
         try {
           const res = await axios.get(`profileSelf/${decodedID}`, {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
+              Authorization: `Bearer ${authTokens?.accessToken}`,
             },
           });
           setInitialUserData(res.data);
         } catch (error) {
+          console.log(error);
           if (error.response?.status === 0) {
             toast({
               position: "bottom-left",
@@ -130,7 +131,6 @@ export const AuthProvider = ({ children }) => {
     }, time);
     return () => clearInterval(interval);
   }, [authTokens, loading]);
-  console.log("Auth Context");
   const contextData = {
     authTokens,
     setAuthTokens,

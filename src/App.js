@@ -1,12 +1,5 @@
-import Navbar from "./components/Navbar/Navbar";
 import Home from "./pages/Home";
-import {
-  BrowserRouter,
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import VerifyRegister from "./services/VerifyRegister";
@@ -16,25 +9,24 @@ import RestrictLoginPage from "./utils/RestrictLoginPage";
 import Pricing from "./pages/Pricing";
 import JobPost from "./pages/JobPost";
 import Jobs from "./pages/Jobs/Jobs";
-import MainContent from "./pages/Profile/MainContent";
 import Contact from "./pages/Contact";
 import CompanyJob from "./pages/Jobs/CompanyJob";
-import CandidateRegister from "./pages/Register/CandidateRegister";
-import UserEducation from "./components/UserPost/UserEducation";
+import UserEducation from "./pages/Profile/Content/UserEducation";
 import DefaultContent from "./pages/Profile/Content/DefaultContent";
 import Blog from "./pages/Blog/Blog";
 import EditProfile from "./pages/Profile/EditProfile";
 import LoadingBar from "react-top-loading-bar";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import SearchPage from "./pages/Search Page/SearchPage";
-import AuthContext from "./context/AuthContext";
 import CompanyDetails from "./pages/Profile/Company Details/CompanyDetails";
 import NotFound from "./pages/NotFound";
 import CreateCompany from "./pages/Profile/Company Details/CreateCompany";
-import HasCompanyRoute from "./utils/hasCompany";
+import Certification from "./pages/Profile/Content/Certification";
+import StateContext from "./context/StateContext";
+import EditPageProtect from "./components/EditPageProtect";
 function App() {
   const [progress, setProgress] = useState(0);
-  const { searchFilter, setSearchFilter } = useContext(AuthContext);
+  const { isValidUser } = useContext(StateContext);
   return (
     <BrowserRouter>
       <div className="App">
@@ -51,7 +43,11 @@ function App() {
             <Route path="/profile/:id" element={<Profile />}>
               <Route index element={<DefaultContent />} />
               <Route path="education" element={<UserEducation />} />
-              <Route path="edit-profile" element={<EditProfile />} />
+              <Route
+                path="edit-profile"
+                element={isValidUser ? <EditProfile /> : <EditPageProtect />}
+              />
+              <Route path="certification" element={<Certification />} />
             </Route>
             <Route path="/company/:id" element={<CompanyDetails />} />
 

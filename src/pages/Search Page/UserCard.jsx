@@ -52,7 +52,9 @@ export default function UserCard(props) {
           <Heading fontSize={"2xl"} fontWeight={500} fontFamily={"body"}>
             {props.username}
           </Heading>
-          <Text color={"gray.500"}>{props.profession}</Text>
+          <Text color={"gray.500"}>
+            {props.profession ? props.profession : "No title found"}
+          </Text>
         </Stack>
         <Divider
           borderBottomColor={useColorModeValue("gray.900", "gray.300")}
@@ -63,7 +65,7 @@ export default function UserCard(props) {
             <Text fontWeight={600} fontSize="xl">
               Skills
             </Text>
-            {props.skills.length ? (
+            {props.skills?.length ? (
               <Stack direction="row" mt={3}>
                 {props.skills.map((item, i) => {
                   return <Tag key={i}>{item}</Tag>;

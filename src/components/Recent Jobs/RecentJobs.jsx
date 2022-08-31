@@ -2,13 +2,30 @@ import React from "react";
 import { Box, Center, Heading, Stack } from "@chakra-ui/react";
 import RecentJobCard from "./RecentJobCard";
 import { useEffect } from "react";
+import axios from "axios";
+import { useContext } from "react";
+import StateContext from "../../context/StateContext";
 function RecentJobs() {
-
-  useEffect( ()=>{
-
-  },[] )
-
-
+  const { recentJobs, setRecentJobs } = useContext(StateContext);
+  useEffect(() => {
+    const getRecentJobs = async () => {
+      if (!recentJobs.length) {
+        try {
+          const res = await axios.get("jobs/", {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: null,
+            },
+          });
+          console.log(res);
+          setRecentJobs(res.data?.results?.slice(0, 3));
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+    getRecentJobs();
+  }, []);
   return (
     <>
       <Center py={5}>
@@ -50,9 +67,20 @@ function RecentJobs() {
         py={6}
         flexWrap="wrap"
       >
-        <RecentJobCard />
-        <RecentJobCard />
-        <RecentJobCard />
+        {recentJobs.map((item) => {
+          return (
+            <RecentJobCard
+              jobTitle={item.JobTitle}
+              key={item.id}
+              companyName={item.companyUser}
+              location={item.Location}
+              minSalary={item.SalaryMin}
+              maxSalary={item.SalaryMax}
+              jobType={item.JobType}
+              jobTags={item.JobTags}
+            />
+          );
+        })}
       </Stack>
     </>
   );

@@ -12,7 +12,7 @@ import {
 import { GoLocation } from "react-icons/go";
 import { AiOutlineDollar, AiOutlineTag } from "react-icons/ai";
 import { MdWorkOutline } from "react-icons/md";
-export default function RecentJobCard() {
+export default function RecentJobCard(props) {
   return (
     <Box
       maxW={"330px"}
@@ -30,8 +30,8 @@ export default function RecentJobCard() {
       >
         <Stack direction={"row"} align={"center"} justify={"center"}>
           <Stack>
-            <Text fontSize="3xl">Frontend Developer</Text>
-            <Text fontWeight={"bold"}>Invato Inc.</Text>
+            <Text fontSize="3xl">{props.jobTitle}</Text>
+            <Text fontWeight={"bold"}>{props.companyName}</Text>
           </Stack>
         </Stack>
       </Stack>
@@ -40,28 +40,31 @@ export default function RecentJobCard() {
         <List spacing={3}>
           <Stack direction="row" align={"center"}>
             <Icon as={GoLocation} color="blue.400" fontSize={20} />
-            <Text>Maitidevi, Kathmandu</Text>
+            <Text>{props.location}</Text>
           </Stack>
           <Stack direction="row" align={"center"}>
             <Icon as={AiOutlineDollar} color="blue.400" fontSize={20} />
-            <Text>289 - 399</Text>
+            <Text>
+              ${props.minSalary} - ${props.maxSalary}
+            </Text>
           </Stack>
           <Stack direction="row" align={"center"}>
             <Icon as={MdWorkOutline} color="blue.400" fontSize={20} />
-            <Text>Full Time</Text>
+            <Text>{props.jobType}</Text>
           </Stack>
-          <Stack direction="row" align={"center"}>
-            <Icon as={AiOutlineTag} color="blue.400" fontSize={20} />
-            <Tag>
-              <TagLabel>React Js</TagLabel>
-            </Tag>
-            <Tag>
-              <TagLabel>Node Js</TagLabel>
-            </Tag>
-            <Tag>
-              <TagLabel>Chakra UI</TagLabel>
-            </Tag>
-          </Stack>
+          {props.jobTags?.length && (
+            <Stack direction="row" align={"center"}>
+              <Icon as={AiOutlineTag} color="blue.400" fontSize={20} />
+
+              {props.jobTags?.map((item, i) => {
+                return (
+                  <Tag key={i}>
+                    <TagLabel>{item.toUpperCase()}</TagLabel>
+                  </Tag>
+                );
+              })}
+            </Stack>
+          )}
         </List>
 
         <Button
@@ -77,7 +80,7 @@ export default function RecentJobCard() {
             bg: "blue.500",
           }}
         >
-          Apply
+          View Details
         </Button>
       </Box>
     </Box>

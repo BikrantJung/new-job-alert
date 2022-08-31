@@ -30,11 +30,16 @@ import AuthContext from "../../context/AuthContext";
 import axios from "axios";
 import axiosInstance from "../../services/api";
 
-function SocialMeidaDetails(props) {
+function SocialMediaDetails(props) {
   const toast = useToast();
   const { localUserID, accessToken } = getTokens();
-  const { userProfileData, setUserProfileData, initialUserData, decodedID,authTokens } =
-    useContext(AuthContext);
+  const {
+    userProfileData,
+    setUserProfileData,
+    initialUserData,
+    decodedID,
+    authTokens,
+  } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
   const handleFormSubmit = async (e) => {
@@ -50,16 +55,12 @@ function SocialMeidaDetails(props) {
       subscription: userProfileData.subscription,
     };
     try {
-      const res = await axios.put(
-        `profileSelf/${decodedID}`,
-        socialData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:`Bearer ${authTokens?.accessToken}`
-          },
-        }
-      );
+      const res = await axios.put(`profileSelf/${decodedID}`, socialData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens?.accessToken}`,
+        },
+      });
       setLoading(false);
 
       setAllowClose(true);
@@ -220,4 +221,4 @@ function SocialMeidaDetails(props) {
   );
 }
 
-export default SocialMeidaDetails;
+export default SocialMediaDetails;
