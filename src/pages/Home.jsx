@@ -1,7 +1,10 @@
+import { Stack } from "@chakra-ui/react";
 import axios from "axios";
 import React, { lazy, Suspense, useContext, useEffect } from "react";
 import { useState } from "react";
+import { PuffLoader } from "react-spinners";
 import Hero from "../components/Hero/Hero";
+import Loader from "../components/Loader";
 import Navbar from "../components/Navbar/Navbar";
 import SignUpComp from "../components/Sign up/SignUpComp";
 import AuthContext from "../context/AuthContext";
@@ -43,7 +46,7 @@ function Home() {
   return (
     <div>
       <Navbar />
-      <Suspense fallback={<div>Loading</div>}>
+      <Suspense fallback={<Loader />}>
         <Hero />
         <Categories />
         <RecentJobs />

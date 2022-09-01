@@ -45,18 +45,20 @@ export const StateProvider = ({ children }) => {
   }, [decodedID]);
 
   useEffect(() => {
-    const checkID =
-      window.btoa(
+    if (userProfileData?.user || initialUserData?.user) {
+      const checkID =
         window.btoa(
-          window.btoa(window.btoa(window.btoa(userProfileData?.user)))
-        )
-      ) ||
-      window.btoa(
+          window.btoa(
+            window.btoa(window.btoa(window.btoa(userProfileData?.user)))
+          )
+        ) ||
         window.btoa(
-          window.btoa(window.btoa(window.btoa(initialUserData?.user)))
-        )
-      );
-    setIsValidUser(checkID === localUserID);
+          window.btoa(
+            window.btoa(window.btoa(window.btoa(initialUserData?.user)))
+          )
+        );
+      setIsValidUser(checkID === localUserID);
+    }
   }, [userProfileData?.user, initialUserData?.user]);
 
   const contextData = {

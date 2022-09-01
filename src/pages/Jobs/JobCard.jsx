@@ -35,12 +35,6 @@ function JobCard(props) {
       border="1px solid"
       borderColor={useColorModeValue("gray.300", "gray.600")}
     >
-      <JobModal
-        onOpen={onOpen}
-        onClose={onClose}
-        isOpen={isOpen}
-        JobTitle={props.JobTitle}
-      />
       <Stack
         flex={1}
         p={[2, 3]}
@@ -62,7 +56,6 @@ function JobCard(props) {
             <CustomText
               fontSize={[11, 11, 13, 14, 15]}
               color={useColorModeValue("green")}
-              as="em"
               onClick={() => handleProfileClick(props.user)}
             >
               @{props.companyName}
@@ -89,6 +82,7 @@ function JobCard(props) {
 
         <CustomText
           textAlign="center"
+          noOfLines={3}
           fontWeight="bold"
           fontSize={[10, 11, 12, 13, 14]}
           color={useColorModeValue("cyan.900", "cyan.200")}
@@ -101,6 +95,8 @@ function JobCard(props) {
           as={ReactLink}
           to={`/company/${props.companyName}/${props.JobTitle}`}
           id={props.userID}
+          textDecoration="none"
+          _hover={{ textDecoration: "none" }}
         >
           <Button
             style={{ marginTop: "auto", marginBottom: "1rem" }}
@@ -130,10 +126,10 @@ function JobCard(props) {
       </Stack>
       <Stack flex={1}>
         <Image
-          src={props.JobCategoryImage || props.JobImage}
+          src={props.JobImage || props.JobCategoryImage}
           height="100%"
           w="100%"
-          p={1}
+          objectFit={"contain"}
         />
       </Stack>
     </Stack>

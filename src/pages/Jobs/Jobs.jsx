@@ -15,7 +15,8 @@ import JobCard from "./JobCard";
 import { Link as ReactLink, useLocation } from "react-router-dom";
 import StateContext from "../../context/StateContext";
 import ServerErrorSVG from "../../components/ServerErrorSVG";
-import { PacmanLoader } from "react-spinners";
+import { PuffLoader } from "react-spinners";
+import Loader from "../../components/Loader";
 
 function Jobs() {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -45,6 +46,7 @@ function Jobs() {
           setJobData(res.data.results);
           setShowContent(true);
           setError(false);
+          console.log(res);
         } catch (error) {
           setShowContent(true);
           setError(true);
@@ -77,9 +79,7 @@ function Jobs() {
     <div>
       <Navbar />
       {!showContent ? (
-        <Stack align="center" justify="center" height="85vh" wight="100vw">
-          <PacmanLoader color="rgb(54, 215, 183)" />
-        </Stack>
+        <Loader />
       ) : error ? (
         <ServerErrorSVG />
       ) : (
@@ -133,6 +133,7 @@ function Jobs() {
                     JobDescription={item.JobDescription}
                     UserName={item.username}
                     userID={item.user}
+                    id={item.id}
                   />
                 );
               })}

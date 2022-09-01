@@ -32,8 +32,9 @@ import AuthContext from "../context/AuthContext";
 import { getTokens } from "../services/localStorage";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
-import { PacmanLoader } from "react-spinners";
+import { PuffLoader } from "react-spinners";
 import ServerErrorSVG from "../components/ServerErrorSVG";
+import Loader from "../components/Loader";
 
 function PriceWrapper({ children }) {
   return (
@@ -197,9 +198,7 @@ export default function Pricing(props) {
     <>
       <Navbar />
       {!showContent ? (
-        <Stack align="center" justify="center" height="85vh" wight="100vw">
-          <PacmanLoader color="rgb(54, 215, 183)" />
-        </Stack>
+        <Loader />
       ) : error ? (
         <ServerErrorSVG />
       ) : (

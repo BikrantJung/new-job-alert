@@ -58,16 +58,12 @@ function ExperienceModal(props) {
     };
 
     try {
-      const res = await axiosInstance.put(
-        `profileSelf/${decodedID}`,
-        experienceData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authTokens?.accessToken}`,
-          },
-        }
-      );
+      const res = await axios.put(`profileSelf/${decodedID}`, experienceData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens?.accessToken}`,
+        },
+      });
       setLoading(false);
       setAllowClose(true);
       console.log(res);

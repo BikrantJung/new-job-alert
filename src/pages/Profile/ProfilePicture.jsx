@@ -49,7 +49,7 @@ function ProfilePicture(props) {
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
   const [allowUpdate, setAllowUpdate] = useState(false);
-
+  const [removed, setRemoved] = useState(false);
   const handleChange = (e) => {
     setAllowUpdate(true);
     setLocalImage(URL.createObjectURL(e.target.files[0]));
@@ -59,13 +59,12 @@ function ProfilePicture(props) {
     e.preventDefault();
     setAllowUpdate(false);
     setLoading(true);
+    setRemoved(false);
     const data = new FormData(e.currentTarget);
     const imgData = {
       user: decodedID,
-      avatar: data.get("image"),
-      subscription: initialUserData.subscription,
+      avatar: removed ? null : data.get("image"),
     };
-
     try {
       const res = await axios.put(`profileSelf/${decodedID}`, imgData, {
         headers: {
@@ -105,6 +104,7 @@ function ProfilePicture(props) {
   }, [allowClose]);
 
   const removePhoto = async () => {
+    setRemoved(true);
     setLocalImage(null);
     const data = {
       user: decodedID,
@@ -164,9 +164,7 @@ function ProfilePicture(props) {
           <Stack align="center" justify={"center"}>
             <Avatar
               src={
-                localImage ||
-                initialUserData?.avatar ||
-                `${userProfileData?.avatar}`
+                localImage || initialUserData?.avatar || userProfileData?.avatar
               }
               size="xl"
             />

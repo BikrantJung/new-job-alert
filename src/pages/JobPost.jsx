@@ -49,8 +49,9 @@ import { AiOutlineDollar } from "react-icons/ai";
 import { IoChevronDown } from "react-icons/io5";
 import { CloseIcon } from "@chakra-ui/icons";
 import Navbar from "../components/Navbar/Navbar";
-import { PacmanLoader } from "react-spinners";
+import { PuffLoader } from "react-spinners";
 import ServerErrorSVG from "../components/ServerErrorSVG";
+import Loader from "../components/Loader";
 const CustomGridItem = ({ children }) => {
   return <GridItem colSpan={[2, 1]}>{children}</GridItem>;
 };
@@ -163,6 +164,7 @@ export default function JobPost() {
         setCategoryData(res.data);
         setShowContent(true);
         setError(false);
+        console.log(res);
       } catch (error) {
         setShowContent(true);
         setError(true);
@@ -238,9 +240,7 @@ export default function JobPost() {
     <>
       <Navbar />
       {!showContent ? (
-        <Stack align="center" justify="center" height="85vh" wight="100vw">
-          <PacmanLoader color="rgb(54, 215, 183)" />
-        </Stack>
+        <Loader />
       ) : error ? (
         <ServerErrorSVG />
       ) : (
@@ -322,7 +322,7 @@ export default function JobPost() {
                             </Select>
                           </FormControl>
                         ) : (
-                          <Skeleton height="100px" />
+                          <Text>Categories are currently unavailable</Text>
                         )}
                       </Stack>
                     </Box>

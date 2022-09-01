@@ -19,6 +19,7 @@ import {
   LinkOverlay,
   Stack,
   useColorMode,
+  Icon,
 } from "@chakra-ui/react";
 import Navbar from "../../components/Navbar/Navbar";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
@@ -31,8 +32,9 @@ import Footer from "../../components/Footer/Footer";
 import { Link as ReactLink } from "react-router-dom";
 import axios from "axios";
 import ServerErrorSVG from "../../components/ServerErrorSVG";
-import { PacmanLoader } from "react-spinners";
-
+import { BarLoader } from "react-spinners";
+import Loader from "../../components/Loader";
+import { BsFacebook } from "react-icons/bs";
 const BlogTags = (props) => {
   return (
     <HStack spacing={2} marginTop={props.marginTop}>
@@ -104,6 +106,8 @@ const Blog = () => {
           setShowContent(true);
           setError(true);
         }
+      } else {
+        setShowContent(true);
       }
     }
 
@@ -114,9 +118,7 @@ const Blog = () => {
     <>
       <Navbar />
       {!showContent ? (
-        <Stack align="center" justify="center" height="85vh" wight="100vw">
-          <PacmanLoader color="rgb(54, 215, 183)" />
-        </Stack>
+        <Loader />
       ) : error ? (
         <ServerErrorSVG />
       ) : (

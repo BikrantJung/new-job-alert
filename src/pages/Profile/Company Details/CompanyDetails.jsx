@@ -22,6 +22,7 @@ import {
   Text,
   Textarea,
   Tooltip,
+  useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
@@ -40,14 +41,22 @@ import { useEffect } from "react";
 import axios from "axios";
 import { Link as ReactLink, useParams } from "react-router-dom";
 import { IoLogoWhatsapp } from "react-icons/io";
+import { useContext } from "react";
+import StateContext from "../../../context/StateContext";
+import Loader from "../../../components/Loader";
+import ServerErrorSVG from "../../../components/ServerErrorSVG";
 function CompanyDetails() {
   const { id } = useParams();
   const [companyData, setCompanyData] = useState([]);
   const [showSkeleton, setShowSkeleton] = useState(false);
+  const [showContent, setShowContent] = useState(false);
   const [error, setError] = useState(false);
+  const { colorMode } = useColorMode();
+  const { userCompany } = useContext(StateContext);
   useEffect(() => {
     const getCompanyDetails = async () => {
       setShowSkeleton(true);
+      setShowContent(false);
       try {
         const res = await axios.get(`company/${id}`, {
           headers: {
@@ -58,7 +67,10 @@ function CompanyDetails() {
         console.log(res);
         setCompanyData(res.data);
         setShowSkeleton(false);
+        setShowContent(true);
+        setError(false);
       } catch (error) {
+        setShowContent(true);
         setError(true);
         console.log(error);
       }
@@ -69,239 +81,256 @@ function CompanyDetails() {
   return (
     <>
       <Navbar />
-      <Stack
-        direction={{ base: "column", md: "row" }}
-        p={5}
-        gap={3}
-        background={useColorModeValue("gray.200", "gray.900")}
-        alignItems="flex-start"
-      >
-        <Stack
-          bgColor={useColorModeValue("white", "gray.800")}
-          border="1px solid"
-          borderColor={useColorModeValue("gray.300", "gray.600")}
-          flex={3}
-          style={{ marginInlineStart: 0 }}
-          alignSelf="flex-start"
-          height="80vh"
-          overflow="hidden"
-          w="100%"
-        >
-          <Stack align="center" height="100%">
-            <Box
-              height={{ base: "13rem", md: "45rem" }}
-              //   m={5}
-
+      {!showContent ? (
+        <Loader />
+      ) : error ? (
+        <ServerErrorSVG />
+      ) : (
+        <>
+          <Stack
+            direction={{ base: "column", md: "row" }}
+            p={5}
+            gap={3}
+            background={colorMode === "light" ? "gray.200" : "gray.900"}
+            alignItems="flex-start"
+          >
+            <Stack
+              bgColor={colorMode === "light" ? "white" : "gray.800"}
+              border="1px solid"
+              borderColor={colorMode === "light" ? "gray.300" : "gray.600"}
+              flex={3}
+              style={{ marginInlineStart: 0 }}
+              alignSelf="flex-start"
+              height="80vh"
+              overflow="hidden"
               w="100%"
-              display="grid"
-              placeItems={"center"}
-              position="relative"
-              bgColor={useColorModeValue("gray.100", "gray.900")}
-              //   display="none"
             >
-              <Image
-                // fallbackSrc="https://via.placeholder.com/150"
-                width="100%"
-                objectFit={"cover"}
-                height="100%"
-                position="absolute"
-                src={companyData?.companyCover}
-                // mt={100}
-              />
-              <Box
-                bgColor="white"
-                p={1}
-                borderRadius="full"
-                position="absolute"
-                bottom={"-20%"}
-                left={"50%"}
-                transform="translateX(-50%)"
-              >
-                <Avatar
-                  size="lg"
-                  src={companyData?.companyLogo}
-                  //   objectFit={'cover'}
-                />
-              </Box>
-            </Box>
-            <Stack align="center">
-              <Stack
-                mt={{ base: 39, md: 34 }}
-                direction="row"
-                align="center"
-                justify={"center"}
-              >
-                {showSkeleton ? (
-                  <Skeleton height="20px" width="6rem" mt={15} />
-                ) : (
-                  <Text
-                    fontWeight={"bold"}
-                    fontSize={[15, 16, 17, 18, 19, 20]}
-                    mt={15}
+              <Stack align="center" height="100%">
+                <Box
+                  height={{ base: "13rem", md: "45rem" }}
+                  //   m={5}
+
+                  w="100%"
+                  display="grid"
+                  placeItems={"center"}
+                  position="relative"
+                  bgColor={colorMode === "light" ? "gray.100" : "gray.900"}
+                  //   display="none"
+                >
+                  <Image
+                    // fallbackSrc="https://via.placeholder.com/150"
+                    width="100%"
+                    objectFit={"cover"}
+                    height="100%"
+                    position="absolute"
+                    src={companyData?.companyCover}
+                    // mt={100}
+                  />
+                  <Box
+                    bgColor="white"
+                    p={1}
+                    borderRadius="full"
+                    position="absolute"
+                    bottom={"-20%"}
+                    left={"50%"}
+                    transform="translateX(-50%)"
                   >
-                    {companyData?.companyUsername}
-                  </Text>
-                )}
+                    <Avatar
+                      size="lg"
+                      src={companyData?.companyLogo}
+                      //   objectFit={'cover'}
+                    />
+                  </Box>
+                </Box>
+                <Stack align="center">
+                  <Stack
+                    mt={{ base: 39, md: 34 }}
+                    direction="row"
+                    align="center"
+                    justify={"center"}
+                  >
+                    {showSkeleton ? (
+                      <Skeleton height="20px" width="6rem" mt={15} />
+                    ) : (
+                      <Text
+                        fontWeight={"bold"}
+                        fontSize={[15, 16, 17, 18, 19, 20]}
+                        mt={15}
+                      >
+                        {companyData?.companyUsername}
+                      </Text>
+                    )}
+                  </Stack>
+                </Stack>
+                <Stack direction="row">
+                  {companyData?.instagram && (
+                    <Tooltip
+                      label={
+                        companyData?.instagram
+                          ? companyData?.instagram
+                          : "No link found"
+                      }
+                      hasArrow
+                      display={["none", "none", "block"]}
+                    >
+                      <span>
+                        <Link href={companyData?.instagram} target="_blank">
+                          <Icon
+                            as={AiFillInstagram}
+                            _hover={{ cursor: "pointer" }}
+                          />
+                        </Link>
+                      </span>
+                    </Tooltip>
+                  )}
+                  {companyData?.facebook && (
+                    <Tooltip
+                      label={
+                        companyData?.facebook
+                          ? companyData?.facebook
+                          : "No link found"
+                      }
+                      hasArrow
+                      display={["none", "none", "block"]}
+                    >
+                      <span>
+                        <Link href={companyData?.facebook} target="_blank">
+                          <Icon
+                            as={AiFillFacebook}
+                            _hover={{ cursor: "pointer" }}
+                          />
+                        </Link>
+                      </span>
+                    </Tooltip>
+                  )}
+
+                  {companyData?.twitter && (
+                    <Tooltip
+                      label={
+                        companyData?.twitter
+                          ? companyData?.twitter
+                          : "No link found"
+                      }
+                      hasArrow
+                      display={["none", "none", "block"]}
+                    >
+                      <span>
+                        <Link href={companyData?.twitter} target="_blank">
+                          <Icon
+                            as={AiFillTwitterCircle}
+                            _hover={{ cursor: "pointer" }}
+                          />
+                        </Link>
+                      </span>
+                    </Tooltip>
+                  )}
+
+                  {companyData?.whatsapp && (
+                    <Tooltip
+                      label={
+                        companyData?.whatsapp
+                          ? companyData?.whatsapp
+                          : "No link found"
+                      }
+                      hasArrow
+                      display={["none", "none", "block"]}
+                    >
+                      <span>
+                        <Icon
+                          as={IoLogoWhatsapp}
+                          _hover={{ cursor: "pointer" }}
+                        />
+                      </span>
+                    </Tooltip>
+                  )}
+                </Stack>
+                <Stack w="100%" p={3}>
+                  <Stack direction="row" align="center">
+                    <Icon as={InfoIcon} fontSize={[11, 12, 13, 14, 15, 16]} />
+                    <Text fontSize={[10, 11, 12, 13, 14, 15]}>
+                      {companyData?.companyLocation
+                        ? companyData?.companyLocation
+                        : "No location found"}
+                    </Text>
+                  </Stack>
+                  <Stack direction="row" align="center">
+                    <Icon as={PhoneIcon} fontSize={[10, 11, 12, 13, 14, 15]} />
+                    <Text fontSize={[10, 11, 12, 13, 14, 15]}>
+                      {companyData?.companyTel
+                        ? companyData?.companyTel
+                        : "No number found"}
+                    </Text>
+                  </Stack>
+                  <Stack direction="row" align="center">
+                    <Icon as={EmailIcon} fontSize={[10, 11, 12, 13, 14, 15]} />
+                    <Text fontSize={[10, 11, 12, 13, 14, 15]}>
+                      {" "}
+                      {companyData?.companyEmail
+                        ? companyData?.companyEmail
+                        : "No email found"}
+                    </Text>
+                  </Stack>
+                </Stack>
               </Stack>
             </Stack>
-            <Stack direction="row">
-              {companyData?.instagram && (
-                <Tooltip
-                  label={
-                    companyData?.instagram
-                      ? companyData?.instagram
-                      : "No link found"
-                  }
-                  hasArrow
-                  display={["none", "none", "block"]}
-                >
-                  <span>
-                    <Link href={companyData?.instagram} target="_blank">
-                      <Icon
-                        as={AiFillInstagram}
-                        _hover={{ cursor: "pointer" }}
-                      />
-                    </Link>
-                  </span>
-                </Tooltip>
-              )}
-              {companyData?.facebook && (
-                <Tooltip
-                  label={
-                    companyData?.facebook
-                      ? companyData?.facebook
-                      : "No link found"
-                  }
-                  hasArrow
-                  display={["none", "none", "block"]}
-                >
-                  <span>
-                    <Link href={companyData?.facebook} target="_blank">
-                      <Icon
-                        as={AiFillFacebook}
-                        _hover={{ cursor: "pointer" }}
-                      />
-                    </Link>
-                  </span>
-                </Tooltip>
-              )}
-
-              {companyData?.twitter && (
-                <Tooltip
-                  label={
-                    companyData?.twitter
-                      ? companyData?.twitter
-                      : "No link found"
-                  }
-                  hasArrow
-                  display={["none", "none", "block"]}
-                >
-                  <span>
-                    <Link href={companyData?.twitter} target="_blank">
-                      <Icon
-                        as={AiFillTwitterCircle}
-                        _hover={{ cursor: "pointer" }}
-                      />
-                    </Link>
-                  </span>
-                </Tooltip>
-              )}
-
-              {companyData?.whatsapp && (
-                <Tooltip
-                  label={
-                    companyData?.whatsapp
-                      ? companyData?.whatsapp
-                      : "No link found"
-                  }
-                  hasArrow
-                  display={["none", "none", "block"]}
-                >
-                  <span>
-                    <Icon as={IoLogoWhatsapp} _hover={{ cursor: "pointer" }} />
-                  </span>
-                </Tooltip>
-              )}
-            </Stack>
-            <Stack w="100%" p={3}>
-              <Stack direction="row" align="center">
-                <Icon as={InfoIcon} fontSize={[11, 12, 13, 14, 15, 16]} />
-                <Text fontSize={[10, 11, 12, 13, 14, 15]}>
-                  {companyData?.companyLocation
-                    ? companyData?.companyLocation
-                    : "No location found"}
-                </Text>
-              </Stack>
-              <Stack direction="row" align="center">
-                <Icon as={PhoneIcon} fontSize={[10, 11, 12, 13, 14, 15]} />
-                <Text fontSize={[10, 11, 12, 13, 14, 15]}>
-                  {companyData?.companyTel
-                    ? companyData?.companyTel
-                    : "No number found"}
-                </Text>
-              </Stack>
-              <Stack direction="row" align="center">
-                <Icon as={EmailIcon} fontSize={[10, 11, 12, 13, 14, 15]} />
-                <Text fontSize={[10, 11, 12, 13, 14, 15]}>
-                  {" "}
-                  {companyData?.companyEmail
-                    ? companyData?.companyEmail
-                    : "No email found"}
-                </Text>
-              </Stack>
+            <Stack
+              border="1px solid"
+              borderColor={colorMode === "light" ? "gray.300" : "gray.600"}
+              bgColor={colorMode === "light" ? "white" : "gray.900"}
+              flex={7}
+              style={{ marginInlineStart: 0 }}
+            >
+              <Tabs variant="enclosed" isLazy>
+                <TabList>
+                  <Tab gap={2}>
+                    <Icon as={MdWorkOutline} />
+                    <Text fontSize={[10, 11, 12, 13, 14, 15]}>Jobs</Text>
+                  </Tab>
+                  <Tab gap={2}>
+                    <Icon as={InfoIcon} />
+                    <Text fontSize={[10, 11, 12, 13, 14, 15]}>About</Text>
+                  </Tab>
+                  <Tab
+                    gap={2}
+                    style={{ marginLeft: "auto" }}
+                    display={id === userCompany ? "flex" : "none"}
+                  >
+                    <Icon as={EditIcon} />
+                    <Text fontSize={[10, 11, 12, 13, 14, 15]}>Edit</Text>
+                  </Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel>
+                    <Stack>
+                      <Heading
+                        fontSize="lg"
+                        border="1px solid"
+                        borderColor={
+                          colorMode === "light" ? "gray.300" : "gray.600"
+                        }
+                        p={3}
+                        color={colorMode === "light" ? "gray.700" : "gray.300"}
+                      >
+                        Vacancies
+                      </Heading>
+                      <Jobs />
+                      <Jobs />
+                      <Jobs />
+                    </Stack>
+                  </TabPanel>
+                  <TabPanel>
+                    <About />
+                  </TabPanel>
+                  <TabPanel>
+                    <EditCompanyDetails />
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
             </Stack>
           </Stack>
-        </Stack>
-        <Stack
-          border="1px solid"
-          borderColor={useColorModeValue("gray.300", "gray.600")}
-          bgColor={useColorModeValue("white", "gray.900")}
-          flex={7}
-          style={{ marginInlineStart: 0 }}
-        >
-          <Tabs variant="enclosed" isLazy>
-            <TabList>
-              <Tab gap={2}>
-                <Icon as={MdWorkOutline} />
-                <Text fontSize={[10, 11, 12, 13, 14, 15]}>Jobs</Text>
-              </Tab>
-              <Tab gap={2}>
-                <Icon as={InfoIcon} />
-                <Text fontSize={[10, 11, 12, 13, 14, 15]}>About</Text>
-              </Tab>
-              <Tab gap={2} style={{ marginLeft: "auto" }}>
-                <Icon as={EditIcon} />
-                <Text fontSize={[10, 11, 12, 13, 14, 15]}>Edit</Text>
-              </Tab>
-            </TabList>
-            <TabPanels>
-              <TabPanel>
-                <Stack>
-                  <Heading
-                    fontSize="lg"
-                    border="1px solid"
-                    borderColor={useColorModeValue("gray.300", "gray.600")}
-                    p={3}
-                    color={useColorModeValue("gray.700", "gray.300")}
-                  >
-                    Vacancies
-                  </Heading>
-                  <Jobs />
-                  <Jobs />
-                  <Jobs />
-                </Stack>
-              </TabPanel>
-              <TabPanel>
-                <About />
-              </TabPanel>
-              <TabPanel>
-                <EditCompanyDetails />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </Stack>
-      </Stack>
-      <Footer />
+          <Footer />
+        </>
+      )}
     </>
   );
 }

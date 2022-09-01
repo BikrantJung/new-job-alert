@@ -43,19 +43,36 @@ import SocialMediaDetails from "./SocialMediaDetails";
 import WorkAreaModal from "./WorkAreaModal";
 import { useNavigate } from "react-router-dom";
 import EducationModal from "./Modals/EducationModal";
-import CertificationCVModal from "./Modals/CertificaionCVModal";
+import CertificationModal from "./Modals/CertificaionModal";
 import { getTokens } from "../../services/localStorage";
 import StateContext from "../../context/StateContext";
+import { useEffect } from "react";
+import axios from "axios";
+import CVModal from "./Modals/CVModal";
 function EditProfile(props) {
   const navigate = useNavigate();
   const [selectedModal, setSelectedModal] = useState("");
-  const { userProfileData, initialUserData } = useContext(AuthContext);
+  const { userProfileData, initialUserData, moreUserData, setMoreUserData } =
+    useContext(AuthContext);
   const { isValidUser } = useContext(StateContext);
-
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleClick = (e) => {
     setSelectedModal(e.target.value);
   };
+  useEffect(() => {
+    const getMoreUserData = async () => {
+      if (userProfileData?.user) {
+        try {
+          const res = await axios.get(
+            `profileEduDetails/${userProfileData?.user}`
+          );
+          console.log(res);
+          setMoreUserData(res.data);
+        } catch (error) {}
+      }
+    };
+    getMoreUserData();
+  }, []);
 
   console.log("PROFILE");
 
@@ -618,20 +635,50 @@ function EditProfile(props) {
                     <Tbody>
                       <Tr>
                         <Td style={{ padding: 0 }}>School</Td>
-                        <Td>NorthUniversity</Td>
+                        <Td
+                          color={moreUserData?.school ? "gray.800" : "gray.400"}
+                        >
+                          {moreUserData?.school
+                            ? moreUserData?.school
+                            : "Not available"}
+                        </Td>
                       </Tr>
                       <Tr>
                         <Td style={{ padding: 0 }}>Year</Td>
-                        <Td> From 1990 to 2005 </Td>
+                        <Td
+                          color={
+                            moreUserData?.fromYear ? "gray.800" : "gray.400"
+                          }
+                        >
+                          {moreUserData?.currentEdu
+                            ? `Still studying from ${moreUserData?.fromYear}`
+                            : ` From ${moreUserData?.fromYear} to
+
+                          ${moreUserData?.toYear}`}
+                        </Td>
                       </Tr>
 
                       <Tr>
                         <Td style={{ padding: 0 }}>Degree</Td>
-                        <Td>Masters Degree</Td>
+                        <Td
+                          color={moreUserData?.degree ? "gray.800" : "gray.400"}
+                        >
+                          {moreUserData?.degree
+                            ? moreUserData?.degree
+                            : "Not available"}
+                        </Td>
                       </Tr>
                       <Tr>
                         <Td style={{ padding: 0 }}>Area of study</Td>
-                        <Td>Computer Science</Td>
+                        <Td
+                          color={
+                            moreUserData?.areaOfStudy ? "gray.800" : "gray.400"
+                          }
+                        >
+                          {moreUserData?.areaOfStudy
+                            ? moreUserData?.areaOfStudy
+                            : "Not available"}
+                        </Td>
                       </Tr>
                       <Tr>
                         <Td style={{ padding: 0 }}>Description</Td>
@@ -656,21 +703,52 @@ function EditProfile(props) {
                     fontWeight={500}
                     color={useColorModeValue("blue", "cyan.400")}
                   >
-                    Certification and CV
+                    Certification
                   </Text>
                   <Button
                     variant="ghost"
                     colorScheme={"blue"}
-                    value="certification_cv"
+                    value="certification"
                     onClick={(e) => {
                       handleClick(e);
                       onOpen();
                     }}
                   >
-                    Edit
+                    Upload
                   </Button>
-                  {selectedModal === "certification_cv" && (
-                    <CertificationCVModal isOpen={isOpen} onClose={onClose} />
+                  {selectedModal === "certification" && (
+                    <CertificationModal isOpen={isOpen} onClose={onClose} />
+                  )}
+                </Stack>
+              </Box>
+              <Box>
+                <Stack
+                  direction="row"
+                  align="center"
+                  justify={"space-between"}
+                  p={2}
+                  boxShadow="md"
+                >
+                  <Text
+                    fontSize={[16, 17, 18, 19, 20]}
+                    fontWeight={500}
+                    color={useColorModeValue("blue", "cyan.400")}
+                  >
+                    CV
+                  </Text>
+                  <Button
+                    variant="ghost"
+                    colorScheme={"blue"}
+                    value="cv"
+                    onClick={(e) => {
+                      handleClick(e);
+                      onOpen();
+                    }}
+                  >
+                    Upload
+                  </Button>
+                  {selectedModal === "cv" && (
+                    <CVModal isOpen={isOpen} onClose={onClose} />
                   )}
                 </Stack>
               </Box>

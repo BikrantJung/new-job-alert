@@ -31,6 +31,8 @@ function EducationModal(props) {
     decodedID,
     initialUserData,
     authTokens,
+    moreUserData,
+    setMoreUserData,
   } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
@@ -40,35 +42,60 @@ function EducationModal(props) {
     e.preventDefault();
     setLoading(true);
     const data = new FormData(e.currentTarget);
-    const contactData = {
-      user: decodedID,
-      phNumber: data.get("school"),
-      contactEmail: data.get("area_of_study"),
-      contactTel: data.get("tel_no"),
-      subscription: userProfileData.subscription,
+    const educationData = {
+      euser: decodedID,
+      school: data.get("school"),
+      areaOfStudy: data.get("area_of_study"),
+      fromYear: data.get("year_from"),
+      toYear: data.get("year_to"),
+      eduDescription: data.get("description"),
+      degree: data.get("degree"),
+      currentEdu: currentlyStudying,
     };
+
     try {
-      const res = await axios.put(`profileSelf/${decodedID}`, contactData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authTokens?.accessToken}`,
-        },
-      });
+      const res = await axios.put(
+        `profileEduDetails/${decodedID}`,
+        educationData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authTokens?.accessToken}`,
+          },
+        }
+      );
+      console.log(res);
       setLoading(false);
 
       setAllowClose(true);
 
-      setUserProfileData(res.data);
+      setMoreUserData(res.data);
     } catch (error) {
       setAllowClose(false);
       setLoading(false);
       console.log(error);
-      toast({
-        title: "Server error. Please try again later.",
-        status: "error",
-        duration: 4000,
-        isClosable: true,
-      });
+      if (error.response?.data?.fromYear || error.response?.data?.toYear) {
+        toast({
+          title: "Please select the year",
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+      } else if (error.response?.data?.school) {
+        toast({
+          title: "Please enter a school name ",
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+      } else if (error.response?.data?.areaOfStudy) {
+        toast({
+          title: "Please enter the area of study",
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+      }
     }
   };
   useEffect(() => {
@@ -128,9 +155,6 @@ function EducationModal(props) {
               <Input
                 type="text"
                 name="school"
-                defaultValue={
-                  userProfileData?.phNumber || initialUserData?.phNumber
-                }
                 placeholder="E.x. Cambridge University"
               />
             </FormControl>
@@ -145,6 +169,14 @@ function EducationModal(props) {
                 placeholder="E.x. Computer Science"
               />
             </FormControl>
+            <FormControl id="degree">
+              <FormLabel>Degree</FormLabel>
+              <Input
+                type="text"
+                name="degree"
+                placeholder="E.x. Bachelor's degree"
+              />
+            </FormControl>
             <FormControl id="currently-studying">
               <Checkbox
                 onChange={() => setCurrentlyStudying((prevValue) => !prevValue)}
@@ -154,7 +186,7 @@ function EducationModal(props) {
             </FormControl>
             <Grid templateColumns={"repeat(2,1fr)"} gap={2} w="100%">
               <GridItem colSpan={1}>
-                <FormControl id="year-from">
+                <FormControl id="year-from" isRequired>
                   <FormLabel>Year: From</FormLabel>
                   <Select placeholder="Select year" name="year_from">
                     {yearArray.map((item, i) => {
@@ -168,7 +200,7 @@ function EducationModal(props) {
                 </FormControl>
               </GridItem>
               <GridItem colSpan={1}>
-                <FormControl id="year-to">
+                <FormControl id="year-to" isRequired>
                   <FormLabel>Year: To</FormLabel>
                   <Select
                     placeholder="Select year"

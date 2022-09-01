@@ -45,8 +45,9 @@ import { BsBook } from "react-icons/bs";
 import { BiBuildings } from "react-icons/bi";
 import StateContext from "../../context/StateContext";
 import { TbCertificate } from "react-icons/tb";
-import { PacmanLoader } from "react-spinners";
+import { PuffLoader } from "react-spinners";
 import ServerErrorSVG from "../../components/ServerErrorSVG";
+import Loader from "../../components/Loader";
 export default function Profile(props) {
   const { colorMode, toggleColorMode } = useColorMode();
 
@@ -93,9 +94,7 @@ export default function Profile(props) {
   return (
     <>
       {!showContent ? (
-        <Stack align="center" justify="center" height="100vh" wight="100vw">
-          <PacmanLoader color="rgb(54, 215, 183)" />
-        </Stack>
+        <Loader />
       ) : error ? (
         <ServerErrorSVG />
       ) : (

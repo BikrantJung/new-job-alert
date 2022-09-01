@@ -1,4 +1,5 @@
 import {
+  Center,
   Divider,
   Heading,
   Link,
@@ -15,10 +16,11 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import axios from "axios";
-import React from "react";
+import React, { useContext } from "react";
 import { useEffect } from "react";
 import { IoMdCheckmarkCircle, IoMdSettings } from "react-icons/io";
 import { IoRefreshCircle } from "react-icons/io5";
+import AuthContext from "../../../context/AuthContext";
 
 function UserEducation() {
   return (
@@ -49,6 +51,7 @@ function UserEducation() {
 }
 
 function EducationDetails() {
+  const { moreUserData } = useContext(AuthContext);
   return (
     <Stack
       overflow="auto"
@@ -64,16 +67,13 @@ function EducationDetails() {
             Graduation
           </Heading>
         </Stack>
-        {/* {selectedModal === "work_area" && (
-          <WorkArea onOpen={onOpen} onClose={onClose} isOpen={isOpen} />
-        )} */}
-        {/* <Divider
-          borderBottomColor={useColorModeValue("gray.600", "gray.300")}
-        /> */}
+
         <Stack gap={1} p={3} pb={0}>
           <Heading fontSize="lg">School</Heading>
           <Text style={{ margin: 0 }}>
-            Northeast University from 1994 to 2004
+            {moreUserData?.currentEdu
+              ? `Studying at ${moreUserData?.school} from ${moreUserData?.fromYear}`
+              : `Studied at ${moreUserData?.school} from ${moreUserData?.fromYear} to ${moreUserData?.toYear}`}
           </Text>
         </Stack>
         <Divider
@@ -81,14 +81,14 @@ function EducationDetails() {
         />
         <Stack gap={1} p={3} pb={0}>
           <Heading fontSize="lg">Degree</Heading>
-          <Text style={{ margin: 0 }}>Msc.</Text>
+          <Text style={{ margin: 0 }}> {moreUserData?.degree} </Text>
         </Stack>
         <Divider
           borderBottomColor={useColorModeValue("gray.600", "gray.300")}
         />
         <Stack gap={1} p={3} pb={0}>
           <Heading fontSize="lg">Area of study</Heading>
-          <Text style={{ margin: 0 }}>Computer Science</Text>
+          <Text style={{ margin: 0 }}> {moreUserData?.areaOfStudy}</Text>
         </Stack>
         <Divider
           borderBottomColor={useColorModeValue("gray.600", "gray.300")}
@@ -102,10 +102,7 @@ function EducationDetails() {
             textAlign="justify"
             pb={3}
           >
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book.
+            {moreUserData?.eduDescription}
           </Text>
         </Stack>
       </Stack>
@@ -114,6 +111,7 @@ function EducationDetails() {
 }
 
 function WorkHistory() {
+  const { userProfileData } = useContext(AuthContext);
   return (
     <Stack
       overflow="auto"
@@ -127,16 +125,33 @@ function WorkHistory() {
             Employment History
           </Heading>
         </Stack>
-        <List spacing={3} pt={3}>
-          <ListItem>
-            <ListIcon as={IoRefreshCircle} color="green.500" />
-            Worked at{" "}
-            <Link href="#" color={"blue"}>
-              Google
-            </Link>{" "}
-            from year 1990 to 2004 as a senior engineer.
-          </ListItem>
-        </List>
+        {userProfileData?.workExperience?.length ? (
+          <Stack my={3}>
+            <List>
+              {userProfileData?.workExperience?.map((item, index) => {
+                return (
+                  <ListItem
+                    display={"flex"}
+                    alignItems="center"
+                    gap={2}
+                    w="100%"
+                    key={index}
+                  >
+                    <ListIcon
+                      as={IoMdCheckmarkCircle}
+                      color="rgb(29, 161, 242)"
+                    />
+                    <Text fontSize={(10, 11, 12, 13, 14, 15)}>{item}</Text>
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Stack>
+        ) : (
+          <Center my={3} color="gray.400">
+            Not available
+          </Center>
+        )}
       </Stack>
     </Stack>
   );

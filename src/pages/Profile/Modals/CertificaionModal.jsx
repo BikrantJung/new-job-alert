@@ -6,7 +6,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
-  Avatar,
   Box,
   Button,
   Divider,
@@ -21,7 +20,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  Text,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -30,56 +28,55 @@ import { useContext } from "react";
 import axios from "axios";
 import AuthContext from "../../../context/AuthContext";
 
-function CertificationCVModal(props) {
-  console.log("PP");
+function CertificationModal(props) {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef();
   const {
     userProfileData,
-    setUserProfileData,
-    initialUserData,
-    setInitialUserData,
     decodedID,
-
     authTokens,
+    moreUserData,
+    setMoreUserData,
   } = useContext(AuthContext);
   const [localImage, setLocalImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
   const [allowUpdate, setAllowUpdate] = useState(false);
-
+  const [removed, setRemoved] = useState(false);
   const handleChange = (e) => {
     setAllowUpdate(true);
     setLocalImage(URL.createObjectURL(e.target.files[0]));
   };
-
   async function handleFormSubmit(e) {
     e.preventDefault();
     setAllowUpdate(false);
     setLoading(true);
+    setRemoved(false);
     const data = new FormData(e.currentTarget);
-    const imgData = {
-      user: decodedID,
-      avatar: data.get("image"),
-      subscription: initialUserData.subscription,
+    const certificationCV = {
+      euser: decodedID,
+      certification: removed ? null : data.get("certificate_image"),
     };
 
     try {
-      const res = await axios.put(`profileSelf/${decodedID}`, imgData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${authTokens?.accessToken}`,
-        },
-      });
+      const res = await axios.put(
+        `profileEduDetails/${decodedID}`,
+        certificationCV,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${authTokens?.accessToken}`,
+          },
+        }
+      );
       setLoading(false);
       setAllowClose(true);
-
-      setInitialUserData(res.data);
-      setUserProfileData([]);
-      setUserProfileData(res.data);
+      console.log(res);
+      setMoreUserData(res.data);
       setLocalImage(null);
     } catch (error) {
+      console.log(error);
       setAllowUpdate(true);
       setAllowClose(false);
       setLoading(false);
@@ -102,32 +99,37 @@ function CertificationCVModal(props) {
     };
     handleClose();
   }, [allowClose]);
+  console.log(moreUserData?.certification);
 
   const removePhoto = async () => {
     setLocalImage(null);
-    const data = {
-      user: decodedID,
-      avatar: null,
+    setRemoved(true);
+    const certificationData = {
+      euser: decodedID,
+      certification: null,
     };
     try {
-      const res = await axios.put(`profileSelf/${decodedID}`, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authTokens?.accessToken}`,
-        },
-      });
+      const res = await axios.put(
+        `profileEduDetails/${decodedID}`,
+        certificationData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authTokens?.accessToken}`,
+          },
+        }
+      );
       setLoading(false);
-
       setAllowClose(true);
-      setInitialUserData(res.data);
-      setUserProfileData([]);
-      setUserProfileData(res.data);
+      setMoreUserData(res.data);
     } catch (error) {
+      console.log("FKUCKING ERROR");
+      console.log(error);
       setAllowClose(false);
       setLoading(false);
       setAllowUpdate(true);
       toast({
-        title: "Server Error. Please try again later.",
+        title: "Server Errors. Please try again later.",
         status: "error",
         duration: 4000,
         isClosable: true,
@@ -144,20 +146,21 @@ function CertificationCVModal(props) {
         setLoading(false);
         props.onClose();
       }}
+      scrollBehavior={"outside"}
+      size="xl"
     >
       <ModalOverlay />
       <ModalContent
-        height="90%"
+        // height="90%"
         w={["100vw", "100vw", "80vw"]}
         m={0}
         as="form"
         onSubmit={(e) => handleFormSubmit(e)}
         noValidate
+        style={{ marginTop: "0rem" }}
       >
         <Stack>
-          <ModalHeader textAlign={"center"}>
-            Update certificate and CV{" "}
-          </ModalHeader>
+          <ModalHeader textAlign={"center"}>Update certification</ModalHeader>
           <ModalCloseButton />
           <Divider />
         </Stack>
@@ -167,15 +170,15 @@ function CertificationCVModal(props) {
           </Heading>
           <Stack align="center" justify={"center"}>
             <Box width="70%">
-              <Image src="https://i.pinimg.com/736x/8f/ae/c3/8faec3a389cd628f24293abef4d3a26b.jpg" />
+              <Image src={localImage || moreUserData?.certification} />
             </Box>
           </Stack>
-          <Stack my={5} direction="row" align="center" justify={"flex-end"}>
+          <Stack my={5} direction="row" align="center" justify={"center"}>
             <Input
               type="file"
               id="file-upload"
               accept="image/*"
-              name="image"
+              name="certificate_image"
               hidden
               onChange={(e) => handleChange(e)}
             />
@@ -192,7 +195,7 @@ function CertificationCVModal(props) {
             <Button
               leftIcon={<DeleteIcon />}
               onClick={onOpen}
-              disabled={!(localImage || userProfileData?.avatar)}
+              disabled={!(localImage || moreUserData?.certification)}
             >
               Remove photo
             </Button>
@@ -255,4 +258,4 @@ function CertificationCVModal(props) {
   );
 }
 
-export default CertificationCVModal;
+export default CertificationModal;

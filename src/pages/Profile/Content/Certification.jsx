@@ -18,8 +18,10 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import React from "react";
+import { useContext } from "react";
 import { IoRefreshCircle } from "react-icons/io5";
-
+import AuthContext from "../../../context/AuthContext";
+import { AiOutlineFileText } from "react-icons/ai";
 function Certification() {
   return (
     <Stack flex={7} style={{ marginInlineStart: 0 }} w="100%">
@@ -49,6 +51,7 @@ function Certification() {
 }
 
 function Certificate() {
+  const { moreUserData } = useContext(AuthContext);
   return (
     <Stack
       overflow="auto"
@@ -67,40 +70,13 @@ function Certificate() {
         <Stack gap={1} p={3} pb={0}>
           <List spacing={3}>
             <ListItem>
-              <Stack direction="row" align="center">
-                <Icon as={IoRefreshCircle} color="green.500" />
-                <Text>
-                  Certified by{" "}
-                  <Link href="#" color={"blue"}>
-                    Google
-                  </Link>{" "}
-                  at year ____
-                </Text>
-              </Stack>
-
               <Box w="50%" mt={2}>
-                <Image src="https://i.pinimg.com/736x/8f/ae/c3/8faec3a389cd628f24293abef4d3a26b.jpg" />
+                <Image src={moreUserData?.certification} />
               </Box>
             </ListItem>
             <Divider
               borderBottomColor={useColorModeValue("gray.600", "gray.300")}
             />
-            <ListItem>
-              <Stack direction="row" align="center">
-                <Icon as={IoRefreshCircle} color="green.500" />
-                <Text>
-                  Certified by{" "}
-                  <Link href="#" color={"blue"}>
-                    Google
-                  </Link>{" "}
-                  at year ____
-                </Text>
-              </Stack>
-
-              <Box w="50%" mt={2}>
-                <Image src="https://i.pinimg.com/736x/8f/ae/c3/8faec3a389cd628f24293abef4d3a26b.jpg" />
-              </Box>
-            </ListItem>
           </List>
         </Stack>
       </Stack>
@@ -109,6 +85,8 @@ function Certificate() {
 }
 
 function CV() {
+  const { moreUserData } = useContext(AuthContext);
+
   return (
     <Stack overflow="auto" style={{ marginLeft: "0" }}>
       <Stack gap={2}>
@@ -119,9 +97,19 @@ function CV() {
         </Stack>
 
         <Stack gap={1} p={3} pb={0}>
-          <Box w="50%" mt={2}>
-            <Image src="https://i.pinimg.com/736x/8f/ae/c3/8faec3a389cd628f24293abef4d3a26b.jpg" />
-          </Box>
+          <Stack
+            bg="teal.200"
+            w="80%"
+            p={3}
+            borderRadius="md"
+            direction="row"
+            align="center"
+          >
+            <Icon as={AiOutlineFileText} color="black" />
+            <Link href={moreUserData?.cvUpload} target="_blank">
+              {moreUserData?.cvUpload.split("/").slice(-1)[0]}
+            </Link>
+          </Stack>
         </Stack>
       </Stack>
     </Stack>

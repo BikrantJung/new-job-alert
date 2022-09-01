@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }) => {
   const [blogData, setBlogData] = useState([]);
   const [latestBlog, setLatestBlog] = useState([]);
   const [isCompany, setIsCompany] = useState(true);
+  const [moreUserData, setMoreUserData] = useState([]);
   const [authTokens, setAuthTokens] = useState(
     accessToken && refreshToken
       ? {
@@ -123,7 +124,7 @@ export const AuthProvider = ({ children }) => {
     if (loading) {
       updateToken();
     }
-    let time = 50 * 1000;
+    let time = 9 * 60 * 1000;
     let interval = setInterval(() => {
       if (authTokens.accessToken && authTokens.refreshToken) {
         updateToken();
@@ -158,6 +159,8 @@ export const AuthProvider = ({ children }) => {
     setLatestBlog,
     isCompany,
     setIsCompany,
+    moreUserData,
+    setMoreUserData,
   };
   return (
     <AuthContext.Provider value={contextData}>
