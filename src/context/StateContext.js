@@ -33,8 +33,8 @@ export const StateProvider = ({ children }) => {
           console.log("COMPANY", res);
         } catch (error) {
           if (
-            error.response.data.statusText === "Not found" &&
-            error.response.data.status === 404
+            error.response?.data?.statusText === "Not found" &&
+            error.response?.data?.status === 404
           ) {
             setHasCompany(false);
           }

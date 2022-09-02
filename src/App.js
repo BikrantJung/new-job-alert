@@ -24,6 +24,7 @@ import CreateCompany from "./pages/Profile/Company Details/CreateCompany";
 import Certification from "./pages/Profile/Content/Certification";
 import StateContext from "./context/StateContext";
 import EditPageProtect from "./components/EditPageProtect";
+import Faq from "./pages/FAQ/Faq";
 function App() {
   const [progress, setProgress] = useState(0);
   const { isValidUser } = useContext(StateContext);
@@ -57,6 +58,7 @@ function App() {
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/jobs" element={<Jobs />} />
+          <Route path="/faq" element={<Faq />} />
           <Route path="/jobs/:id" element={<CompanyJob />} />
           <Route path={`/users`} element={<SearchPage />} />
           <Route

@@ -14,6 +14,7 @@ const CustomSteps = {
     };
   },
 };
+
 const theme = extendTheme({
   fonts: {
     heading: `'SF Pro Display', sans-serif`,

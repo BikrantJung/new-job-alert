@@ -53,6 +53,10 @@ const Links = [
     link: "/create-job-post",
     text: "Post a job",
   },
+  {
+    link: "/faq",
+    text: "FAQs",
+  },
 ];
 
 const NavLink = (props) => (
