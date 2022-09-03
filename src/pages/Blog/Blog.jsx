@@ -97,7 +97,6 @@ const Blog = () => {
               Authorization: null,
             },
           });
-          console.log(res);
           setLatestBlog(res.data.splice(-1));
           setBlogData(res.data);
           setShowContent(true);

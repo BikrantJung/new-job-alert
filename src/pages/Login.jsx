@@ -21,7 +21,7 @@ import AuthContext from "../context/AuthContext";
 import StateContext from "../context/StateContext";
 import { saveTokens, saveUserID } from "../services/localStorage";
 import axiosInstance from "../services/api";
-
+import { setCookie, getCookie, removeCookie } from "../utils/cookieHook";
 import {
   encode,
   decode,
@@ -62,33 +62,23 @@ export default function Login() {
         method: "POST",
         url: "login/",
         data: loginData,
+
         headers: {
           "Content-type": "application/json",
           Authorization: null,
         },
       });
+
       setIsLoading(false);
       saveTokens(res.data.token);
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${res.data.token.access}`;
+
       setAuthTokens({
-        accessToken: res.data.token.access,
-        refreshToken: res.data.token.refresh,
+        refreshToken: res.data.token,
       });
 
       window.location.reload(false);
-      const encodedID = window.btoa(
-        window.btoa(window.btoa(window.btoa(window.btoa(res.data.id))))
-      );
-      saveUserID(encodedID);
-      window.location.reload(false);
-
-      // localStorage.setItem("session", JSON.stringify(res.data.token));
     } catch (error) {
       setIsLoading(false);
-      console.log(error);
-      // setServerError(error.response.data.errors);
       if (error?.response?.data?.errors?.non_field_errors) {
         toast({
           title: error?.response.data.errors.non_field_errors[0],

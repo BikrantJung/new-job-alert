@@ -22,17 +22,10 @@ import { getTokens } from "../../services/localStorage";
 import { Link as ReactLink, Outlet } from "react-router-dom";
 
 function MainContent() {
-  const { userProfileData, initialUserData, urlID, encodedID } =
+  const { userProfileData, initialUserData, urlID, userID } =
     useContext(AuthContext);
-  const { localUserID } = getTokens();
 
-  const checkID =
-    window.btoa(
-      window.btoa(window.btoa(window.btoa(window.btoa(userProfileData?.user))))
-    ) ||
-    window.btoa(
-      window.btoa(window.btoa(window.btoa(window.btoa(initialUserData?.user))))
-    );
+  const checkID = userProfileData?.user || initialUserData?.user;
 
   return (
     <Stack
@@ -98,7 +91,7 @@ function MainContent() {
         )}
 
         {/* Edit Profile*/}
-        {localUserID === checkID && (
+        {userID === checkID && (
           <Link
             as={ReactLink}
             to="edit-profile"

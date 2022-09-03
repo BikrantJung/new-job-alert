@@ -17,11 +17,8 @@ function RecentJobs() {
               Authorization: null,
             },
           });
-          console.log(res);
           setRecentJobs(res.data?.results?.slice(0, 3));
-        } catch (error) {
-          console.log(error);
-        }
+        } catch (error) {}
       }
     };
     getRecentJobs();

@@ -32,13 +32,8 @@ function CertificationModal(props) {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef();
-  const {
-    userProfileData,
-    decodedID,
-    authTokens,
-    moreUserData,
-    setMoreUserData,
-  } = useContext(AuthContext);
+  const { userProfileData, userID, authTokens, moreUserData, setMoreUserData } =
+    useContext(AuthContext);
   const [localImage, setLocalImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
@@ -55,13 +50,13 @@ function CertificationModal(props) {
     setRemoved(false);
     const data = new FormData(e.currentTarget);
     const certificationCV = {
-      euser: decodedID,
+      euser: userID,
       certification: removed ? null : data.get("certificate_image"),
     };
 
     try {
       const res = await axios.put(
-        `profileEduDetails/${decodedID}`,
+        `profileEduDetails/${userID}`,
         certificationCV,
         {
           headers: {
@@ -72,11 +67,9 @@ function CertificationModal(props) {
       );
       setLoading(false);
       setAllowClose(true);
-      console.log(res);
       setMoreUserData(res.data);
       setLocalImage(null);
     } catch (error) {
-      console.log(error);
       setAllowUpdate(true);
       setAllowClose(false);
       setLoading(false);
@@ -105,12 +98,12 @@ function CertificationModal(props) {
     setLocalImage(null);
     setRemoved(true);
     const certificationData = {
-      euser: decodedID,
+      euser: userID,
       certification: null,
     };
     try {
       const res = await axios.put(
-        `profileEduDetails/${decodedID}`,
+        `profileEduDetails/${userID}`,
         certificationData,
         {
           headers: {
@@ -124,7 +117,6 @@ function CertificationModal(props) {
       setMoreUserData(res.data);
     } catch (error) {
       console.log("FKUCKING ERROR");
-      console.log(error);
       setAllowClose(false);
       setLoading(false);
       setAllowUpdate(true);

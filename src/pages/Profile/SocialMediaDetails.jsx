@@ -32,12 +32,11 @@ import axiosInstance from "../../services/api";
 
 function SocialMediaDetails(props) {
   const toast = useToast();
-  const { localUserID, accessToken } = getTokens();
   const {
     userProfileData,
     setUserProfileData,
     initialUserData,
-    decodedID,
+    userID,
     authTokens,
   } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -47,7 +46,7 @@ function SocialMediaDetails(props) {
     setLoading(true);
     const data = new FormData(e.currentTarget);
     const socialData = {
-      user: decodedID,
+      user: userID,
       facebook: data.get("facebook_link"),
       whatsapp: data.get("whatsapp_num"),
       twitter: data.get("twitter_link"),
@@ -55,7 +54,7 @@ function SocialMediaDetails(props) {
       subscription: userProfileData.subscription,
     };
     try {
-      const res = await axios.put(`profileSelf/${decodedID}`, socialData, {
+      const res = await axios.put(`profileSelf/${userID}`, socialData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authTokens?.accessToken}`,

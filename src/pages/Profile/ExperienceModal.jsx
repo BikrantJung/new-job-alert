@@ -38,7 +38,7 @@ function ExperienceModal(props) {
     setUserProfileData,
     initialUserData,
     setInitialUserData,
-    decodedID,
+    userID,
     authTokens,
   } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -52,13 +52,13 @@ function ExperienceModal(props) {
     e.preventDefault();
     setLoading(true);
     const experienceData = {
-      user: decodedID,
+      user: userID,
       workExperience: experienceList?.length ? experienceList : null,
       subscription: userProfileData.subscription,
     };
 
     try {
-      const res = await axios.put(`profileSelf/${decodedID}`, experienceData, {
+      const res = await axios.put(`profileSelf/${userID}`, experienceData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authTokens?.accessToken}`,
@@ -66,14 +66,12 @@ function ExperienceModal(props) {
       });
       setLoading(false);
       setAllowClose(true);
-      console.log(res);
       setInitialUserData(res.data);
       setUserProfileData([]);
       setUserProfileData(res.data);
     } catch (error) {
       setAllowClose(false);
       setLoading(false);
-      console.log(error);
       toast({
         title: "Server Error. Please try again later.",
         status: "error",

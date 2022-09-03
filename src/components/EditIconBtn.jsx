@@ -1,14 +1,12 @@
 import React from "react";
 import { IconButton } from "@chakra-ui/react";
 import { EditIcon } from "@chakra-ui/icons";
-import { getTokens } from "../services/localStorage";
 import { useContext } from "react";
 import AuthContext from "../context/AuthContext";
 
 function EditIconBtn({ ...rest }) {
-  const { localUserID } = getTokens();
-  const { userProfileData } = useContext(AuthContext);
-  const parsedID = parseInt(localUserID);
+  const { userProfileData, userID } = useContext(AuthContext);
+  const parsedID = parseInt(userID);
 
   return (
     <>

@@ -46,7 +46,6 @@ function Jobs() {
           setJobData(res.data.results);
           setShowContent(true);
           setError(false);
-          console.log(res);
         } catch (error) {
           setShowContent(true);
           setError(true);
@@ -66,11 +65,8 @@ function Jobs() {
             },
           });
 
-          console.log(res);
           setJobData(res.data);
-        } catch (error) {
-          console.log(error);
-        }
+        } catch (error) {}
       }
     };
     fetchUsers();

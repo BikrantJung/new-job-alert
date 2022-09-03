@@ -23,13 +23,12 @@ import AuthContext from "../../context/AuthContext";
 import axiosInstance from "../../services/api";
 function Biography(props) {
   const toast = useToast();
-  const { localUserID, accessToken } = getTokens();
   const {
     userProfileData,
     setUserProfileData,
     initialUserData,
     setInitialUserData,
-    decodedID,
+    userID,
     authTokens,
   } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -39,13 +38,13 @@ function Biography(props) {
     setLoading(true);
     const data = new FormData(e.currentTarget);
     const biographyData = {
-      user: decodedID,
+      user: userID,
       bio: data.get("biography"),
       subscription: userProfileData.subscription,
     };
 
     try {
-      const res = await axios.put(`profileSelf/${decodedID}`, biographyData, {
+      const res = await axios.put(`profileSelf/${userID}`, biographyData, {
         headers: {
           "Content-Type": "application/json",
         },

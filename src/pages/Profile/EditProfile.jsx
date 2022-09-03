@@ -66,7 +66,6 @@ function EditProfile(props) {
           const res = await axios.get(
             `profileEduDetails/${userProfileData?.user}`
           );
-          console.log(res);
           setMoreUserData(res.data);
         } catch (error) {}
       }

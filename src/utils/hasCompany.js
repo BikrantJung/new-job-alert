@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import AuthContext from "../context/AuthContext";
 import axios from "axios";
 const HasCompanyRoute = ({ children }) => {
-  const { authTokens, decodedID } = useContext(AuthContext);
+  const { authTokens, userID } = useContext(AuthContext);
   const location = useLocation();
   //   const authed = authTokens.accessToken ? true : false;
   console.log("HAS COMPANY");
@@ -11,7 +11,7 @@ const HasCompanyRoute = ({ children }) => {
   useEffect(() => {
     const hasCompany = async () => {
       try {
-        const res = await axios.get(`companySelf/${decodedID}`, {
+        const res = await axios.get(`companySelf/${userID}`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authTokens?.accessToken}`,

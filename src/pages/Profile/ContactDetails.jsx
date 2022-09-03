@@ -27,30 +27,29 @@ import axiosInstance from "../../services/api";
 
 function ContactDetails(props) {
   const toast = useToast();
-  const { localUserID, accessToken } = getTokens();
   const {
     userProfileData,
     setUserProfileData,
-    decodedID,
+    userID,
     initialUserData,
     authTokens,
   } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
- 
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     const data = new FormData(e.currentTarget);
     const contactData = {
-      user: decodedID,
+      user: userID,
       phNumber: data.get("phone_number"),
       contactEmail: data.get("contact_email"),
       contactTel: data.get("tel_no"),
       subscription: userProfileData.subscription,
     };
     try {
-      const res = await axios.put(`profileSelf/${decodedID}`, contactData, {
+      const res = await axios.put(`profileSelf/${userID}`, contactData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authTokens?.accessToken}`,
@@ -64,7 +63,6 @@ function ContactDetails(props) {
     } catch (error) {
       setAllowClose(false);
       setLoading(false);
-      console.log(error);
       if (error.response?.data?.contactEmail) {
         toast({
           title: "Enter a valid email address",

@@ -28,7 +28,7 @@ function EducationModal(props) {
   const {
     userProfileData,
     setUserProfileData,
-    decodedID,
+    userID,
     initialUserData,
     authTokens,
     moreUserData,
@@ -43,7 +43,7 @@ function EducationModal(props) {
     setLoading(true);
     const data = new FormData(e.currentTarget);
     const educationData = {
-      euser: decodedID,
+      euser: userID,
       school: data.get("school"),
       areaOfStudy: data.get("area_of_study"),
       fromYear: data.get("year_from"),
@@ -55,7 +55,7 @@ function EducationModal(props) {
 
     try {
       const res = await axios.put(
-        `profileEduDetails/${decodedID}`,
+        `profileEduDetails/${userID}`,
         educationData,
         {
           headers: {
@@ -64,7 +64,6 @@ function EducationModal(props) {
           },
         }
       );
-      console.log(res);
       setLoading(false);
 
       setAllowClose(true);
@@ -73,7 +72,6 @@ function EducationModal(props) {
     } catch (error) {
       setAllowClose(false);
       setLoading(false);
-      console.log(error);
       if (error.response?.data?.fromYear || error.response?.data?.toYear) {
         toast({
           title: "Please select the year",

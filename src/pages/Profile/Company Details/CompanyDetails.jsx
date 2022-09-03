@@ -74,7 +74,7 @@ function CompanyDetails() {
   const [localLogo, setLocalLogo] = useState("");
   const { colorMode } = useColorMode();
   const { userCompany } = useContext(StateContext);
-  const { decodedID, authTokens } = useContext(AuthContext);
+  const { userID, authTokens } = useContext(AuthContext);
   useEffect(() => {
     const getCompanyDetails = async () => {
       setShowSkeleton(true);
@@ -86,7 +86,6 @@ function CompanyDetails() {
             Authorization: null,
           },
         });
-        console.log(res);
         setCompanyData(res.data);
         setShowSkeleton(false);
         setShowContent(true);
@@ -94,7 +93,6 @@ function CompanyDetails() {
       } catch (error) {
         setShowContent(true);
         setError(true);
-        console.log(error);
       }
     };
     getCompanyDetails();
@@ -105,7 +103,7 @@ function CompanyDetails() {
     const data = new FormData(e.currentTarget);
     setLoading(true);
     const updateData = {
-      company:decodedID,
+      company: userID,
       companyName: data.get("company_name"),
       companyTagline: data.get("company_tagline"),
       companyEmail: data.get("company_email"),
@@ -120,17 +118,15 @@ function CompanyDetails() {
       companyCover: data.get("company_cover"),
     };
     try {
-      const res = await axios.put(`companySelf/${decodedID}`, updateData, {
+      const res = await axios.put(`companySelf/${userID}`, updateData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authTokens?.accessToken}`,
         },
       });
       setLoading(false);
-      console.log(res);
     } catch (error) {
       setLoading(false);
-      console.log(error);
     }
   }
   function removeAllPhotos() {

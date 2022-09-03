@@ -18,6 +18,7 @@
     "base-64": "^1.0.0",
     "chakra-ui-steps": "^1.7.4",
     "dayjs": "^1.11.5",
+    "js-cookie": "^3.0.1",
     "jwt-decode": "^3.1.2",
     "khalti-checkout-web": "^2.2.0",
     "mem": "^9.0.2",

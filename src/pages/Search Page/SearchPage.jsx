@@ -21,11 +21,8 @@ function SearchPage() {
           },
         });
 
-        console.log(res);
         setUser(res.data);
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     };
     fetchUsers();
   }, []);

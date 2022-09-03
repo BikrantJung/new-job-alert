@@ -24,13 +24,12 @@ import AuthContext from "../../context/AuthContext";
 import axiosInstance from "../../services/api";
 function WorkAreaModal(props) {
   const toast = useToast();
-  const { localUserID, accessToken } = getTokens();
   const {
     userProfileData,
     setUserProfileData,
     initialUserData,
     setInitialUserData,
-    decodedID,
+    userID,
   } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
@@ -39,31 +38,25 @@ function WorkAreaModal(props) {
     setLoading(true);
     const data = new FormData(e.currentTarget);
     const professionData = {
-      user: decodedID,
+      user: userID,
       profession: data.get("profession"),
       subscription: userProfileData.subscription,
     };
 
     try {
-      const res = await axios.put(
-        `profileSelf/${decodedID}`,
-        professionData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await axios.put(`profileSelf/${userID}`, professionData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       setLoading(false);
       setAllowClose(true);
-      console.log(res);
       setInitialUserData(res.data);
       setUserProfileData([]);
       setUserProfileData(res.data);
     } catch (error) {
       setAllowClose(false);
       setLoading(false);
-      console.log(error)
       toast({
         title: "Server Error. Please try again later.",
         status: "error",

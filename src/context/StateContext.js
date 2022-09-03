@@ -5,24 +5,22 @@ import AuthContext from "./AuthContext";
 const StateContext = createContext();
 export default StateContext;
 export const StateProvider = ({ children }) => {
-  const { localUserID } = getTokens();
-
   const [navHeight, setNavHeight] = useState(0);
   const [renderNav, setRenderNav] = useState(true);
   const [justRegistered, setJustRegistered] = useState(false);
   const [successfulPost, setSuccessfulPost] = useState(false);
   const [jobData, setJobData] = useState([]);
   const [hasCompany, setHasCompany] = useState(false);
-  const { decodedID, authTokens, initialUserData, userProfileData } =
+  const { userID, authTokens, initialUserData, userProfileData } =
     useContext(AuthContext);
   const [userCompany, setUserCompany] = useState("");
   const [recentJobs, setRecentJobs] = useState([]);
   const [isValidUser, setIsValidUser] = useState(false);
   useEffect(() => {
     const hasCompany = async () => {
-      if (decodedID) {
+      if (userID) {
         try {
-          const res = await axios.get(`companySelf/${decodedID}`, {
+          const res = await axios.get(`companySelf/${userID}`, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${authTokens?.accessToken}`,
@@ -30,7 +28,6 @@ export const StateProvider = ({ children }) => {
           });
           setHasCompany(true);
           setUserCompany(res.data.companyUsername);
-          console.log("COMPANY", res);
         } catch (error) {
           if (
             error.response?.data?.statusText === "Not found" &&
@@ -42,22 +39,13 @@ export const StateProvider = ({ children }) => {
       }
     };
     hasCompany();
-  }, [decodedID]);
+  }, [userID]);
 
   useEffect(() => {
     if (userProfileData?.user || initialUserData?.user) {
-      const checkID =
-        window.btoa(
-          window.btoa(
-            window.btoa(window.btoa(window.btoa(userProfileData?.user)))
-          )
-        ) ||
-        window.btoa(
-          window.btoa(
-            window.btoa(window.btoa(window.btoa(initialUserData?.user)))
-          )
-        );
-      setIsValidUser(checkID === localUserID);
+      const checkID = userProfileData?.user || initialUserData?.user;
+
+      setIsValidUser(checkID === userID);
     }
   }, [userProfileData?.user, initialUserData?.user]);
 

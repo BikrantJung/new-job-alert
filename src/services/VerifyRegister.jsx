@@ -11,9 +11,8 @@ function VerifyRegister() {
           method: "POST",
           url: `/verify-email/${id}/${token}/`,
         });
-        console.log(res);
       } catch (error) {
-        console.log(error.response.data)
+        console.log(error.response.data);
       }
     }
     verifyPage();

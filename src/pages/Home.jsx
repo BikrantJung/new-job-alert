@@ -20,28 +20,25 @@ function Home() {
     setLoading,
     initialUserData,
     setInitialUserData,
-    decodedID,
+    userID,
     authTokens,
   } = useContext(AuthContext);
-  const { accessToken } = getTokens();
   useEffect(() => {
     async function getUserProfileData() {
-      if (decodedID && !initialUserData) {
+      if (userID && !initialUserData) {
         try {
-          const res = await axios.get(`profileSelf/${decodedID}`, {
+          const res = await axios.get(`profileSelf/${userID}`, {
             headers: {
               Authorization: `Bearer ${authTokens?.accessToken}`,
             },
           });
           setInitialUserData(res.data);
-        } catch (error) {
-          console.log(error);
-        }
+        } catch (error) {}
       }
     }
     getUserProfileData();
     setLoading(false);
-  }, [accessToken, decodedID]);
+  }, [userID]);
 
   return (
     <div>

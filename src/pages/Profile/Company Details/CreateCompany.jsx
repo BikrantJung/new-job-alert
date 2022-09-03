@@ -35,8 +35,7 @@ function CreateCompany() {
 
   const { colorMode } = useColorMode();
 
-  const { decodedID, authTokens } =
-    useContext(AuthContext);
+  const { userID, authTokens } = useContext(AuthContext);
   const { hasCompany, setHasCompany, userCompany } = useContext(StateContext);
   async function createCompany(e) {
     e.preventDefault();
@@ -44,7 +43,7 @@ function CreateCompany() {
     console.log("CREATED");
     const data = new FormData(e.currentTarget);
     const companyDetails = {
-      company: decodedID,
+      company: userID,
       companyUsername: data.get("company_username"),
       companyName: data.get("company_name"),
       companyTagline: data.get("company_tagline"),
@@ -67,14 +66,12 @@ function CreateCompany() {
           Authorization: `Bearer ${authTokens?.accessToken}`,
         },
       });
-      console.log(res);
       setLoading(false);
       setHasCompany(true);
       navigate(`/company/${res.data.data.companyUsername}`);
       window.location.reload(false);
     } catch (error) {
       setLoading(false);
-      console.log(error);
       if (error?.response?.data?.companyUsername) {
         toast({
           title: error?.response?.data?.companyUsername[0],
@@ -82,7 +79,7 @@ function CreateCompany() {
           duration: 4000,
           isClosable: true,
         });
-      }else{
+      } else {
         toast({
           title: "Server error. Please try again later",
           status: "error",

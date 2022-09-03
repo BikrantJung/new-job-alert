@@ -60,8 +60,7 @@ export default function Pricing(props) {
   const [pricingID, setPricingID] = useState();
   const [pricingDetail, setPricingDetail] = useState({});
   const [khaltiResponse, setKhaltiResponse] = useState({});
-  const { accessToken } = getTokens();
-  const { userSubscribed, isExpired } = useContext(AuthContext);
+  const { userSubscribed, isExpired, authTokens } = useContext(AuthContext);
   const toast = useToast();
   useEffect(() => {
     async function getPricingData() {
@@ -78,7 +77,6 @@ export default function Pricing(props) {
         const removedData = res.data.shift();
         setPricingData(res.data);
 
-        console.log(res);
         setShowContent(true);
         setError(false);
       } catch (error) {
@@ -91,7 +89,7 @@ export default function Pricing(props) {
   }, []);
 
   const checkUserVerification = async (e, id) => {
-    if (accessToken) {
+    if (authTokens.accessToken) {
       try {
         const data = {
           membership_type: null,
@@ -149,7 +147,7 @@ export default function Pricing(props) {
               },
               headers: {
                 "Content-Type": "application/json",
-                authorization: `Bearer ${accessToken}`,
+                authorization: `Bearer ${authTokens.accessToken}`,
               },
             });
           } catch (error) {
@@ -164,7 +162,6 @@ export default function Pricing(props) {
         // onError handler is optional
         onError(error) {
           // handle errors
-          console.log(error);
         },
         onClose() {},
       },
@@ -176,7 +173,7 @@ export default function Pricing(props) {
         // "SCT",
       ],
     };
-    if (accessToken) {
+    if (authTokens.accessToken) {
       setModalOpen(false);
       let checkout = new KhaltiCheckout(config);
       checkout.show({ amount: 10000 });

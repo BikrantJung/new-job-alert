@@ -33,7 +33,7 @@ function SkillsModal(props) {
   const {
     userProfileData,
     setUserProfileData,
-    decodedID,
+    userID,
     setInitialUserData,
     authTokens,
   } = useContext(AuthContext);
@@ -66,13 +66,13 @@ function SkillsModal(props) {
     setLoading(true);
 
     const skillsData = {
-      user: decodedID,
+      user: userID,
       skills: skillsList?.length ? skillsList : null,
       subscription: userProfileData.subscription,
     };
 
     try {
-      const res = await axios.put(`profileSelf/${decodedID}`, skillsData, {
+      const res = await axios.put(`profileSelf/${userID}`, skillsData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authTokens?.accessToken}`,
@@ -84,7 +84,6 @@ function SkillsModal(props) {
       setUserProfileData(res.data);
     } catch (error) {
       setAllowClose(false);
-      console.log(error);
       setLoading(false);
       toast({
         title: "Server Error. Please try again later.",

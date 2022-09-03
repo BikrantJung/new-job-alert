@@ -74,7 +74,6 @@ export default function Profile(props) {
         });
 
         setUserProfileData([]);
-        console.log(res);
         setUserProfileData(res.data);
         setShowContent(true);
         setError(false);
@@ -84,7 +83,6 @@ export default function Profile(props) {
         setError(true);
         setUserProfileData([]);
         setInitialUserData([]);
-        console.log(error);
       }
     }
 

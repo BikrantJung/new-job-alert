@@ -38,13 +38,8 @@ function CVModal(props) {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef();
-  const {
-    userProfileData,
-    decodedID,
-    authTokens,
-    moreUserData,
-    setMoreUserData,
-  } = useContext(AuthContext);
+  const { userProfileData, userID, authTokens, moreUserData, setMoreUserData } =
+    useContext(AuthContext);
   const [localFile, setlocalFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
@@ -63,7 +58,7 @@ function CVModal(props) {
     setRemoved(false);
     const data = new FormData(e.currentTarget);
     const CVData = {
-      euser: decodedID,
+      euser: userID,
       cvUpload: removed ? null : data.get("cv_image"),
     };
 
@@ -80,7 +75,7 @@ function CVModal(props) {
       setAllowClose(false);
     } else {
       try {
-        const res = await axios.put(`profileEduDetails/${decodedID}`, CVData, {
+        const res = await axios.put(`profileEduDetails/${userID}`, CVData, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${authTokens?.accessToken}`,
@@ -88,11 +83,9 @@ function CVModal(props) {
         });
         setLoading(false);
         setAllowClose(true);
-        console.log(res);
         setMoreUserData(res.data);
         setlocalFile(null);
       } catch (error) {
-        console.log(error);
         setAllowUpdate(true);
         setAllowClose(false);
         setLoading(false);
@@ -120,11 +113,11 @@ function CVModal(props) {
     setlocalFile(null);
     setRemoved(true);
     const CVData = {
-      euser: decodedID,
+      euser: userID,
       cvUpload: null,
     };
     try {
-      const res = await axios.put(`profileEduDetails/${decodedID}`, CVData, {
+      const res = await axios.put(`profileEduDetails/${userID}`, CVData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authTokens?.accessToken}`,

@@ -148,11 +148,9 @@ export default function JobPost() {
 
         setShowContent(true);
         setError(false);
-        console.log(res);
       } catch (error) {
         setShowContent(true);
         setError(true);
-        console.log(error);
       }
     };
 
@@ -198,11 +196,9 @@ export default function JobPost() {
           Authorization: `Bearer ${authTokens?.accessToken}`,
         },
       });
-      console.log(res);
       setIsLoading(false);
       window.location.reload(false);
     } catch (error) {
-      console.log(error);
       setIsLoading(false);
 
       if (error.response.data) {
@@ -570,29 +566,30 @@ function EduExperience(props) {
                   {props.experienceList?.map((item, index) => {
                     return (
                       <>
-                      <ListItem
-                        display={"flex"}
-                        alignItems="center"
-                        gap={2}
-                        w="100%"
-                        key={index}
-                      >
-                        <ListIcon
-                          as={BsFillCircleFill}
-                          color="rgb(29, 161, 242)"
-                          fontSize={13}
-                        />
-                        <Text fontSize={(10, 11, 12, 13, 14, 15)}>{item}</Text>
-                        <IconButton
-                          icon={<DeleteIcon />}
-                          fontSize={14}
-                          size="sm"
-                          marginLeft={"auto"}
-                          onClick={() => props.deleteItem(index)}
-                        />
-                      </ListItem>
-                      <Divider borderTop="1px solid gray" />
-
+                        <ListItem
+                          display={"flex"}
+                          alignItems="center"
+                          gap={2}
+                          w="100%"
+                          key={index}
+                        >
+                          <ListIcon
+                            as={BsFillCircleFill}
+                            color="rgb(29, 161, 242)"
+                            fontSize={13}
+                          />
+                          <Text fontSize={(10, 11, 12, 13, 14, 15)}>
+                            {item}
+                          </Text>
+                          <IconButton
+                            icon={<DeleteIcon />}
+                            fontSize={14}
+                            size="sm"
+                            marginLeft={"auto"}
+                            onClick={() => props.deleteItem(index)}
+                          />
+                        </ListItem>
+                        <Divider borderTop="1px solid gray" />
                       </>
                     );
                   })}

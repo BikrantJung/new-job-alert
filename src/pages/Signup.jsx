@@ -61,7 +61,6 @@ export default function Signup() {
       navigate("/login");
     } catch (error) {
       setIsLoading(false);
-      console.log(error);
       if (
         error.response.status === 500 &&
         error.response.statusText === "Internal Server Error"
@@ -95,7 +94,6 @@ export default function Signup() {
           isClosable: true,
         });
       }
-      console.log(error);
     }
   };
 

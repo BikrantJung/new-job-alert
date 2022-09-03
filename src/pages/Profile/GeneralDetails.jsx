@@ -24,15 +24,14 @@ import AuthContext from "../../context/AuthContext";
 
 function GeneralDetails(props) {
   const toast = useToast();
-  const { localUserID, accessToken } = getTokens();
   const {
     userProfileData,
     setUserProfileData,
     isExpired,
-    initialUserData,  
+    initialUserData,
     setInitialUserData,
-    decodedID,
-    authTokens
+    userID,
+    authTokens,
   } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
@@ -41,24 +40,19 @@ function GeneralDetails(props) {
     setLoading(true);
     const data = new FormData(e.currentTarget);
     const generalData = {
-      user: decodedID,
+      user: userID,
       location: data.get("current_city"),
       birthPlace: data.get("home_town"),
       DateOfBirth: data.get("date_of_birth") || null,
       subscription: userProfileData.subscription,
     };
     try {
-      const res = await axios.put(
-        `profileSelf/${decodedID}`,
-        generalData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:`Bearer ${authTokens?.accessToken}`
-
-          },
-        }
-      );
+      const res = await axios.put(`profileSelf/${userID}`, generalData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens?.accessToken}`,
+        },
+      });
       setLoading(false);
 
       setAllowClose(true);
@@ -67,7 +61,6 @@ function GeneralDetails(props) {
       setInitialUserData(res.data);
     } catch (error) {
       setAllowClose(false);
-      console.log(error);
       setLoading(false);
       toast({
         title: "Server Error. Please try again later.",

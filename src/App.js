@@ -28,7 +28,6 @@ import Faq from "./pages/FAQ/Faq";
 function App() {
   const [progress, setProgress] = useState(0);
   const { isValidUser } = useContext(StateContext);
-  console.log(isValidUser);
   return (
     <BrowserRouter>
       <div className="App">

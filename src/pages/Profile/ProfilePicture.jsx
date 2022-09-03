@@ -41,7 +41,7 @@ function ProfilePicture(props) {
     setUserProfileData,
     initialUserData,
     setInitialUserData,
-    decodedID,
+    userID,
 
     authTokens,
   } = useContext(AuthContext);
@@ -62,11 +62,11 @@ function ProfilePicture(props) {
     setRemoved(false);
     const data = new FormData(e.currentTarget);
     const imgData = {
-      user: decodedID,
+      user: userID,
       avatar: removed ? null : data.get("image"),
     };
     try {
-      const res = await axios.put(`profileSelf/${decodedID}`, imgData, {
+      const res = await axios.put(`profileSelf/${userID}`, imgData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${authTokens?.accessToken}`,
@@ -107,11 +107,11 @@ function ProfilePicture(props) {
     setRemoved(true);
     setLocalImage(null);
     const data = {
-      user: decodedID,
+      user: userID,
       avatar: null,
     };
     try {
-      const res = await axios.put(`profileSelf/${decodedID}`, data, {
+      const res = await axios.put(`profileSelf/${userID}`, data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authTokens?.accessToken}`,

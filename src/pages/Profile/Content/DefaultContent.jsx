@@ -59,7 +59,7 @@ function DefaultContent() {
 function General() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedModal, setSelectedModal] = useState("");
-  const { initialUserData, urlID, userProfileData, decodedID } =
+  const { initialUserData, urlID, userProfileData, userID } =
     useContext(AuthContext);
 
   return (
@@ -72,7 +72,7 @@ function General() {
                 ? initialUserData?.profession
                   ? initialUserData?.profession
                   : "Add your profession"
-                : parseInt(decodedID) === userProfileData?.user
+                : parseInt(userID) === userProfileData?.user
                 ? userProfileData?.profession
                   ? userProfileData?.profession
                   : "Add your profession"
