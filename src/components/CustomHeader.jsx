@@ -3,7 +3,7 @@ import React from "react";
 
 function CustomHeader({ children, ...rest }) {
   return (
-    <Center>
+    <Center >
       <Heading
         {...rest}
         sx={{

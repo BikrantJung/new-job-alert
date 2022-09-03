@@ -1,4 +1,10 @@
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Avatar,
   Box,
   Button,
@@ -24,6 +30,7 @@ import {
   Tooltip,
   useColorMode,
   useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import {
@@ -34,7 +41,14 @@ import {
 } from "react-icons/ai";
 import Navbar from "../../../components/Navbar/Navbar";
 import { IoLocation } from "react-icons/io5";
-import { PhoneIcon, EmailIcon, InfoIcon, EditIcon } from "@chakra-ui/icons";
+import {
+  PhoneIcon,
+  EmailIcon,
+  InfoIcon,
+  EditIcon,
+  AddIcon,
+  DeleteIcon,
+} from "@chakra-ui/icons";
 import { MdWorkOutline } from "react-icons/md";
 import Footer from "../../../components/Footer/Footer";
 import { useEffect } from "react";
@@ -45,14 +59,22 @@ import { useContext } from "react";
 import StateContext from "../../../context/StateContext";
 import Loader from "../../../components/Loader";
 import ServerErrorSVG from "../../../components/ServerErrorSVG";
+import { useRef } from "react";
+import AuthContext from "../../../context/AuthContext";
 function CompanyDetails() {
   const { id } = useParams();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const [companyData, setCompanyData] = useState([]);
   const [showSkeleton, setShowSkeleton] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [localCover, setLocalCover] = useState("");
+  const [localLogo, setLocalLogo] = useState("");
   const { colorMode } = useColorMode();
   const { userCompany } = useContext(StateContext);
+  const { decodedID, authTokens } = useContext(AuthContext);
   useEffect(() => {
     const getCompanyDetails = async () => {
       setShowSkeleton(true);
@@ -78,6 +100,45 @@ function CompanyDetails() {
     getCompanyDetails();
   }, [id]);
 
+  async function updateCompanyDetails(e) {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    setLoading(true);
+    const updateData = {
+      company:decodedID,
+      companyName: data.get("company_name"),
+      companyTagline: data.get("company_tagline"),
+      companyEmail: data.get("company_email"),
+      companyLocation: data.get("company_location"),
+      companyTel: data.get("company_telephone"),
+      facebook: data.get("company_facebook"),
+      whatsapp: data.get("company_whatsapp"),
+      instagram: data.get("company_instagram"),
+      twitter: data.get("company_twitter"),
+      companyDescription: data.get("company_description"),
+      companyLogo: data.get("company_logo"),
+      companyCover: data.get("company_cover"),
+    };
+    try {
+      const res = await axios.put(`companySelf/${decodedID}`, updateData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens?.accessToken}`,
+        },
+      });
+      setLoading(false);
+      console.log(res);
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  }
+  function removeAllPhotos() {
+    setLocalCover("");
+    setLocalLogo("");
+    // setLoading(true);
+    onClose();
+  }
   return (
     <>
       <Navbar />
@@ -123,7 +184,7 @@ function CompanyDetails() {
                     objectFit={"cover"}
                     height="100%"
                     position="absolute"
-                    src={companyData?.companyCover}
+                    src={localCover || companyData?.companyCover}
                     // mt={100}
                   />
                   <Box
@@ -137,7 +198,7 @@ function CompanyDetails() {
                   >
                     <Avatar
                       size="lg"
-                      src={companyData?.companyLogo}
+                      src={localLogo || companyData?.companyLogo}
                       //   objectFit={'cover'}
                     />
                   </Box>
@@ -157,7 +218,7 @@ function CompanyDetails() {
                         fontSize={[15, 16, 17, 18, 19, 20]}
                         mt={15}
                       >
-                        {companyData?.companyUsername}
+                        {companyData?.companyName}
                       </Text>
                     )}
                   </Stack>
@@ -280,7 +341,7 @@ function CompanyDetails() {
               flex={7}
               style={{ marginInlineStart: 0 }}
             >
-              <Tabs variant="enclosed" isLazy>
+              <Tabs variant="enclosed" index={2} isLazy>
                 <TabList>
                   <Tab gap={2}>
                     <Icon as={MdWorkOutline} />
@@ -319,10 +380,29 @@ function CompanyDetails() {
                     </Stack>
                   </TabPanel>
                   <TabPanel>
-                    <About />
+                    <About
+                      companyName={companyData?.companyName}
+                      companyTagline={companyData?.companyTagline}
+                      companyDescription={companyData?.companyDescription}
+                      companyLocation={companyData?.companyLocation}
+                      companyEmail={companyData?.companyEmail}
+                      companyTelephone={companyData?.companyTel}
+                    />
                   </TabPanel>
-                  <TabPanel>
-                    <EditCompanyDetails />
+                  <TabPanel
+                    as="form"
+                    noValidate
+                    onSubmit={updateCompanyDetails}
+                  >
+                    <EditCompanyDetails
+                      setLocalCover={setLocalCover}
+                      setLocalLogo={setLocalLogo}
+                      removeAllPhotos={removeAllPhotos}
+                      loading={loading}
+                      isOpen={isOpen}
+                      onClose={onClose}
+                      onOpen={onOpen}
+                    />
                   </TabPanel>
                 </TabPanels>
               </Tabs>
@@ -382,27 +462,19 @@ function Jobs() {
   );
 }
 
-function About() {
+function About(props) {
   return (
     <Stack
       border="1px solid"
       borderColor={useColorModeValue("gray.300", "gray.600")}
       p={5}
     >
-      <Heading fontSize="2xl">X.COM</Heading>
+      <Heading fontSize="2xl">{props.companyName}</Heading>
       <Text style={{ margin: 0 }} fontWeight="bold">
-        Tagline
+        {props.companyTagline}
       </Text>
       <Text fontSize={[11, 12, 13, 14, 15, 16]}>
-        Lorem Ipsum is simply dummy text of the printing and typesetting
-        industry. Lorem Ipsum has been the industry's standard dummy text ever
-        since the 1500s, when an unknown printer took a galley of type and
-        scrambled it to make a type specimen book. It has survived not only five
-        centuries, but also the leap into electronic typesetting, remaining
-        essentially unchanged. It was popularised in the 1960s with the release
-        of Letraset sheets containing Lorem Ipsum passages, and more recently
-        with desktop publishing software like Aldus PageMaker including versions
-        of Lorem Ipsum.
+        {props.companyDescription}
       </Text>
       <Stack
         border="1px solid"
@@ -432,16 +504,26 @@ function About() {
             </Stack>
           </Stack>
           <Stack flex={1}>
-            <Text>Birendranagar</Text>
-            <Text>Birendranagar</Text>
-            <Text>Birendranagar</Text>
+            <Text>
+              {props.companyLocation ? props.companyLocation : "Not available"}
+            </Text>
+            <Text>
+              {props.companyEmail ? props.companyEmail : "Not available"}
+            </Text>
+            <Text>
+              {props.companyTelephone
+                ? props.companyTelephone
+                : "Not available"}
+            </Text>
           </Stack>
         </Stack>
       </Stack>
     </Stack>
   );
 }
-export function EditCompanyDetails() {
+export function EditCompanyDetails(props) {
+  const cancelRef = useRef();
+
   return (
     <Stack p={2}>
       <Stack
@@ -466,6 +548,7 @@ export function EditCompanyDetails() {
           fontWeight="inherit"
           colorScheme={"twitter"}
           onClick={() => console.log("CLICKED")}
+          type="submit"
         >
           Save
         </Button>
@@ -478,23 +561,31 @@ export function EditCompanyDetails() {
         gap={5}
       >
         <GridItem colSpan={1}>
-          <FormControl isRequired>
+          <FormControl>
             <FormLabel style={{ margin: 0 }} fontSize={14}>
               Company name
             </FormLabel>
-            <Input placeholder="Enter your company name..." fontSize={14} />
+            <Input
+              placeholder="Enter your company name..."
+              name="company_name"
+              fontSize={14}
+            />
           </FormControl>
         </GridItem>
         <GridItem colSpan={1}>
           <FormControl>
             <FormLabel style={{ margin: 0 }} fontSize={14}>
-              Company title
+              Company tagline
             </FormLabel>
-            <Input placeholder="Enter your company title..." fontSize={14} />
+            <Input
+              placeholder="Enter your company tagline..."
+              name="company_tagline"
+              fontSize={14}
+            />
           </FormControl>
         </GridItem>
         <GridItem colSpan={1}>
-          <FormControl isRequired>
+          <FormControl>
             <FormLabel style={{ margin: 0 }} fontSize={14}>
               Company email
             </FormLabel>
@@ -502,19 +593,24 @@ export function EditCompanyDetails() {
               placeholder="Enter your company email..."
               fontSize={14}
               type="email"
+              name="company_email"
             />
           </FormControl>
         </GridItem>
         <GridItem colSpan={1}>
-          <FormControl isRequired>
+          <FormControl>
             <FormLabel style={{ margin: 0 }} fontSize={14}>
               Company location
             </FormLabel>
-            <Input placeholder="Enter your company location..." fontSize={14} />
+            <Input
+              placeholder="Enter your company location..."
+              name="company_location"
+              fontSize={14}
+            />
           </FormControl>
         </GridItem>
         <GridItem colSpan={2}>
-          <FormControl isRequired>
+          <FormControl>
             <FormLabel style={{ margin: 0 }} fontSize={14}>
               Company Description
             </FormLabel>
@@ -522,18 +618,220 @@ export function EditCompanyDetails() {
               resize="none"
               placeholder="Describe your company..."
               fontSize={14}
+              name="company_description"
             />
           </FormControl>
         </GridItem>
       </Grid>
-      <Stack
-        border="1px solid"
-        borderColor={useColorModeValue("gray.300", "gray.600")}
-        p={3}
-        direction="row"
-        align="center"
-      >
-        <Heading fontSize="lg">Social and contact info</Heading>
+
+      <Stack>
+        <Stack
+          border="1px solid"
+          borderColor={useColorModeValue("gray.300", "gray.600")}
+          p={3}
+          direction="row"
+          align="center"
+        >
+          <Heading fontSize="lg">Social and contact info</Heading>
+        </Stack>
+        <Grid
+          border="1px solid"
+          borderColor={useColorModeValue("gray.300", "gray.600")}
+          p={3}
+          templateColumns="repeat(2,1fr)"
+          gap={5}
+        >
+          <GridItem colSpan={1}>
+            <FormControl>
+              <FormLabel style={{ margin: 0 }} fontSize={14}>
+                Facebook URL
+              </FormLabel>
+              <Input
+                placeholder="https://www.facebook.com/YOURACCOUNT"
+                name="company_facebook"
+                fontSize={14}
+              />
+            </FormControl>
+          </GridItem>
+          <GridItem colSpan={1}>
+            <FormControl>
+              <FormLabel style={{ margin: 0 }} fontSize={14}>
+                Whatsapp number
+              </FormLabel>
+              <Input
+                type="number"
+                placeholder="Whatsapp number..."
+                name="company_whatsapp"
+                fontSize={14}
+              />
+            </FormControl>
+          </GridItem>
+          <GridItem colSpan={1}>
+            <FormControl>
+              <FormLabel style={{ margin: 0 }} fontSize={14}>
+                Instagram URL
+              </FormLabel>
+              <Input
+                placeholder="https://www.instagram.com/YOURACCOUNT"
+                fontSize={14}
+                name="company_instagram"
+              />
+            </FormControl>
+          </GridItem>
+          <GridItem colSpan={1}>
+            <FormControl>
+              <FormLabel style={{ margin: 0 }} fontSize={14}>
+                Twitter URL
+              </FormLabel>
+              <Input
+                placeholder="https://www.twitter.com/YOURACCOUNT"
+                name="company_twitter"
+                fontSize={14}
+              />
+            </FormControl>
+          </GridItem>
+          <GridItem colSpan={2}>
+            <FormControl>
+              <FormLabel style={{ margin: 0 }} fontSize={14}>
+                Telephone number
+              </FormLabel>
+              <Input
+                type="number"
+                placeholder="Telephone number..."
+                fontSize={14}
+                name="company_telephone"
+              />
+            </FormControl>
+          </GridItem>
+        </Grid>
+      </Stack>
+
+      {/* Logo and Cover Image Update */}
+      <Stack>
+        <Stack
+          border="1px solid"
+          borderColor={useColorModeValue("gray.300", "gray.600")}
+          p={3}
+          direction="row"
+          align="center"
+        >
+          <Heading fontSize="lg">Logo and cover image</Heading>
+        </Stack>
+        <Stack
+          border="1px solid"
+          borderColor={useColorModeValue("gray.300", "gray.600")}
+          p={2}
+          gap={5}
+          direction="row"
+        >
+          <FormControl p={1} w="auto">
+            <FormLabel style={{ margin: 0 }} fontSize={14}>
+              Update Logo
+            </FormLabel>
+            <Stack my={2} direction="row">
+              <Input
+                type="file"
+                id="logo-upload"
+                accept="image/*"
+                name="company_logo"
+                hidden
+                onChange={(e) =>
+                  props.setLocalLogo(URL.createObjectURL(e.target.files[0]))
+                }
+              />
+
+              <Button
+                as={"label"}
+                leftIcon={<AddIcon />}
+                style={{ marginInlineStart: "0" }}
+                htmlFor="logo-upload"
+                cursor={"pointer"}
+                size="sm"
+              >
+                Upload
+              </Button>
+            </Stack>
+          </FormControl>
+
+          <FormControl p={1} w="auto">
+            <FormLabel style={{ margin: 0 }} fontSize={14}>
+              Update Cover
+            </FormLabel>
+            <Stack my={2} direction="row">
+              <Input
+                type="file"
+                id="cover-upload"
+                accept="image/*"
+                name="company_cover"
+                hidden
+                onChange={(e) =>
+                  props.setLocalCover(URL.createObjectURL(e.target.files[0]))
+                }
+              />
+
+              <Button
+                as={"label"}
+                leftIcon={<AddIcon />}
+                style={{ marginInlineStart: "0" }}
+                htmlFor="cover-upload"
+                cursor={"pointer"}
+                size="sm"
+              >
+                Upload
+              </Button>
+            </Stack>
+          </FormControl>
+          <FormControl p={1}>
+            <FormLabel style={{ margin: 0 }} fontSize={14}>
+              Reset all photos
+            </FormLabel>
+            <Button
+              my={2}
+              size="sm"
+              leftIcon={<DeleteIcon />}
+              colorScheme="red"
+              onClick={props.onOpen}
+            >
+              Reset
+            </Button>
+          </FormControl>
+          <AlertDialog
+            isOpen={props.isOpen}
+            leastDestructiveRef={cancelRef}
+            onClose={props.onClose}
+            isCentered
+          >
+            <AlertDialogOverlay>
+              <AlertDialogContent>
+                <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                  Reset all photos
+                </AlertDialogHeader>
+
+                <AlertDialogBody>
+                  Are you sure you want to reset all photos
+                </AlertDialogBody>
+
+                <AlertDialogFooter>
+                  <Button ref={cancelRef} onClick={props.onClose}>
+                    Cancel
+                  </Button>
+                  <Button
+                    colorScheme="red"
+                    onClick={() => {
+                      props.removeAllPhotos();
+                    }}
+                    ml={3}
+                    leftIcon={<DeleteIcon />}
+                    isLoading={props.loading}
+                    disabled={props.loading}
+                  >
+                    Reset
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </AlertDialog>
+        </Stack>
       </Stack>
     </Stack>
   );

@@ -16,6 +16,7 @@ import {
   Textarea,
   Link,
   useColorMode,
+  useToast,
 } from "@chakra-ui/react";
 import React, { useRef, useState } from "react";
 import { Link as ReactLink, useNavigate } from "react-router-dom";
@@ -27,13 +28,14 @@ import BrokenImage from "../../../images/broken_image.png";
 import StateContext from "../../../context/StateContext";
 function CreateCompany() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [localAvatar, setLocalAvatar] = useState(null);
   const [localCover, setLocalCover] = useState(null);
 
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode } = useColorMode();
 
-  const { decodedID, authTokens, isCompany, setIsCompany } =
+  const { decodedID, authTokens } =
     useContext(AuthContext);
   const { hasCompany, setHasCompany, userCompany } = useContext(StateContext);
   async function createCompany(e) {
@@ -54,7 +56,7 @@ function CreateCompany() {
       instagram: data.get("company_instagram"),
       twitter: data.get("company_twitter"),
       companyDescription: data.get("company_description"),
-      companyLogo: data.get("company_cover"),
+      companyLogo: data.get("company_logo"),
       companyCover: data.get("company_cover"),
     };
     console.log("PHOTO", companyDetails.companyLogo);
@@ -73,6 +75,21 @@ function CreateCompany() {
     } catch (error) {
       setLoading(false);
       console.log(error);
+      if (error?.response?.data?.companyUsername) {
+        toast({
+          title: error?.response?.data?.companyUsername[0],
+          status: "warning",
+          duration: 4000,
+          isClosable: true,
+        });
+      }else{
+        toast({
+          title: "Server error. Please try again later",
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+      }
     }
   }
   console.log(localAvatar);
@@ -149,15 +166,19 @@ function CreateCompany() {
                 bgColor={colorMode === "light" ? "gray.100" : "gray.900"}
                 //   display="none"
               >
-                <Image
-                  fallbackSrc="https://via.placeholder.com/150"
-                  width="100%"
-                  objectFit={"cover"}
-                  height="100%"
-                  position="absolute"
-                  src={localCover || BrokenImage}
-                  // mt={100}
-                />
+                {localCover ? (
+                  <Image
+                    width="100%"
+                    objectFit={"cover"}
+                    height="100%"
+                    position="absolute"
+                    src={localCover}
+                    // mt={100}
+                  />
+                ) : (
+                  ""
+                )}
+
                 <Box
                   bgColor="white"
                   p={1}
@@ -251,6 +272,9 @@ function CreateCompany() {
                     <FormLabel style={{ margin: 0 }} fontSize={14}>
                       Company Username (Unique)
                     </FormLabel>
+                    <FormLabel style={{ margin: 0 }} fontSize={14}>
+                      This should not contain whitespaces
+                    </FormLabel>
 
                     <Input
                       placeholder="Enter your company username..."
@@ -263,6 +287,9 @@ function CreateCompany() {
                   <FormControl>
                     <FormLabel style={{ margin: 0 }} fontSize={14}>
                       Company name
+                    </FormLabel>
+                    <FormLabel style={{ margin: 0 }} fontSize={14}>
+                      This name will be displayed as your company name
                     </FormLabel>
                     <Input
                       placeholder="Enter your company name..."
@@ -316,7 +343,7 @@ function CreateCompany() {
                     </FormLabel>
                     <Textarea
                       resize="none"
-                      placeholder="Describe your company..."
+                      placeholder="Established, motive, aim..."
                       fontSize={14}
                       name="company_description"
                     />
@@ -334,7 +361,9 @@ function CreateCompany() {
                         accept="image/*"
                         name="company_logo"
                         hidden
-                        onChange={(e) => setLocalAvatar(e.target.files[0])}
+                        onChange={(e) =>
+                          setLocalAvatar(URL.createObjectURL(e.target.files[0]))
+                        }
                       />
 
                       <Button
@@ -403,7 +432,7 @@ function CreateCompany() {
                       Facebook URL
                     </FormLabel>
                     <Input
-                      placeholder="Add a link to your facebook page"
+                      placeholder="https://www.facebook.com/YOURACCOUNT"
                       fontSize={14}
                       name="company_facebook"
                     />
@@ -428,7 +457,7 @@ function CreateCompany() {
                       Instagram URL
                     </FormLabel>
                     <Input
-                      placeholder="Add a link to your instagram page "
+                      placeholder="https://www.instagram.com/YOURACCOUNT"
                       fontSize={14}
                       type="email"
                       name="company_instagram"
@@ -441,7 +470,7 @@ function CreateCompany() {
                       Twitter URL
                     </FormLabel>
                     <Input
-                      placeholder="Add a link to your twitter Profile "
+                      placeholder="https://www.twitter.com/YOURACCOUNT "
                       fontSize={14}
                       name="company_twitter"
                     />

@@ -43,6 +43,11 @@ import {
   Divider,
   RadioGroup,
   Radio,
+  InputRightElement,
+  Kbd,
+  List,
+  ListItem,
+  ListIcon,
 } from "@chakra-ui/react";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import axios from "axios";
@@ -61,89 +66,39 @@ import { Step, Steps, useSteps } from "chakra-ui-steps";
 import ReactSelect from "react-select";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-
+import CustomHeader from "../components/CustomHeader";
+import ReactQuill from "react-quill";
+import { BsFillCircleFill } from "react-icons/bs";
+import "react-quill/dist/quill.snow.css";
 //
 //
 //
-
-const CustomGridItem = ({ children }) => {
-  return <GridItem colSpan={[2, 1]}>{children}</GridItem>;
-};
 
 export default function JobPost() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = useRef();
-  const [localImage, setLocalImage] = useState(null);
   const navigate = useNavigate();
+
   const { authTokens, initialUserData } = useContext(AuthContext);
   const { colorMode } = useColorMode();
-  const [tabIndex, setTabIndex] = useState(2);
-  const [tagValues, setTagValues] = useState([]);
-  const [filteredJobTags, setFilteredJobTags] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState([]);
+  const [tabIndex, setTabIndex] = useState(1);
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [categoryData, setCategoryData] = useState([]);
   const [showContent, setShowContent] = useState(false);
   const [error, setError] = useState(false);
-
-  const [tagsOptions, setTagsOptions] = useState([
-    {
-      id: 1,
-      value: "Web",
-    },
-    {
-      id: 2,
-      value: "Graphics",
-    },
-    {
-      id: 3,
-      value: "Internet",
-    },
-  ]);
-
-  const handleChange = (e) => {
-    setLocalImage(URL.createObjectURL(e.target.files[0]));
-  };
-  const removePhoto = async () => {
-    setLocalImage(null);
-  };
+  const [jobDescription, setJobDescription] = useState("");
+  const [requiredSkills, setRequiredSkills] = useState([]);
+  const [educationRequired, setEducationRequired] = useState(false);
+  const [experienceText, setExperienceText] = useState("");
+  const [experienceList, setExperienceList] = useState([]);
+  const [postData, setPostData] = useState({
+    jobCategoryData: [],
+    jobEducationData: [],
+    jobPositionData: [],
+    jobSkillsData: [],
+    jobTypeData: [],
+    jobSalaryData: [],
+  });
 
   // Job tags multi select updata array
-
-  const handleCategoryChange = (e, value) => {
-    setSelectedCategory(
-      categoryData.filter((item) => {
-        return item.name === e.target.value;
-      })
-    );
-  };
-
-  function handleMultiSelect(e, id) {
-    setTagValues((prevValues) => {
-      return [...prevValues, tagsOptions.find((obj) => obj.id === id)];
-    });
-    setTagsOptions(
-      tagsOptions.filter((obj) => {
-        return obj.id !== id;
-      })
-    );
-  }
-
-  // Remove job tags from array
-  const removeTags = (id) => {
-    const removedItem = tagValues.filter((obj) => {
-      return obj.id === id;
-    });
-    setTagsOptions((prevOptions) => {
-      return [...prevOptions, ...removedItem];
-    });
-    setTagValues(
-      tagValues.filter((obj) => {
-        return obj.id !== id;
-      })
-    );
-  };
 
   // Next button tab increment
   const tabIncrement = () => {
@@ -159,23 +114,38 @@ export default function JobPost() {
     setTabIndex(index);
   };
 
-  // Controlled input fields
-
   // Get category data on first load
   useEffect(() => {
     // window.scrollTo(0, 0);
     const getCategory = async () => {
       setShowContent(false);
+
+      // const endpoints = ['category/','position/','type/','education/','skills/','salary/']
+      const endpoints = [
+        "category/",
+        "educationlevel/",
+        "jobposition/",
+        "jobskills/",
+        "jobtype/",
+        "salarytype/",
+      ];
       try {
-        const res = await axios({
-          method: "GET",
-          url: "category/",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authTokens?.accessToken}`,
-          },
+        const res = await axios.all(
+          endpoints.map(async (endpoint) => await axios.get(endpoint))
+        );
+
+        setPostData((prevData) => {
+          return {
+            ...prevData,
+            ["jobCategoryData"]: res[0].data,
+            ["jobEducationData"]: res[1].data,
+            ["jobPositionData"]: res[2].data,
+            ["jobSkillsData"]: res[3].data,
+            ["jobTypeData"]: res[4].data,
+            ["jobSalaryData"]: res[5].data,
+          };
         });
-        setCategoryData(res.data);
+
         setShowContent(true);
         setError(false);
         console.log(res);
@@ -193,62 +163,67 @@ export default function JobPost() {
     e.preventDefault();
     setIsLoading(true);
     const data = new FormData(e.currentTarget);
-    tagValues.map((item) => {
-      filteredJobTags.push(item.value);
+    let skills = [];
+    requiredSkills.map((item) => {
+      skills.push(item.value);
     });
 
     let postData = {
       IdComp: initialUserData?.user,
-
-      Category: selectedCategory[0].id,
+      Category: data.get("job_category"),
       JobTitle: data.get("job_title"),
-      JobCategoryImage: selectedCategory[0].CategoryImage,
-      JobImage: data.get("job_image"),
+      JobPosition: data.get("job_position"),
+      NoOfVacancy: data.get("no_of_vacancies"),
+      EduRequirement: educationRequired,
+      EduLevel: data.get("edu_level"),
       JobEmail: data.get("job_email"),
-      Location: "Nepal",
+      Location: data.get("job_location"),
       JobRegion: data.get("job_region"),
       JobType: data.get("job_type"),
-      JobCategory: data.get("job_category"),
-      JobTags: JSON.stringify(filteredJobTags),
-      JobDescription: data.get("job_description"),
-      JobExperience: data.get("job_experience"),
+      RequiredSkills: skills,
+      JobDescription: jobDescription,
+      SalaryType: data.get("salary_type"),
       SalaryMin: data.get("min_salary"),
       SalaryMax: data.get("max_salary"),
-      ImportantInformation: data.get("job_information"),
+      SalaryOption: data.get("salary_option"),
+      JobExperience: experienceList,
+      expires_in: data.get("job_deadline"),
+      ImportantInformation: data.get("imp_information"),
     };
+
     try {
       const res = await axios.post("post/", postData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${authTokens?.accessToken}`,
         },
       });
-      setFilteredJobTags([]);
+      console.log(res);
       setIsLoading(false);
-      navigate("/jobs");
+      window.location.reload(false);
     } catch (error) {
-      setFilteredJobTags([]);
+      console.log(error);
       setIsLoading(false);
 
+      if (error.response.data) {
+        toast({
+          title: "Make sure you enter all valid data",
+          status: "warning",
+          duration: 4000,
+          isClosable: true,
+        });
+      }
       if (error.response.data.JobEmail) {
         toast({
-          title: error.response.data.JobEmail[0],
-          status: "error",
+          title: "Enter valid job address",
+          status: "warning",
           duration: 4000,
           isClosable: true,
         });
       }
-      if (error.response.data.msg) {
-        toast({
-          title: error.response.data.msg,
-          status: "error",
-          duration: 4000,
-          isClosable: true,
-        });
-      }
-      console.log(error);
     }
   };
+
   const customStyles = {
     option: (provided, state) => ({
       ...provided,
@@ -269,7 +244,6 @@ export default function JobPost() {
       ...styles,
       display: "flex",
       color: "red",
-      borderRadius: "0",
 
       border: `1px solid ${
         colorMode === "light" ? "rgb(203, 213, 224)" : "rgb(74, 85, 104)"
@@ -286,72 +260,116 @@ export default function JobPost() {
     },
   };
 
+  // Add work experience List
+  function deleteItem(id) {
+    const updatedItems = experienceList.filter((elem, index) => {
+      return index !== id;
+    });
+    setExperienceList(updatedItems);
+  }
+
   return (
     <>
       <Navbar />
-
-      <Box
-        as="form"
-        noValidate
-        onSubmit={submitJobPost}
-        bg={useColorModeValue("gray.100", "gray.800")}
-        // height="100vh"
-      >
-        <Tabs
-          index={tabIndex}
-          isFitted
-          variant="enclosed"
-          onChange={handleTabChange}
+      {!showContent ? (
+        <Loader />
+      ) : error ? (
+        <ServerErrorSVG />
+      ) : (
+        <Box
+          as="form"
+          noValidate
+          onSubmit={submitJobPost}
+          bg={colorMode === "light" ? "gray.100" : "gray.800"}
+          // height="100vh"
         >
-          <TabList mb="1em">
-            <Tab
-              _selected={{
-                bg: colorMode === "light" ? "gray.300" : "gray.600",
-              }}
+          <Tabs
+            index={tabIndex}
+            isFitted
+            variant="enclosed"
+            onChange={handleTabChange}
+          >
+            <TabList mb="1em">
+              <Tab
+                display={{ base: "none", md: "block" }}
+                _selected={{
+                  bg: colorMode === "light" ? "gray.300" : "gray.600",
+                }}
+              >
+                Basic Details
+              </Tab>
+              <Tab
+                display={{ base: "none", md: "block" }}
+                isDisabled={tabIndex >= 1 ? false : true}
+                _selected={{
+                  bg: colorMode === "light" ? "gray.300" : "gray.600",
+                }}
+              >
+                Specifications
+              </Tab>
+              <Tab
+                display={{ base: "none", md: "block" }}
+                isDisabled={tabIndex < 2 ? true : false}
+                _selected={{
+                  bg: colorMode === "light" ? "gray.300" : "gray.600",
+                }}
+              >
+                Salary & Deadline
+              </Tab>
+            </TabList>
+            <CustomHeader
+              textAlign={"center"}
+              display={{ base: "block", md: "none" }}
             >
-              Job Category
-            </Tab>
-            <Tab
-              isDisabled={tabIndex >= 1 ? false : true}
-              _selected={{
-                bg: colorMode === "light" ? "gray.300" : "gray.600",
-              }}
-            >
-              Job Details
-            </Tab>
-            <Tab
-              isDisabled={tabIndex < 2 ? true : false}
-              _selected={{
-                bg: colorMode === "light" ? "gray.300" : "gray.600",
-              }}
-            >
-              Salary & Deadline
-            </Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel display="flex" width="100%" justifyContent="center">
-              <BasicDetails
-                tabIncrement={tabIncrement}
-                customStyles={customStyles}
-              />
-            </TabPanel>
-            <TabPanel display="flex" width="100%" justifyContent="center">
-              <EduExperience
-                tabIncrement={tabIncrement}
-                customStyles={customStyles}
-                tabDecrement={tabDecrement}
-              />
-            </TabPanel>
-            <TabPanel display="flex" width="100%" justifyContent="center">
-              <PaymentDate
-                tabIncrement={tabIncrement}
-                customStyles={customStyles}
-                tabDecrement={tabDecrement}
-              />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      </Box>
+              Create Job Post
+            </CustomHeader>
+            <TabPanels>
+              <TabPanel
+                height={{ base: "auto", md: "80vh" }}
+                display="flex"
+                width="100%"
+                justifyContent="center"
+              >
+                <BasicDetails
+                  tabIncrement={tabIncrement}
+                  customStyles={customStyles}
+                  positionData={postData.jobPositionData}
+                  categoryData={postData.jobCategoryData}
+                  jobType={postData.jobTypeData}
+                />
+              </TabPanel>
+              <TabPanel display="flex" width="100%" justifyContent="center">
+                <EduExperience
+                  tabIncrement={tabIncrement}
+                  customStyles={customStyles}
+                  tabDecrement={tabDecrement}
+                  jobEducation={postData.jobEducationData}
+                  jobSkills={postData.jobSkillsData}
+                  jobDescription={jobDescription}
+                  setJobDescription={setJobDescription}
+                  setRequiredSkills={setRequiredSkills}
+                  educationRequired={educationRequired}
+                  setEducationRequired={setEducationRequired}
+                  experienceText={experienceText}
+                  setExperienceText={setExperienceText}
+                  experienceList={experienceList}
+                  setExperienceList={setExperienceList}
+                  deleteItem={deleteItem}
+                />
+              </TabPanel>
+              <TabPanel display="flex" width="100%" justifyContent="center">
+                <PaymentDate
+                  tabIncrement={tabIncrement}
+                  customStyles={customStyles}
+                  tabDecrement={tabDecrement}
+                  jobSalary={postData.jobSalaryData}
+                  isLoading={isLoading}
+                />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </Box>
+      )}
     </>
   );
 }
@@ -360,51 +378,16 @@ function BasicDetails(props) {
   const toast = useToast();
   const { colorMode } = useColorMode();
   const menuRef = useRef();
-  const [inputValues, setInputValues] = useState({
-    JobTitle: "",
-    JobCategory: "",
-    JobPosition: "",
-    JobVacancies: "",
-    JobType: "",
-  });
-  const [categoryData, setCategoryData] = useState([
-    { value: "Engineer", label: "Engineer" },
-    { value: "Doctor", label: "Doctor" },
-    { value: "Pilot", label: "Pilot" },
-    { value: "Assistant", label: "Assistant" },
-    { value: "Hostess", label: "Hostess" },
-    { value: "Manager", label: "Manager" },
-    { value: "CEO", label: "CEO" },
-    { value: "Teacher", label: "Teacher" },
-    { value: "Farmer", label: "Farmer" },
-    { value: "Priest", label: "Priest" },
-    { value: "Judge", label: "Judge" },
-    { value: "Mayor", label: "Mayor" },
-    { value: "Prime Minister", label: "Prime Minister" },
-    { value: "Present", label: "Present" },
-    { value: "King", label: "King" },
-  ]);
-  const [jobTypeData, setJobTypeData] = useState([
-    { value: "Full time", label: "Full time" },
-    { value: "Part time", label: "Part time" },
-    { value: "Freelance", label: "Freelance" },
-    { value: "Work from home", label: "Work from home" },
-  ]);
-  const [positionData, setPositionData] = useState([
-    { value: "Full time", label: "Full time" },
-    { value: "Part time", label: "Part time" },
-    { value: "Freelance", label: "Freelance" },
-    { value: "Work from home", label: "Work from home" },
-  ]);
 
   return (
     <Flex
       align={"center"}
       justify={"center"}
       bg={useColorModeValue("white", "gray.700")}
-      w="50%"
+      w={{ base: "100%", sm: "90%", md: "70%", lg: "50%" }}
       border="1px solid"
       borderColor={colorMode === "light" ? "gray.300" : "gray.600"}
+      borderRadius="md"
     >
       <Stack spacing={4} mx={"auto"} p={6} w="100%">
         <Stack align={"center"} direction="row" w="100%">
@@ -417,6 +400,7 @@ function BasicDetails(props) {
           p={2}
           templateColumns="repeat(2,1fr)"
           gap={3}
+          borderRadius="md"
         >
           <GridItem colSpan={{ base: 2, md: 1 }}>
             <FormControl isRequired>
@@ -425,7 +409,7 @@ function BasicDetails(props) {
                 placeholder="E.x. Engineer"
                 outline="1px solid "
                 outlineColor={colorMode === "light" ? "gray.300" : "gray.600"}
-                borderRadius="0"
+                name="job_title"
               />
             </FormControl>
           </GridItem>
@@ -434,7 +418,8 @@ function BasicDetails(props) {
               <FormLabel>Position</FormLabel>
               <ReactSelect
                 isClearable
-                options={positionData}
+                name="job_position"
+                options={props.positionData}
                 styles={props.customStyles}
               />
             </FormControl>
@@ -442,39 +427,46 @@ function BasicDetails(props) {
           <GridItem colSpan={{ base: 2, md: 1 }} position="relative">
             <FormControl isRequired>
               <FormLabel>Job Location</FormLabel>
-              <Input placeholder="E.x. Thamel, Kathmandu" />
+              <Input placeholder="E.x. Thamel, Kathmandu" name="job_location" />
             </FormControl>
           </GridItem>
           <GridItem colSpan={{ base: 2, md: 1 }} position="relative">
             <FormControl isRequired>
+              <FormLabel>Job Region</FormLabel>
+              <Input placeholder="E.x. Bagmati" name="job_region" />
+            </FormControl>
+          </GridItem>
+          <GridItem colSpan={2} position="relative">
+            <FormControl isRequired>
               <FormLabel>Job category</FormLabel>
               <ReactSelect
                 isClearable
-                options={categoryData}
+                options={props.categoryData}
                 styles={props.customStyles}
+                name="job_category"
               />
             </FormControl>
           </GridItem>
           <GridItem colSpan={{ base: 2, md: 1 }} position="relative">
             <FormControl ref={menuRef}>
               <FormLabel>No of vacancies</FormLabel>
-              <Input defaultValue={1} type="number" />
+              <Input defaultValue={1} type="number" name="no_of_vacancies" />
             </FormControl>
           </GridItem>
           <GridItem colSpan={{ base: 2, md: 1 }} position="relative">
             <FormControl isRequired ref={menuRef}>
               <FormLabel>Job Type</FormLabel>
-              <ReactSelect options={jobTypeData} styles={props.customStyles} />
+              <ReactSelect
+                isClearable
+                options={props.jobType}
+                styles={props.customStyles}
+                name="job_type"
+              />
             </FormControl>
           </GridItem>
         </Grid>
         <Stack align="flex-end">
-          <Button
-            size="sm"
-            borderRadius="0"
-            colorScheme="twitter"
-            onClick={props.tabIncrement}
-          >
+          <Button size="sm" colorScheme="twitter" onClick={props.tabIncrement}>
             Proceed
           </Button>
         </Stack>
@@ -484,41 +476,29 @@ function BasicDetails(props) {
 }
 function EduExperience(props) {
   const { colorMode } = useColorMode();
-  const [educationRequired, setEducationRequired] = useState(false);
-  const [educationLevel, setEducationLevel] = useState([
-    { value: "Ph.D.", label: "Ph.D." },
-    { value: "Masters Degree", label: "Masters Degree" },
-    { value: "Bachelor", label: "Bachelor" },
-    { value: "Intermediate", label: "Intermediate" },
-    { value: "SLC", label: "SLC" },
-  ]);
-  const [skillsRequired, setSkillsRequired] = useState([
-    { value: "Web", label: "Web" },
-    { value: "HTML", label: "HTML" },
-    { value: "Marketing", label: "Marketing" },
-    { value: "Agriculture", label: "Agriculture" },
-    { value: "Business", label: "Business" },
-  ]);
   return (
     <Flex
       align={"flex-start"}
       justify={"center"}
       bg={useColorModeValue("white", "gray.700")}
-      w="60%"
+      w={{ base: "100%", sm: "90%", md: "70%", lg: "50%" }}
       border="1px solid"
       borderColor={colorMode === "light" ? "gray.300" : "gray.600"}
+      borderRadius="md"
     >
       <Stack spacing={4} mx={"auto"} p={6} w="100%">
         <Stack align={"center"} direction="row" w="100%">
-          <Heading fontSize="lg">Specification & Education</Heading>
+          <Heading fontSize="lg">
+            Specification & Education (All fields are required)
+          </Heading>
         </Stack>
-
         <Grid
           border="1px solid"
           borderColor={colorMode === "light" ? "gray.300" : "gray.600"}
           p={2}
           templateColumns="repeat(2,1fr)"
           gap={3}
+          borderRadius="md"
         >
           <GridItem colSpan={2} my={2}>
             <FormControl display="flex" alignItems="center">
@@ -527,7 +507,10 @@ function EduExperience(props) {
               </FormLabel>
               <Switch
                 id="email-alerts"
-                onChange={() => setEducationRequired(!educationRequired)}
+                onChange={(e) =>
+                  props.setEducationRequired(!props.educationRequired)
+                }
+                name="edu_required"
               />
             </FormControl>
           </GridItem>
@@ -535,28 +518,101 @@ function EduExperience(props) {
             <FormControl mb={5}>
               <FormLabel>Education Level</FormLabel>
               <ReactSelect
-                options={educationLevel}
+                isClearable
+                options={props.jobEducation}
                 styles={props.customStyles}
-                isDisabled={!educationRequired}
+                isDisabled={!props.educationRequired}
+                name="edu_level"
               />
             </FormControl>
             <Divider borderTop="1px solid gray" />
           </GridItem>
           <GridItem colSpan={2} position="relative">
             <FormControl>
-              <FormLabel>Work Experience</FormLabel>
-              <Input placeholder="E.x. At least 2 years at engineering" />
+              <FormLabel style={{ margin: 0 }}>Work Experience</FormLabel>
+              <Text fontSize={14} style={{ marginTop: 0 }} mb={1}>
+                Type a sentence and press <Kbd mx={1}>+</Kbd> icon
+              </Text>
+              <InputGroup flex={1}>
+                <InputRightElement
+                  children={<AddIcon fontSize={14} />}
+                  cursor="pointer"
+                  bg={colorMode === "light" ? "gray.100" : "gray.800"}
+                  _hover={{
+                    bg: colorMode === "light" ? "gray.200" : "gray.900",
+                  }}
+                  onClick={() => {
+                    if (props.experienceText) {
+                      props.setExperienceList((prevValue) => {
+                        return [...prevValue, props.experienceText];
+                      });
+                      props.setExperienceText("");
+                    }
+                  }}
+                />
+                <Input
+                  value={props.experienceText}
+                  onChange={(e) => props.setExperienceText(e.target.value)}
+                  placeholder="E.x. At least 2 years at engineering"
+                  name="job_experience"
+                />
+              </InputGroup>
             </FormControl>
+            {props.experienceList?.length ? (
+              <Stack
+                direction="row"
+                my={4}
+                p={3}
+                border="1px solid"
+                borderColor={colorMode === "light" ? "gray.300" : "gray.600"}
+              >
+                <List spacing={3} w="100%">
+                  {props.experienceList?.map((item, index) => {
+                    return (
+                      <>
+                      <ListItem
+                        display={"flex"}
+                        alignItems="center"
+                        gap={2}
+                        w="100%"
+                        key={index}
+                      >
+                        <ListIcon
+                          as={BsFillCircleFill}
+                          color="rgb(29, 161, 242)"
+                          fontSize={13}
+                        />
+                        <Text fontSize={(10, 11, 12, 13, 14, 15)}>{item}</Text>
+                        <IconButton
+                          icon={<DeleteIcon />}
+                          fontSize={14}
+                          size="sm"
+                          marginLeft={"auto"}
+                          onClick={() => props.deleteItem(index)}
+                        />
+                      </ListItem>
+                      <Divider borderTop="1px solid gray" />
+
+                      </>
+                    );
+                  })}
+                </List>
+              </Stack>
+            ) : (
+              ""
+            )}
           </GridItem>
           <GridItem colSpan={2} position="relative">
             <FormControl>
               <FormLabel>Skills Required (No more than 5 skills)</FormLabel>
               <ReactSelect
                 isClearable
-                options={skillsRequired}
+                options={props.jobSkills}
                 isMulti
                 zIndex={100}
-                onChange={(e) => console.log(e)}
+                onChange={(e) => props.setRequiredSkills(e)}
+                name="job_skills"
+                styles={props.customStyles}
               />
             </FormControl>
           </GridItem>
@@ -564,36 +620,20 @@ function EduExperience(props) {
           <GridItem colSpan={2} position="relative" height="20rem">
             <FormControl isRequired>
               <FormLabel>Job Description</FormLabel>
-              <CKEditor
-                editor={ClassicEditor}
-                data=""
-                onReady={(editor) => {
-                  // You can store the "editor" and use when it is needed.
-                  console.log("Editor is ready to use!", editor);
-                }}
-                onChange={(event, editor) => {
-                  const data = editor.getData();
-                  console.log(data);
-                }}
+              <ReactQuill
+                style={{ height: "30vh", color: "" }}
+                theme="snow"
+                value={props.jobDescription}
+                onChange={props.setJobDescription}
               />
             </FormControl>
           </GridItem>
         </Grid>
         <Stack justify="flex-end" direction="row">
-          <Button
-            size="sm"
-            borderRadius="0"
-            colorScheme="twitter"
-            onClick={props.tabDecrement}
-          >
+          <Button size="sm" colorScheme="twitter" onClick={props.tabDecrement}>
             Back
           </Button>
-          <Button
-            size="sm"
-            borderRadius="0"
-            colorScheme="twitter"
-            onClick={props.tabIncrement}
-          >
+          <Button size="sm" colorScheme="twitter" onClick={props.tabIncrement}>
             Proceed
           </Button>
         </Stack>
@@ -605,22 +645,16 @@ function EduExperience(props) {
 function PaymentDate(props) {
   const { colorMode } = useColorMode();
   const [value, setValue] = useState("Fixed");
-  const salaryOption = [
-    { value: "Yearly", label: "Yearly" },
-    { value: "Monthly", label: "Monthly" },
-    { value: "Weekly", label: "Weekly" },
-    { value: "Daily", label: "Daily" },
-    { value: "Hourly", label: "Hourly" },
-  ];
 
   return (
     <Flex
       align={"flex-start"}
       justify={"center"}
       bg={useColorModeValue("white", "gray.700")}
-      w="60%"
+      w={{ base: "100%", sm: "90%", md: "70%", lg: "50%" }}
       border="1px solid"
       borderColor={colorMode === "light" ? "gray.300" : "gray.600"}
+      borderRadius="md"
     >
       <Stack spacing={4} mx={"auto"} p={6} w="100%">
         <Stack align={"center"} direction="row" w="100%">
@@ -632,6 +666,7 @@ function PaymentDate(props) {
           borderColor={colorMode === "light" ? "gray.300" : "gray.600"}
           p={2}
           templateColumns="repeat(2,1fr)"
+          borderRadius="md"
           gap={3}
         >
           <GridItem colSpan={2} my={2}>
@@ -640,7 +675,13 @@ function PaymentDate(props) {
                 <FormLabel htmlFor="email-alerts" mb="0">
                   Select salary type:
                 </FormLabel>
-                <RadioGroup onChange={setValue} value={value}>
+
+                {/* Salary type (Ranged or Fixed) */}
+                <RadioGroup
+                  onChange={setValue}
+                  value={value}
+                  name="salary_type"
+                >
                   <Stack direction="row">
                     <Radio value="Fixed">Fixed</Radio>
                     <Radio value="Ranged">Ranged</Radio>
@@ -662,18 +703,32 @@ function PaymentDate(props) {
                   />
                   <Input
                     type="number"
-                    name="min_salary"
+                    name="max_salary"
                     isDisabled={value === "Fixed" ? true : false}
-                    s
                   />
                 </InputGroup>
+
+                {/* Salary Options... */}
                 <Box flex={1}>
                   <ReactSelect
+                    isClearable
+                    name="salary_option"
                     styles={props.customStyles}
-                    options={salaryOption}
+                    options={props.jobSalary}
                   />
                 </Box>
               </Stack>
+            </FormControl>
+          </GridItem>
+          <GridItem colSpan={2}>
+            <FormControl mb={5} isRequired>
+              <FormLabel style={{ margin: 0 }}>Contact email</FormLabel>
+
+              <Input
+                type="email"
+                placeholder="Enter your contact email"
+                name="job_email"
+              />
             </FormControl>
           </GridItem>
           <GridItem colSpan={2}>
@@ -683,256 +738,37 @@ function PaymentDate(props) {
                 If you select any past date, your post will be automatically
                 deleted
               </Text>
-              <Input type="datetime-local" />
+              <Input type="datetime-local" name="job_deadline" />
+            </FormControl>
+          </GridItem>
+          <GridItem colSpan={2}>
+            <FormControl mb={5}>
+              <FormLabel style={{ margin: 0 }}>
+                Additional Information
+              </FormLabel>
+              <Textarea
+                resize="none"
+                style={{ marginTop: 0 }}
+                name="imp_information"
+              />
             </FormControl>
           </GridItem>
         </Grid>
         <Stack justify="flex-end" direction="row">
-          <Button
-            size="sm"
-            borderRadius="0"
-            colorScheme="twitter"
-            onClick={props.tabDecrement}
-          >
+          <Button size="sm" colorScheme="twitter" onClick={props.tabDecrement}>
             Back
           </Button>
           <Button
             size="sm"
-            borderRadius="0"
             colorScheme="twitter"
-            onClick={props.tabIncrement}
+            type="submit"
+            isLoading={props.isLoading}
+            isDisabled={props.isLoading}
           >
-            Proceed
+            Post
           </Button>
         </Stack>
       </Stack>
     </Flex>
   );
 }
-
-// {
-//   <Flex
-//     minH="100vh"
-//     align={"flex-start"}
-//     justify={"center"}
-//     bg={colorMode === "light" ? "gray.50" : "gray.800"}
-//   >
-//     <Stack spacing={4} mx={"auto"} maxW={"xl"} p={6}>
-//       <Stack align={"center"}>
-//         <Heading fontSize={"4xl"} textAlign="center">
-//           Create Job Post
-//         </Heading>
-//       </Stack>
-//       <Box
-//         rounded={"lg"}
-//         bg={colorMode === "light" ? "white" : "gray.700"}
-//         boxShadow={"lg"}
-//         p={8}
-//       >
-//         <Grid gap={4} templateColumns="repeat(2, 1fr)">
-//           <CustomGridItem>
-//             <FormControl id="title" isRequired>
-//               <FormLabel>Job Title</FormLabel>
-//               <Input type="text" name="job_title" />
-//             </FormControl>
-//           </CustomGridItem>
-
-//           <CustomGridItem>
-//             <FormControl id="email" isRequired>
-//               <FormLabel>Email</FormLabel>
-//               <Input type="email" name="job_email" />
-//             </FormControl>
-//           </CustomGridItem>
-
-//           <CustomGridItem>
-//             <FormControl id="location" isRequired>
-//               <FormLabel>Location</FormLabel>
-//               <Input type="text" name="job_location" />
-//             </FormControl>
-//           </CustomGridItem>
-
-//           <CustomGridItem>
-//             <FormControl id="region" isRequired>
-//               <FormLabel>Region</FormLabel>
-//               <Input type="text" name="job_region" />
-//             </FormControl>
-//           </CustomGridItem>
-
-//           <CustomGridItem>
-//             <FormControl id="email" isRequired>
-//               <FormLabel>Job Type</FormLabel>
-//               <Select name="job_type">
-//                 <option value="Full Time">Full Time</option>
-//                 <option value="Part Time">Part Time</option>
-//                 <option value="Freelance">Freelance</option>
-//               </Select>
-//             </FormControl>
-//           </CustomGridItem>
-//           <CustomGridItem>
-//             <FormControl id="email" isRequired>
-//               <FormLabel>Job Experience</FormLabel>
-//               <Input type="text" name="job_experience" />
-//             </FormControl>
-//           </CustomGridItem>
-//           <GridItem colSpan={2}>
-//             <FormControl id="tags" isRequired>
-//               <FormLabel>Job Tags</FormLabel>
-
-//               <Menu width="100%" placement="bottom">
-//                 <MenuButton
-//                   as={Button}
-//                   width="100%"
-//                   rightIcon={<IoChevronDown />}
-//                 >
-//                   Job Tags
-//                 </MenuButton>
-//                 <MenuList width="100%">
-//                   {tagsOptions ? (
-//                     tagsOptions.map((item) => {
-//                       return (
-//                         <MenuItem
-//                           key={item.id}
-//                           width="100%"
-//                           onClick={(e) => handleMultiSelect(e, item.id)}
-//                         >
-//                           {item.value}
-//                         </MenuItem>
-//                       );
-//                     })
-//                   ) : (
-//                     <MenuItem disabled as={Button}>
-//                       No Job Tags Found
-//                     </MenuItem>
-//                   )}
-//                 </MenuList>
-//               </Menu>
-//             </FormControl>
-//           </GridItem>
-
-//           <GridItem colSpan={2}>
-//             <Stack direction="row">
-//               {tagValues.map((item) => {
-//                 return (
-//                   <Tag key={item.id}>
-//                     <TagLabel>{item.value}</TagLabel>
-//                     <TagRightIcon
-//                       as={CloseIcon}
-//                       fontSize={8}
-//                       _hover={{ cursor: "pointer" }}
-//                       onClick={() => removeTags(item.id)}
-//                     />
-//                   </Tag>
-//                 );
-//               })}
-//             </Stack>
-//           </GridItem>
-//           <GridItem colSpan={2}>
-//             <FormControl id="description" isRequired>
-//               <FormLabel>Job Description</FormLabel>
-//               <Textarea type="text" name="job_description" />
-//             </FormControl>
-//           </GridItem>
-
-//           <GridItem colSpan={2}>
-//             <FormControl>
-//               <Text fontSize={[14, 15, 16, 17, 18, 19]}>
-//                 Provide a cover image for your job post(Optional)
-//               </Text>
-//               <Text fontSize={[11, 12, 13, 14, 15, 16]} as="cite">
-//                 If not provided, default image will be used
-//               </Text>
-//               {localImage ? (
-//                 <Stack align="center" justify="center" my={3}>
-//                   <Image
-//                     alt="Job image"
-//                     objectFit="contain"
-//                     width="100%"
-//                     src={localImage}
-//                   />
-//                 </Stack>
-//               ) : (
-//                 ""
-//               )}
-//             </FormControl>
-//             <Stack my={2} direction="row">
-//               <Input
-//                 type="file"
-//                 id="file-upload"
-//                 accept="image/*"
-//                 name="job_image"
-//                 hidden
-//                 onChange={(e) => handleChange(e)}
-//               />
-
-//               <Button
-//                 as={"label"}
-//                 leftIcon={<AddIcon />}
-//                 style={{ marginInlineStart: "0" }}
-//                 htmlFor="file-upload"
-//                 cursor={"pointer"}
-//               >
-//                 Upload photo
-//               </Button>
-
-//               <Button
-//                 leftIcon={<DeleteIcon />}
-//                 onClick={onOpen}
-//                 display={localImage ? "block" : "none"}
-//               >
-//                 Remove photo
-//               </Button>
-//               <AlertDialog
-//                 isOpen={isOpen}
-//                 leastDestructiveRef={cancelRef}
-//                 onClose={onClose}
-//               >
-//                 <AlertDialogOverlay>
-//                   <AlertDialogContent>
-//                     <AlertDialogHeader fontSize="lg" fontWeight="bold">
-//                       Remove Profile Photo
-//                     </AlertDialogHeader>
-
-//                     <AlertDialogBody>
-//                       Are you sure you want to remove profile photo
-//                     </AlertDialogBody>
-
-//                     <AlertDialogFooter>
-//                       <Button ref={cancelRef} onClick={onClose}>
-//                         Cancel
-//                       </Button>
-//                       <Button
-//                         colorScheme="red"
-//                         onClick={() => {
-//                           removePhoto();
-//                           onClose();
-//                         }}
-//                         ml={3}
-//                         leftIcon={<DeleteIcon />}
-//                       >
-//                         Remove
-//                       </Button>
-//                     </AlertDialogFooter>
-//                   </AlertDialogContent>
-//                 </AlertDialogOverlay>
-//               </AlertDialog>
-//             </Stack>
-//           </GridItem>
-//         </Grid>
-//       </Box>
-//       <Stack justify={"flex-end"} direction="row">
-//         <Button
-//           onClick={tabDecrement}
-//           bg={colorMode === "light" ? "gray.300" : "gray.600"}
-//         >
-//           Prev
-//         </Button>
-//         <Button
-//           bg={colorMode === "light" ? "gray.300" : "gray.600"}
-//           onClick={tabIncrement}
-//         >
-//           Next
-//         </Button>
-//       </Stack>
-//     </Stack>
-//   </Flex>;
-// }

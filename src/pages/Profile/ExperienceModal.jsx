@@ -184,7 +184,6 @@ function ExperienceModal(props) {
                       size="sm"
                       marginLeft={"auto"}
                       onClick={() => deleteItem(index)}
-                      disabled={loading}
                     />
                   </ListItem>
                 );
