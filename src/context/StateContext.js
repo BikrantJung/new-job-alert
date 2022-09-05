@@ -1,6 +1,7 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
-import { getTokens } from "../services/localStorage";
+import { PuffLoader } from "react-spinners";
+
 import AuthContext from "./AuthContext";
 const StateContext = createContext();
 export default StateContext;
@@ -16,6 +17,11 @@ export const StateProvider = ({ children }) => {
   const [userCompany, setUserCompany] = useState("");
   const [recentJobs, setRecentJobs] = useState([]);
   const [isValidUser, setIsValidUser] = useState(false);
+  const [companyJobs, setCompanyJobs] = useState([]);
+  const [companyData, setCompanyData] = useState([]);
+  const [localCover, setLocalCover] = useState("");
+  const [localLogo, setLocalLogo] = useState("");
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const hasCompany = async () => {
       if (userID) {
@@ -38,6 +44,7 @@ export const StateProvider = ({ children }) => {
         }
       }
     };
+    setLoading(false);
     hasCompany();
   }, [userID]);
 
@@ -64,11 +71,34 @@ export const StateProvider = ({ children }) => {
     recentJobs,
     setRecentJobs,
     isValidUser,
+    companyData,
+    setCompanyData,
+    companyJobs,
+    setCompanyJobs,
+    localCover,
+    setLocalCover,
+    localLogo,
+    setLocalLogo,
   };
 
   return (
     <StateContext.Provider value={contextData}>
-      {children}
+      {loading ? (
+        <div
+          style={{
+            height: "97vh",
+            width: "97vw",
+            display: "grid",
+            placeItems: "center",
+            margin: 0,
+            padding: 0,
+          }}
+        >
+          <PuffLoader color="rgb(54, 215, 183)" />
+        </div>
+      ) : (
+        children
+      )}
     </StateContext.Provider>
   );
 };

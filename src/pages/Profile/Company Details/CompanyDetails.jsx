@@ -1,4 +1,12 @@
 import {
+  AddIcon,
+  DeleteIcon,
+  EditIcon,
+  EmailIcon,
+  InfoIcon,
+  PhoneIcon,
+} from "@chakra-ui/icons";
+import {
   AlertDialog,
   AlertDialogBody,
   AlertDialogContent,
@@ -8,7 +16,6 @@ import {
   Avatar,
   Box,
   Button,
-  Divider,
   FormControl,
   FormLabel,
   Grid,
@@ -31,50 +38,43 @@ import {
   useColorMode,
   useColorModeValue,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   AiFillFacebook,
   AiFillInstagram,
-  AiFillLinkedin,
   AiFillTwitterCircle,
 } from "react-icons/ai";
-import Navbar from "../../../components/Navbar/Navbar";
-import { IoLocation } from "react-icons/io5";
-import {
-  PhoneIcon,
-  EmailIcon,
-  InfoIcon,
-  EditIcon,
-  AddIcon,
-  DeleteIcon,
-} from "@chakra-ui/icons";
-import { MdWorkOutline } from "react-icons/md";
-import Footer from "../../../components/Footer/Footer";
-import { useEffect } from "react";
-import axios from "axios";
-import { Link as ReactLink, useParams } from "react-router-dom";
 import { IoLogoWhatsapp } from "react-icons/io";
-import { useContext } from "react";
-import StateContext from "../../../context/StateContext";
+import { IoLocation } from "react-icons/io5";
+import { MdWorkOutline } from "react-icons/md";
+import { Link as ReactLink, Outlet, useParams } from "react-router-dom";
+import Footer from "../../../components/Footer/Footer";
 import Loader from "../../../components/Loader";
+import Navbar from "../../../components/Navbar/Navbar";
 import ServerErrorSVG from "../../../components/ServerErrorSVG";
-import { useRef } from "react";
 import AuthContext from "../../../context/AuthContext";
+import StateContext from "../../../context/StateContext";
 function CompanyDetails() {
   const { id } = useParams();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const [companyData, setCompanyData] = useState([]);
   const [showSkeleton, setShowSkeleton] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [localCover, setLocalCover] = useState("");
-  const [localLogo, setLocalLogo] = useState("");
+
   const { colorMode } = useColorMode();
-  const { userCompany } = useContext(StateContext);
-  const { userID, authTokens } = useContext(AuthContext);
+  const {
+    userCompany,
+    companyData,
+    setCompanyData,
+    companyJobs,
+    setCompanyJobs,
+    localCover,
+    setLocalCover,
+    localLogo,
+    setLocalLogo,
+  } = useContext(StateContext);
   useEffect(() => {
     const getCompanyDetails = async () => {
       setShowSkeleton(true);
@@ -96,60 +96,44 @@ function CompanyDetails() {
       }
     };
     getCompanyDetails();
+  }, [id, setCompanyData]);
+
+  useEffect(() => {
+    const getCompanyJobs = async () => {
+      try {
+        const res = await axios.get(`companyJobs/${id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: null,
+          },
+        });
+        console.log(res);
+        setCompanyJobs([]);
+        setCompanyJobs(res.data.results);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getCompanyJobs();
   }, [id]);
 
-  async function updateCompanyDetails(e) {
-    e.preventDefault();
-    const data = new FormData(e.currentTarget);
-    setLoading(true);
-    const updateData = {
-      company: userID,
-      companyName: data.get("company_name"),
-      companyTagline: data.get("company_tagline"),
-      companyEmail: data.get("company_email"),
-      companyLocation: data.get("company_location"),
-      companyTel: data.get("company_telephone"),
-      facebook: data.get("company_facebook"),
-      whatsapp: data.get("company_whatsapp"),
-      instagram: data.get("company_instagram"),
-      twitter: data.get("company_twitter"),
-      companyDescription: data.get("company_description"),
-      companyLogo: data.get("company_logo"),
-      companyCover: data.get("company_cover"),
-    };
-    try {
-      const res = await axios.put(`companySelf/${userID}`, updateData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authTokens?.accessToken}`,
-        },
-      });
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-    }
-  }
-  function removeAllPhotos() {
-    setLocalCover("");
-    setLocalLogo("");
-    // setLoading(true);
-    onClose();
-  }
+  console.log("JOBS", companyJobs);
+  console.log("COMPANY", companyData);
   return (
     <>
-      <Navbar />
       {!showContent ? (
         <Loader />
       ) : error ? (
         <ServerErrorSVG />
       ) : (
         <>
+          <Navbar />
           <Stack
             direction={{ base: "column", md: "row" }}
             p={5}
             gap={3}
             background={colorMode === "light" ? "gray.200" : "gray.900"}
-            alignItems="flex-start"
+            alignItems={{ base: "center", md: "flex-start" }}
           >
             <Stack
               bgColor={colorMode === "light" ? "white" : "gray.800"}
@@ -195,7 +179,6 @@ function CompanyDetails() {
                     <Avatar
                       size="lg"
                       src={localLogo || companyData?.companyLogo}
-                      //   objectFit={'cover'}
                     />
                   </Box>
                 </Box>
@@ -330,79 +313,9 @@ function CompanyDetails() {
                 </Stack>
               </Stack>
             </Stack>
-            <Stack
-              border="1px solid"
-              borderColor={colorMode === "light" ? "gray.300" : "gray.600"}
-              bgColor={colorMode === "light" ? "white" : "gray.900"}
-              flex={7}
-              style={{ marginInlineStart: 0 }}
-            >
-              <Tabs variant="enclosed" index={2} isLazy>
-                <TabList>
-                  <Tab gap={2}>
-                    <Icon as={MdWorkOutline} />
-                    <Text fontSize={[10, 11, 12, 13, 14, 15]}>Jobs</Text>
-                  </Tab>
-                  <Tab gap={2}>
-                    <Icon as={InfoIcon} />
-                    <Text fontSize={[10, 11, 12, 13, 14, 15]}>About</Text>
-                  </Tab>
-                  <Tab
-                    gap={2}
-                    style={{ marginLeft: "auto" }}
-                    display={id === userCompany ? "flex" : "none"}
-                  >
-                    <Icon as={EditIcon} />
-                    <Text fontSize={[10, 11, 12, 13, 14, 15]}>Edit</Text>
-                  </Tab>
-                </TabList>
-                <TabPanels>
-                  <TabPanel>
-                    <Stack>
-                      <Heading
-                        fontSize="lg"
-                        border="1px solid"
-                        borderColor={
-                          colorMode === "light" ? "gray.300" : "gray.600"
-                        }
-                        p={3}
-                        color={colorMode === "light" ? "gray.700" : "gray.300"}
-                      >
-                        Vacancies
-                      </Heading>
-                      <Jobs />
-                      <Jobs />
-                      <Jobs />
-                    </Stack>
-                  </TabPanel>
-                  <TabPanel>
-                    <About
-                      companyName={companyData?.companyName}
-                      companyTagline={companyData?.companyTagline}
-                      companyDescription={companyData?.companyDescription}
-                      companyLocation={companyData?.companyLocation}
-                      companyEmail={companyData?.companyEmail}
-                      companyTelephone={companyData?.companyTel}
-                    />
-                  </TabPanel>
-                  <TabPanel
-                    as="form"
-                    noValidate
-                    onSubmit={updateCompanyDetails}
-                  >
-                    <EditCompanyDetails
-                      setLocalCover={setLocalCover}
-                      setLocalLogo={setLocalLogo}
-                      removeAllPhotos={removeAllPhotos}
-                      loading={loading}
-                      isOpen={isOpen}
-                      onClose={onClose}
-                      onOpen={onOpen}
-                    />
-                  </TabPanel>
-                </TabPanels>
-              </Tabs>
-            </Stack>
+
+            {/* Right side company details panel */}
+            <Outlet />
           </Stack>
           <Footer />
         </>
@@ -411,49 +324,282 @@ function CompanyDetails() {
   );
 }
 
-function Jobs() {
+export function CompanyDefaultContent(props) {
+  const { colorMode } = useColorMode();
+  const { id } = useParams();
+  const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const {
+    userCompany,
+    companyData,
+    localCover,
+    setLocalCover,
+    localLogo,
+    setCompanyData,
+    setLocalLogo,
+  } = useContext(StateContext);
+  const [loading, setLoading] = useState(false);
+  const { userID, authTokens } = useContext(AuthContext);
+
+  async function updateCompanyDetails(e) {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    setLoading(true);
+    const updateData = {
+      company: userID,
+      companyName: data.get("company_name")
+        ? data.get("company_name")
+        : companyData?.companyName,
+      companyTagline: data.get("company_tagline"),
+      companyEmail: data.get("company_email"),
+      companyLocation: data.get("company_location"),
+      companyTel: data.get("company_telephone"),
+      facebook: data.get("company_facebook"),
+      whatsapp: data.get("company_whatsapp"),
+      instagram: data.get("company_instagram"),
+      twitter: data.get("company_twitter"),
+      companyDescription: data.get("company_description"),
+      companyLogo: localLogo
+        ? data.get("company_logo")
+        : companyData?.companyLogo,
+      companyCover: localCover
+        ? data.get("company_cover")
+        : companyData?.companyCover,
+    };
+    console.log(updateData.companyCover);
+    console.log(companyData?.companyCover);
+    try {
+      const res = await axios.put(`companySelf/${userID}`, updateData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${authTokens?.accessToken}`,
+        },
+      });
+      setLoading(false);
+      setCompanyData(res.data);
+      window.location.reload(false);
+    } catch (error) {
+      setLoading(false);
+      if (error?.response?.data?.companyCover) {
+        toast({
+          title: error?.response?.data?.companyCover[0],
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+        return;
+      }
+      if (error?.response?.data?.companyLogo) {
+        toast({
+          title: error?.response?.data?.companyLogo[0],
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+        return;
+      }
+      if (error?.response?.data?.companyEmail) {
+        toast({
+          title: error?.response?.data?.companyEmail[0],
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+        return;
+      }
+      console.log(error);
+    }
+  }
+
+  function removeAllPhotos() {
+    setLocalCover("");
+    setLocalLogo("");
+    // setLoading(true);
+    onClose();
+  }
+  return (
+    <Stack
+      border="1px solid"
+      borderColor={colorMode === "light" ? "gray.300" : "gray.600"}
+      bgColor={colorMode === "light" ? "white" : "gray.900"}
+      flex={7}
+      style={{ marginInlineStart: 0 }}
+      width={{ base: "100%", md: "auto" }}
+    >
+      <Tabs variant="enclosed" isLazy>
+        <TabList>
+          <Tab gap={2}>
+            <Icon as={MdWorkOutline} />
+            <Text fontSize={[10, 11, 12, 13, 14, 15]}>Jobs</Text>
+          </Tab>
+          <Tab gap={2}>
+            <Icon as={InfoIcon} />
+            <Text fontSize={[10, 11, 12, 13, 14, 15]}>About</Text>
+          </Tab>
+          <Tab
+            gap={2}
+            style={{ marginLeft: "auto" }}
+            display={id === userCompany ? "flex" : "none"}
+          >
+            <Icon as={EditIcon} />
+            <Text fontSize={[10, 11, 12, 13, 14, 15]}>Edit</Text>
+          </Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <Stack>
+              <Heading
+                fontSize="lg"
+                border="1px solid"
+                borderColor={colorMode === "light" ? "gray.300" : "gray.600"}
+                p={3}
+                color={colorMode === "light" ? "gray.700" : "gray.300"}
+              >
+                Vacancies
+              </Heading>
+
+              {props.companyJobs?.length ? (
+                props.companyJobs?.map((item, index) => {
+                  return (
+                    <Jobs
+                      key={index}
+                      companyName={item?.companyUser}
+                      jobTitle={item?.JobTitle}
+                      companyLocation={item?.Location}
+                      companyPhone={props.companyData?.companyTel}
+                      jobEmail={item?.JobEmail}
+                      companyLogo={props.companyData?.companyLogo}
+                      jobID={item?.id}
+                    />
+                  );
+                })
+              ) : (
+                <Text p={3}>This company hasn't posted yet.</Text>
+              )}
+            </Stack>
+          </TabPanel>
+          <TabPanel>
+            <About
+              companyName={companyData?.companyName}
+              companyTagline={companyData?.companyTagline}
+              companyDescription={companyData?.companyDescription}
+              companyLocation={companyData?.companyLocation}
+              companyEmail={companyData?.companyEmail}
+              companyTelephone={companyData?.companyTel}
+            />
+          </TabPanel>
+          <TabPanel as="form" noValidate onSubmit={updateCompanyDetails}>
+            <EditCompanyDetails
+              setLocalCover={setLocalCover}
+              setLocalLogo={setLocalLogo}
+              removeAllPhotos={removeAllPhotos}
+              loading={loading}
+              isOpen={isOpen}
+              onClose={onClose}
+              onOpen={onOpen}
+            />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </Stack>
+  );
+}
+
+function Jobs(props) {
+  const { colorMode } = useColorMode();
+  const [moreShown, setMoreShown] = useState(false);
+  var month = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
   return (
     <Stack
       border="1px solid"
       borderColor={useColorModeValue("gray.300", "gray.600")}
-      p={5}
-      direction="row"
-      align="center"
+      p={3}
+      direction={{ base: "column-reverse", sm: "row" }}
+      align={{ base: "center", sm: "flex-start" }}
       justify={"space-evenly"}
     >
-      <Stack>
-        <Heading fontSize="2xl">JOB TITLE HERE</Heading>
+      <Stack flex={7} p={2} align={{ base: "center", sm: "flex-start" }}>
+        <Heading fontSize="2xl">{props.jobTitle}</Heading>
         <Text
           style={{ marginTop: 0 }}
           fontSize={[11, 12, 13, 14, 15, 16]}
           fontWeight="bold"
           color={useColorModeValue("gray.600", "gray.300")}
         >
-          X.COM
+          {props.companyName}
         </Text>
         <Stack direction="row" align="center">
           <Icon as={InfoIcon} fontSize={[11, 12, 13, 14, 15, 16]} />
-          <Text fontSize={[10, 11, 12, 13, 14, 15]}>Birendranager</Text>
+          <Text fontSize={[10, 11, 12, 13, 14, 15]}>
+            {props.companyLocation}
+          </Text>
         </Stack>
-        <Stack direction="row" align="center">
-          <Icon as={PhoneIcon} fontSize={[10, 11, 12, 13, 14, 15]} />
-          <Text fontSize={[10, 11, 12, 13, 14, 15]}>98480254</Text>
-        </Stack>
+        {props.companyPhone ? (
+          <Stack direction="row" align="center">
+            <Icon as={PhoneIcon} fontSize={[10, 11, 12, 13, 14, 15]} />
+            <Text fontSize={[10, 11, 12, 13, 14, 15]}>
+              {props.companyPhone}
+            </Text>
+          </Stack>
+        ) : (
+          ""
+        )}
+
         <Stack direction="row" align="center">
           <Icon as={EmailIcon} fontSize={[10, 11, 12, 13, 14, 15]} />
-          <Text fontSize={[10, 11, 12, 13, 14, 15]}>email@gmail.com</Text>
+          <Text fontSize={[10, 11, 12, 13, 14, 15]}>{props.jobEmail}</Text>
         </Stack>
+
+        {/* More job Details */}
+
         <Stack align="flex-start" justify="center">
-          <Button colorScheme="twitter" size="sm">
-            View Details
-          </Button>
+          <Link
+            as={ReactLink}
+            to={`${props.jobTitle}/${props.jobID}`}
+            _hover={{ textDecoration: "none" }}
+            textDecoration="none"
+          >
+            <Button
+              colorScheme="twitter"
+              size={{ base: "xs", sm: "sm" }}
+              onClick={() => setMoreShown(!moreShown)}
+            >
+              View {moreShown ? "Less" : "Details"}
+            </Button>
+          </Link>
         </Stack>
       </Stack>
-      <Image
-        // objectFit={"cover"}
-        w="30%"
-        src="https://images.pexels.com/photos/430205/pexels-photo-430205.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-      />
+      <Stack flex={2} align="center" justify="center" h={"100%"} w="100%">
+        <Box
+          height="20vh"
+          width="20vh"
+          overflow={"hidden"}
+          backgroundImage={`url('${props.companyLogo}')`}
+          backgroundPosition="center center"
+          backgroundSize="cover"
+          backgroundRepeat={"no-repeat"}
+          borderRadius="md"
+          border="1px solid"
+          borderColor={useColorModeValue("gray.300", "gray.600")}
+        >
+          {/* <Image w="100%" src={props.companyLogo} /> */}
+        </Box>
+      </Stack>
     </Stack>
   );
 }
@@ -530,24 +676,6 @@ export function EditCompanyDetails(props) {
         align="center"
       >
         <Heading fontSize="lg">Basic info</Heading>
-        <Button
-          variant="outline"
-          colorScheme={"twitter"}
-          style={{ marginLeft: "auto" }}
-          fontWeight="inherit"
-          size="sm"
-        >
-          Cancel
-        </Button>
-        <Button
-          size="sm"
-          fontWeight="inherit"
-          colorScheme={"twitter"}
-          onClick={() => console.log("CLICKED")}
-          type="submit"
-        >
-          Save
-        </Button>
       </Stack>
       <Grid
         border="1px solid"
@@ -827,6 +955,35 @@ export function EditCompanyDetails(props) {
               </AlertDialogContent>
             </AlertDialogOverlay>
           </AlertDialog>
+        </Stack>
+        <Stack
+          border="1px solid"
+          borderColor={useColorModeValue("gray.300", "gray.600")}
+          p={3}
+          direction="row"
+          align="center"
+        >
+          <Heading fontSize="lg">Save Changes</Heading>
+          <Button
+            variant="outline"
+            colorScheme={"twitter"}
+            style={{ marginLeft: "auto" }}
+            fontWeight="inherit"
+            size="sm"
+          >
+            Cancel
+          </Button>
+          <Button
+            size="sm"
+            fontWeight="inherit"
+            colorScheme={"twitter"}
+            onClick={() => console.log("CLICKED")}
+            type="submit"
+            isLoading={props.loading}
+            isDisabled={props.loading}
+          >
+            Save
+          </Button>
         </Stack>
       </Stack>
     </Stack>

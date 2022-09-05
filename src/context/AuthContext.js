@@ -1,12 +1,14 @@
 import { createContext, useEffect, useState } from "react";
 
-import { getTokens, saveTokens } from "../services/localStorage";
-import { saveUserID } from "../services/localStorage";
+import { getTokens, saveTokens, clearTokens } from "../services/localStorage";
 import axios from "axios";
-import axiosInstance from "../services/api";
 import handleLogout from "../utils/logoutUser";
-import { useToast } from "@chakra-ui/react";
+import { Stack, useToast } from "@chakra-ui/react";
 import jwtDecode from "jwt-decode";
+import Loader from "../components/Loader";
+import ServerErrorSVG from "../components/ServerErrorSVG";
+import { PuffLoader } from "react-spinners";
+
 const AuthContext = createContext();
 
 export default AuthContext;
@@ -28,6 +30,7 @@ export const AuthProvider = ({ children }) => {
   const [isCompany, setIsCompany] = useState(true);
   const [moreUserData, setMoreUserData] = useState([]);
   const [userID, setUserID] = useState(null);
+  const [error, setError] = useState(false);
   const [authTokens, setAuthTokens] = useState(
     refreshToken
       ? {
@@ -39,7 +42,8 @@ export const AuthProvider = ({ children }) => {
           refreshToken: null,
         }
   );
-  axios.defaults.headers["Authorization"] = `Bearer ${authTokens?.accessToken}`;
+  console.log("I RUN");
+  // axios.defaults.headers["Authorization"] = `Bearer ${authTokens?.accessToken}`;
   useEffect(() => {
     async function getUserProfileData() {
       if (
@@ -56,6 +60,7 @@ export const AuthProvider = ({ children }) => {
           });
           setInitialUserData(res.data);
         } catch (error) {
+          setError(true);
           if (error.response?.status === 0) {
             toast({
               position: "bottom-left",
@@ -71,48 +76,57 @@ export const AuthProvider = ({ children }) => {
       }
     }
     getUserProfileData();
-
-    setLoading(false);
   }, [userID, authTokens?.refreshToken]);
 
   // Updating refresh tokens
-
   const updateToken = async () => {
-    try {
-      const res = await axios.post(
-        "token/refresh/",
-        { refresh: authTokens?.refreshToken },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: null,
-          },
-        }
-      );
+    if (authTokens?.refreshToken) {
+      try {
+        const res = await axios.post(
+          "token/refresh/",
+          { refresh: authTokens?.refreshToken },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: null,
+            },
+          }
+        );
 
-      saveTokens(res.data.refresh);
-      setAuthTokens({
-        accessToken: res.data.access,
-        refreshToken: res.data.refresh,
-      });
-      const user = jwtDecode(res.data.access);
-      setUserID(user.user_id);
-    } catch (error) {
-      if (error.response?.status === 0) {
-        toast({
-          position: "bottom-left",
-          title: "Connection timed out",
-          status: "error",
-          duration: 10000,
-          // isClosable: true,
+        saveTokens(res.data.refresh);
+        console.log(res);
+
+        setAuthTokens({
+          accessToken: res.data.access,
+          refreshToken: res.data.refresh,
         });
-        return;
+        const user = jwtDecode(res.data.access);
+        setUserID(user.user_id);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        if (error?.response?.status === 401) {
+          handleLogout();
+        }
+        if (error.response?.status === 0) {
+          toast({
+            position: "bottom-left",
+            title: "Connection timed out",
+            status: "error",
+            duration: 10000,
+            // isClosable: true,
+          });
+          return;
+        }
+        if (error.response?.status === 401) {
+          // handleLogout();
+        }
+        // }
       }
-      if (error.response?.status === 401) {
-        // handleLogout();
-      }
-      // }
+    } else {
+      setLoading(false);
     }
+
     setAllowData(true);
   };
 
@@ -158,9 +172,27 @@ export const AuthProvider = ({ children }) => {
     userID,
     setUserID,
   };
+
   return (
     <AuthContext.Provider value={contextData}>
-      {loading ? null : children}
+      {loading ? (
+        <div
+          style={{
+            height: "97vh",
+            width: "97vw",
+            display: "grid",
+            placeItems: "center",
+            margin: 0,
+            padding: 0,
+          }}
+        >
+          <PuffLoader color="rgb(54, 215, 183)" />
+        </div>
+      ) : error ? (
+        <ServerErrorSVG />
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };

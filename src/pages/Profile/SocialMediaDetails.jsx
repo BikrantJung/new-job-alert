@@ -16,19 +16,15 @@ import {
   ModalOverlay,
   Stack,
   Text,
-  Textarea,
+
   useColorModeValue,
-  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { getTokens } from "../../services/localStorage";
-import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaInstagram } from "react-icons/fa";
 import { IoLogoWhatsapp } from "react-icons/io";
-import { AiFillInstagram, AiFillTwitterCircle } from "react-icons/ai";
 
 import AuthContext from "../../context/AuthContext";
 import axios from "axios";
-import axiosInstance from "../../services/api";
 
 function SocialMediaDetails(props) {
   const toast = useToast();

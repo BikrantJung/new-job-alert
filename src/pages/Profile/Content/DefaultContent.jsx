@@ -1,22 +1,21 @@
-import React, { useContext, useState } from "react";
 import {
-  Text,
-  useDisclosure,
+  Divider,
+  Heading,
+  Link,
+  List,
+  ListIcon,
+  ListItem,
+  Skeleton,
   Stack,
   Tab,
   TabList,
-  Tabs,
-  TabPanels,
   TabPanel,
-  Heading,
+  TabPanels,
+  Tabs,
   Tag,
-  Divider,
-  List,
-  ListItem,
-  ListIcon,
-  Skeleton,
-  Link,
+  Text
 } from "@chakra-ui/react";
+import React, { useContext } from "react";
 import { IoMdCheckmarkCircle } from "react-icons/io";
 
 // import WorkArea from "../Modals/WorkArea";
@@ -57,8 +56,6 @@ function DefaultContent() {
   );
 }
 function General() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedModal, setSelectedModal] = useState("");
   const { initialUserData, urlID, userProfileData, userID } =
     useContext(AuthContext);
 

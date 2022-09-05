@@ -117,7 +117,7 @@ function Biography(props) {
           <Button
             variant="ghost"
             mr={3}
-            onClose={() => {
+            onClick={() => {
               setLoading(false);
               props.onClose();
             }}

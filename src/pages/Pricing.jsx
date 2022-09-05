@@ -193,13 +193,13 @@ export default function Pricing(props) {
   // }, [error]);
   return (
     <>
-      <Navbar />
       {!showContent ? (
         <Loader />
       ) : error ? (
         <ServerErrorSVG />
       ) : (
         <>
+          <Navbar />
           <Box py={12}>
             <VStack spacing={2} textAlign="center">
               <Heading as="h1" fontSize="4xl">

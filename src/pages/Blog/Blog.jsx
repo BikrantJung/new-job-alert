@@ -115,13 +115,13 @@ const Blog = () => {
 
   return (
     <>
-      <Navbar />
       {!showContent ? (
         <Loader />
       ) : error ? (
         <ServerErrorSVG />
       ) : (
         <>
+          <Navbar />
           <Container maxW={"7xl"} p={{ base: "3", md: 10 }} pt={1}>
             <Heading as="h1">Our Blogs</Heading>
             <Box

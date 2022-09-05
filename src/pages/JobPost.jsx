@@ -1,85 +1,58 @@
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import {
-  Flex,
   Box,
+  Button,
+  Divider,
+  Flex,
   FormControl,
   FormLabel,
-  Input,
-  Stack,
-  Button,
-  Heading,
-  Text,
-  useColorModeValue,
-  useToast,
-  Select,
   Grid,
   GridItem,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
-  Textarea,
+  Heading,
+  IconButton,
+  Input,
   InputGroup,
   InputLeftElement,
-  useColorMode,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Tag,
-  TagLabel,
-  TagRightIcon,
-  Skeleton,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  useDisclosure,
-  AlertDialogBody,
-  Image,
-  IconButton,
-  Switch,
-  Divider,
-  RadioGroup,
-  Radio,
   InputRightElement,
   Kbd,
   List,
-  ListItem,
   ListIcon,
+  ListItem,
+  Radio,
+  RadioGroup,
+  Stack,
+  Switch,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  Textarea,
+  useColorMode,
+  useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import axios from "axios";
-import { useState, useContext, useEffect, useRef, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import AuthContext from "../context/AuthContext";
-import StateContext from "../context/StateContext";
-import { AiOutlineDollar, AiOutlineDollarCircle } from "react-icons/ai";
-import { IoChevronDown } from "react-icons/io5";
-import { CloseIcon } from "@chakra-ui/icons";
+import { useContext, useEffect, useRef, useState } from "react";
+import { AiOutlineDollarCircle } from "react-icons/ai";
+import { BsFillCircleFill } from "react-icons/bs";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import ReactSelect from "react-select";
+import CustomHeader from "../components/CustomHeader";
+import Loader from "../components/Loader";
 import Navbar from "../components/Navbar/Navbar";
 import ServerErrorSVG from "../components/ServerErrorSVG";
-import Loader from "../components/Loader";
-import { AiFillEye } from "react-icons/ai";
-import { Step, Steps, useSteps } from "chakra-ui-steps";
-import ReactSelect from "react-select";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import CustomHeader from "../components/CustomHeader";
-import ReactQuill from "react-quill";
-import { BsFillCircleFill } from "react-icons/bs";
-import "react-quill/dist/quill.snow.css";
+import AuthContext from "../context/AuthContext";
 //
 //
 //
 
 export default function JobPost() {
-  const navigate = useNavigate();
-
   const { authTokens, initialUserData } = useContext(AuthContext);
   const { colorMode } = useColorMode();
-  const [tabIndex, setTabIndex] = useState(1);
+  const [tabIndex, setTabIndex] = useState(0);
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showContent, setShowContent] = useState(false);
@@ -137,14 +110,15 @@ export default function JobPost() {
         setPostData((prevData) => {
           return {
             ...prevData,
-            ["jobCategoryData"]: res[0].data,
-            ["jobEducationData"]: res[1].data,
-            ["jobPositionData"]: res[2].data,
-            ["jobSkillsData"]: res[3].data,
-            ["jobTypeData"]: res[4].data,
-            ["jobSalaryData"]: res[5].data,
+            jobCategoryData: res[0].data,
+            jobEducationData: res[1].data,
+            jobPositionData: res[2].data,
+            jobSkillsData: res[3].data,
+            jobTypeData: res[4].data,
+            jobSalaryData: res[5].data,
           };
         });
+        console.log(res);
 
         setShowContent(true);
         setError(false);
@@ -165,7 +139,7 @@ export default function JobPost() {
     requiredSkills.map((item) => {
       skills.push(item.value);
     });
-
+    console.log(skills);
     let postData = {
       IdComp: initialUserData?.user,
       Category: data.get("job_category"),
@@ -266,105 +240,108 @@ export default function JobPost() {
 
   return (
     <>
-      <Navbar />
       {!showContent ? (
         <Loader />
       ) : error ? (
         <ServerErrorSVG />
       ) : (
-        <Box
-          as="form"
-          noValidate
-          onSubmit={submitJobPost}
-          bg={colorMode === "light" ? "gray.100" : "gray.800"}
-          // height="100vh"
-        >
-          <Tabs
-            index={tabIndex}
-            isFitted
-            variant="enclosed"
-            onChange={handleTabChange}
+        <>
+          <Navbar />
+
+          <Box
+            as="form"
+            noValidate
+            onSubmit={submitJobPost}
+            bg={colorMode === "light" ? "gray.100" : "gray.800"}
+            // height="100vh"
           >
-            <TabList mb="1em">
-              <Tab
-                display={{ base: "none", md: "block" }}
-                _selected={{
-                  bg: colorMode === "light" ? "gray.300" : "gray.600",
-                }}
-              >
-                Basic Details
-              </Tab>
-              <Tab
-                display={{ base: "none", md: "block" }}
-                isDisabled={tabIndex >= 1 ? false : true}
-                _selected={{
-                  bg: colorMode === "light" ? "gray.300" : "gray.600",
-                }}
-              >
-                Specifications
-              </Tab>
-              <Tab
-                display={{ base: "none", md: "block" }}
-                isDisabled={tabIndex < 2 ? true : false}
-                _selected={{
-                  bg: colorMode === "light" ? "gray.300" : "gray.600",
-                }}
-              >
-                Salary & Deadline
-              </Tab>
-            </TabList>
-            <CustomHeader
-              textAlign={"center"}
-              display={{ base: "block", md: "none" }}
+            <Tabs
+              index={tabIndex}
+              isFitted
+              variant="enclosed"
+              onChange={handleTabChange}
             >
-              Create Job Post
-            </CustomHeader>
-            <TabPanels>
-              <TabPanel
-                height={{ base: "auto", md: "80vh" }}
-                display="flex"
-                width="100%"
-                justifyContent="center"
+              <TabList mb="1em">
+                <Tab
+                  display={{ base: "none", md: "block" }}
+                  _selected={{
+                    bg: colorMode === "light" ? "gray.300" : "gray.600",
+                  }}
+                >
+                  Basic Details
+                </Tab>
+                <Tab
+                  display={{ base: "none", md: "block" }}
+                  isDisabled={tabIndex >= 1 ? false : true}
+                  _selected={{
+                    bg: colorMode === "light" ? "gray.300" : "gray.600",
+                  }}
+                >
+                  Specifications
+                </Tab>
+                <Tab
+                  display={{ base: "none", md: "block" }}
+                  isDisabled={tabIndex < 2 ? true : false}
+                  _selected={{
+                    bg: colorMode === "light" ? "gray.300" : "gray.600",
+                  }}
+                >
+                  Salary & Deadline
+                </Tab>
+              </TabList>
+              <CustomHeader
+                textAlign={"center"}
+                display={{ base: "block", md: "none" }}
               >
-                <BasicDetails
-                  tabIncrement={tabIncrement}
-                  customStyles={customStyles}
-                  positionData={postData.jobPositionData}
-                  categoryData={postData.jobCategoryData}
-                  jobType={postData.jobTypeData}
-                />
-              </TabPanel>
-              <TabPanel display="flex" width="100%" justifyContent="center">
-                <EduExperience
-                  tabIncrement={tabIncrement}
-                  customStyles={customStyles}
-                  tabDecrement={tabDecrement}
-                  jobEducation={postData.jobEducationData}
-                  jobSkills={postData.jobSkillsData}
-                  jobDescription={jobDescription}
-                  setJobDescription={setJobDescription}
-                  setRequiredSkills={setRequiredSkills}
-                  educationRequired={educationRequired}
-                  setEducationRequired={setEducationRequired}
-                  experienceText={experienceText}
-                  setExperienceText={setExperienceText}
-                  experienceList={experienceList}
-                  setExperienceList={setExperienceList}
-                  deleteItem={deleteItem}
-                />
-              </TabPanel>
-              <TabPanel display="flex" width="100%" justifyContent="center">
-                <PaymentDate
-                  tabIncrement={tabIncrement}
-                  customStyles={customStyles}
-                  tabDecrement={tabDecrement}
-                  jobSalary={postData.jobSalaryData}
-                  isLoading={isLoading}
-                />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </Box>
+                Create Job Post
+              </CustomHeader>
+              <TabPanels>
+                <TabPanel
+                  height={{ base: "auto", md: "80vh" }}
+                  display="flex"
+                  width="100%"
+                  justifyContent="center"
+                >
+                  <BasicDetails
+                    tabIncrement={tabIncrement}
+                    customStyles={customStyles}
+                    positionData={postData.jobPositionData}
+                    categoryData={postData.jobCategoryData}
+                    jobType={postData.jobTypeData}
+                  />
+                </TabPanel>
+                <TabPanel display="flex" width="100%" justifyContent="center">
+                  <EduExperience
+                    tabIncrement={tabIncrement}
+                    customStyles={customStyles}
+                    tabDecrement={tabDecrement}
+                    jobEducation={postData.jobEducationData}
+                    jobSkills={postData.jobSkillsData}
+                    jobDescription={jobDescription}
+                    setJobDescription={setJobDescription}
+                    setRequiredSkills={setRequiredSkills}
+                    educationRequired={educationRequired}
+                    setEducationRequired={setEducationRequired}
+                    experienceText={experienceText}
+                    setExperienceText={setExperienceText}
+                    experienceList={experienceList}
+                    setExperienceList={setExperienceList}
+                    deleteItem={deleteItem}
+                  />
+                </TabPanel>
+                <TabPanel display="flex" width="100%" justifyContent="center">
+                  <PaymentDate
+                    tabIncrement={tabIncrement}
+                    customStyles={customStyles}
+                    tabDecrement={tabDecrement}
+                    jobSalary={postData.jobSalaryData}
+                    isLoading={isLoading}
+                  />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </Box>
+        </>
       )}
     </>
   );
@@ -531,9 +508,10 @@ function EduExperience(props) {
               </Text>
               <InputGroup flex={1}>
                 <InputRightElement
+                  borderRadius={"full"}
                   children={<AddIcon fontSize={14} />}
                   cursor="pointer"
-                  bg={colorMode === "light" ? "gray.100" : "gray.800"}
+                  bg={colorMode === "light" ? "gray.200" : "gray.800"}
                   _hover={{
                     bg: colorMode === "light" ? "gray.200" : "gray.900",
                   }}
@@ -567,11 +545,11 @@ function EduExperience(props) {
                     return (
                       <>
                         <ListItem
+                          key={index}
                           display={"flex"}
                           alignItems="center"
                           gap={2}
                           w="100%"
-                          key={index}
                         >
                           <ListIcon
                             as={BsFillCircleFill}

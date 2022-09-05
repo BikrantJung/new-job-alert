@@ -235,32 +235,12 @@ function CVModal(props) {
                 <>
                   <Icon as={AiOutlineFileText} color="red" />
                   <Link href={moreUserData?.cvUpload} target="_blank">
-                    {moreUserData?.cvUpload.split("/").slice(-1)[0]}
+                    {moreUserData?.cvUpload?.split("/").slice(-1)[0]}
                   </Link>
                 </>
               ) : (
                 <Text>No file found</Text>
               )}
-              {/* <Stack
-                bg="rgb(253, 220, 209)"
-                w="100%"
-                p={3}
-                borderRadius="md"
-                direction="row"
-                align="center"
-              >
-                <Icon as={AiOutlineFileText} color="red" />
-
-                {localFile && <Text>{localFile}</Text>}
-                {moreUserData?.cvUpload && (
-                  <Link href={moreUserData?.cvUpload} target="_blank">
-                    {moreUserData?.cvUpload.split("/").slice(-1)[0]}
-                  </Link>
-                )}
-                {!localFile && !moreUserData?.cvUpload && (
-                  <Text>No file found</Text>
-                )}
-              </Stack> */}
             </Stack>
           </Stack>
         </ModalBody>
@@ -280,7 +260,7 @@ function CVModal(props) {
             variant="ghost"
             mr={3}
             size="sm"
-            onClose={() => {
+            onClick={() => {
               setLoading(false);
               props.onClose();
             }}

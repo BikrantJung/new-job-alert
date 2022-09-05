@@ -54,8 +54,14 @@ export default function Profile(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [showContent, setShowContent] = useState(false);
   const [error, setError] = useState(false);
-  const { setUserProfileData, setAllowData, setUrlID, setInitialUserData } =
-    useContext(AuthContext);
+  const {
+    setUserProfileData,
+    setAllowData,
+    setUrlID,
+    setInitialUserData,
+    setMoreUserData,
+    userProfileData,
+  } = useContext(AuthContext);
   const { id } = useParams();
   useEffect(() => {
     setUrlID(id);
@@ -88,6 +94,23 @@ export default function Profile(props) {
 
     getUserProfileData();
   }, [id]);
+
+  useEffect(() => {
+    const getMoreUserData = async () => {
+      if (userProfileData?.user) {
+        try {
+          const res = await axios.get(
+            `profileEduDetails/${userProfileData?.user}`
+          );
+          setMoreUserData(res.data);
+          console.log(res);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+    getMoreUserData();
+  }, []);
 
   return (
     <>

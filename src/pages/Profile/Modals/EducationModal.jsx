@@ -161,9 +161,6 @@ function EducationModal(props) {
               <Input
                 type="text"
                 name="area_of_study"
-                defaultValue={
-                  userProfileData?.phNumber || initialUserData?.phNumber
-                }
                 placeholder="E.x. Computer Science"
               />
             </FormControl>
@@ -219,14 +216,7 @@ function EducationModal(props) {
             </Grid>
             <FormControl id="description">
               <FormLabel>Education Description</FormLabel>
-              <Textarea
-                resize={"none"}
-                type="text"
-                name="description"
-                defaultValue={
-                  userProfileData?.phNumber || initialUserData?.phNumber
-                }
-              />
+              <Textarea resize={"none"} type="text" name="description" />
             </FormControl>
           </Stack>
         </ModalBody>
@@ -235,7 +225,7 @@ function EducationModal(props) {
           <Button
             variant="ghost"
             mr={3}
-            onClose={() => {
+            onClick={() => {
               setLoading(false);
               props.onClose();
             }}

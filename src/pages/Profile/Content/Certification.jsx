@@ -86,7 +86,7 @@ function Certificate() {
 
 function CV() {
   const { moreUserData } = useContext(AuthContext);
-
+  console.log(moreUserData);
   return (
     <Stack overflow="auto" style={{ marginLeft: "0" }}>
       <Stack gap={2}>
@@ -96,21 +96,25 @@ function CV() {
           </Heading>
         </Stack>
 
-        <Stack gap={1} p={3} pb={0}>
-          <Stack
-            bg="teal.200"
-            w="80%"
-            p={3}
-            borderRadius="md"
-            direction="row"
-            align="center"
-          >
-            <Icon as={AiOutlineFileText} color="black" />
-            <Link href={moreUserData?.cvUpload} target="_blank">
-              {moreUserData?.cvUpload.split("/").slice(-1)[0]}
-            </Link>
+        {moreUserData?.cvUpload ? (
+          <Stack gap={1} p={3} pb={0}>
+            <Stack
+              bg="teal.200"
+              w="80%"
+              p={3}
+              borderRadius="md"
+              direction="row"
+              align="center"
+            >
+              <Icon as={AiOutlineFileText} color="black" />
+              <Link href={moreUserData?.cvUpload} target="_blank">
+                {moreUserData?.cvUpload?.split("/").slice(-1)[0]}
+              </Link>
+            </Stack>
           </Stack>
-        </Stack>
+        ) : (
+          ""
+        )}
       </Stack>
     </Stack>
   );

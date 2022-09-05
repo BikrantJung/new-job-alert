@@ -43,7 +43,7 @@ function ContactDetails(props) {
     const data = new FormData(e.currentTarget);
     const contactData = {
       user: userID,
-      phNumber: data.get("phone_number"),
+      phNumber: data.get("phone_number") ? data.get("phone_number") : null,
       contactEmail: data.get("contact_email"),
       contactTel: data.get("tel_no"),
       subscription: userProfileData.subscription,
@@ -153,7 +153,7 @@ function ContactDetails(props) {
           <Button
             variant="ghost"
             mr={3}
-            onClose={() => {
+            onClick={() => {
               setLoading(false);
               props.onClose();
             }}

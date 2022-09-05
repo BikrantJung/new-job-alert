@@ -19,16 +19,8 @@ import { Link as ReactLink, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import AuthContext from "../context/AuthContext";
 import StateContext from "../context/StateContext";
-import { saveTokens, saveUserID } from "../services/localStorage";
-import axiosInstance from "../services/api";
-import { setCookie, getCookie, removeCookie } from "../utils/cookieHook";
-import {
-  encode,
-  decode,
-  trim,
-  isBase64,
-  isUrlSafeBase64,
-} from "url-safe-base64";
+import { saveTokens } from "../services/localStorage";
+
 export default function Login() {
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +29,6 @@ export default function Login() {
   const { just_registered } = useContext(StateContext);
   const [justRegistered, setJustRegistered] = just_registered;
 
-  const navigate = useNavigate();
 
   useEffect(() => {
     justRegistered &&

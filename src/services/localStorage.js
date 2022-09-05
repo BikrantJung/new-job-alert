@@ -25,8 +25,7 @@ const getTokens = () => {
   return { refreshToken };
 };
 const clearTokens = () => {
-  // localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("chakra-ui-theme-id");
   window.location.reload(false);
 };
 export { saveTokens, getTokens, clearTokens };

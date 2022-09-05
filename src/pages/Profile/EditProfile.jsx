@@ -11,13 +11,6 @@ import {
   List,
   ListIcon,
   ListItem,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Stack,
   Table,
   TableContainer,
@@ -54,20 +47,22 @@ function EditProfile(props) {
   const [selectedModal, setSelectedModal] = useState("");
   const { userProfileData, initialUserData, moreUserData, setMoreUserData } =
     useContext(AuthContext);
-  const { isValidUser } = useContext(StateContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleClick = (e) => {
     setSelectedModal(e.target.value);
   };
   useEffect(() => {
     const getMoreUserData = async () => {
-      if (userProfileData?.user) {
+      if (!moreUserData?.euser && userProfileData?.user) {
         try {
           const res = await axios.get(
             `profileEduDetails/${userProfileData?.user}`
           );
           setMoreUserData(res.data);
-        } catch (error) {}
+          console.log(res);
+        } catch (error) {
+          console.log(error);
+        }
       }
     };
     getMoreUserData();
@@ -478,7 +473,7 @@ function EditProfile(props) {
                         <Td
                           color={
                             userProfileData?.contactTel
-                              ? "blue.400"
+                              ? "gray.800"
                               : "gray.400"
                           }
                         >
@@ -557,7 +552,7 @@ function EditProfile(props) {
                         <Td style={{ padding: 0 }}>Whatsapp</Td>
                         <Td
                           color={
-                            userProfileData?.facebook ? "blue.400" : "gray.400"
+                            userProfileData?.facebook ? "blue.400" : "gray.800"
                           }
                         >
                           {userProfileData?.whatsapp
@@ -574,7 +569,7 @@ function EditProfile(props) {
                             color={
                               userProfileData?.instagram
                                 ? "blue.400"
-                                : "gray.400"
+                                : "gray.800"
                             }
                             target="_blank"
                             _hover={
@@ -587,7 +582,7 @@ function EditProfile(props) {
                             }
                           >
                             {userProfileData?.instagram
-                              ? "OK"
+                              ? userProfileData?.instagram
                               : "Not available"}
                           </Link>
                         </Td>

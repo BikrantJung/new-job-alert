@@ -10,6 +10,7 @@ import {
   Button,
   Divider,
   Heading,
+  Icon,
   Image,
   Input,
   Modal,
@@ -20,6 +21,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
+  Text,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -27,6 +29,7 @@ import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useContext } from "react";
 import axios from "axios";
 import AuthContext from "../../../context/AuthContext";
+import { AiOutlineFileText, AiOutlineReload } from "react-icons/ai";
 
 function CertificationModal(props) {
   const toast = useToast();
@@ -53,7 +56,7 @@ function CertificationModal(props) {
       euser: userID,
       certification: removed ? null : data.get("certificate_image"),
     };
-
+    console.log(data.certification);
     try {
       const res = await axios.put(
         `profileEduDetails/${userID}`,
@@ -66,6 +69,7 @@ function CertificationModal(props) {
         }
       );
       setLoading(false);
+      console.log(res);
       setAllowClose(true);
       setMoreUserData(res.data);
       setLocalImage(null);
@@ -152,99 +156,120 @@ function CertificationModal(props) {
         style={{ marginTop: "0rem" }}
       >
         <Stack>
-          <ModalHeader textAlign={"center"}>Update certification</ModalHeader>
+          <ModalHeader textAlign={"center"}>Update Certification</ModalHeader>
           <ModalCloseButton />
           <Divider />
         </Stack>
         <ModalBody>
-          <Heading fontSize="lg" p={3} boxShadow="md" my={2}>
-            Certificate Image
-          </Heading>
-          <Stack align="center" justify={"center"}>
-            <Box width="70%">
-              <Image src={localImage || moreUserData?.certification} />
-            </Box>
+          <Stack my={4} align="center" justify="center">
+            <Stack align="center">
+              <Stack
+                alignItems="center"
+                justifyContent="center"
+                backgroundColor={"rgb(237, 241, 247)"}
+                height="18rem"
+                width={"18rem"}
+                border="2px dashed"
+                borderColor="gray.400"
+                backgroundImage={localImage}
+                backgroundSize={"cover"}
+                backgroundRepeat={"no-repeat"}
+                backgroundPosition="center center"
+              >
+                <Input
+                  type="file"
+                  id="certification-upload"
+                  accept="image/*"
+                  name="certificate_image"
+                  hidden
+                  onChange={(e) => handleChange(e)}
+                />
+
+                <Button
+                  as={"label"}
+                  leftIcon={<AddIcon />}
+                  htmlFor="certification-upload"
+                  cursor={"pointer"}
+                  colorScheme="red"
+                  borderRadius={0}
+                  mb={5}
+                >
+                  Upload image
+                </Button>
+              </Stack>
+            </Stack>
+            <Text fontSize="14">
+              Your image will be uploaded on its original size
+            </Text>
           </Stack>
-          <Stack my={5} direction="row" align="center" justify={"center"}>
-            <Input
-              type="file"
-              id="file-upload"
-              accept="image/*"
-              name="certificate_image"
-              hidden
-              onChange={(e) => handleChange(e)}
-            />
-
-            <Button
-              as={"label"}
-              leftIcon={<AddIcon />}
-              htmlFor="file-upload"
-              cursor={"pointer"}
-            >
-              Upload photo
-            </Button>
-
-            <Button
-              leftIcon={<DeleteIcon />}
-              onClick={onOpen}
-              disabled={!(localImage || moreUserData?.certification)}
-            >
-              Remove photo
-            </Button>
-          </Stack>
-          <>
-            <AlertDialog
-              isOpen={isOpen}
-              leastDestructiveRef={cancelRef}
-              onClose={onClose}
-            >
-              <AlertDialogOverlay>
-                <AlertDialogContent>
-                  <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                    Remove Profile Photo
-                  </AlertDialogHeader>
-
-                  <AlertDialogBody>
-                    Are you sure you want to remove profile photo
-                  </AlertDialogBody>
-
-                  <AlertDialogFooter>
-                    <Button ref={cancelRef} onClick={onClose}>
-                      Cancel
-                    </Button>
-                    <Button
-                      colorScheme="red"
-                      onClick={() => {
-                        removePhoto();
-                        onClose();
-                      }}
-                      ml={3}
-                      leftIcon={<DeleteIcon />}
-                    >
-                      Remove
-                    </Button>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialogOverlay>
-            </AlertDialog>
-          </>
         </ModalBody>
 
         <ModalFooter>
           <Button
+            leftIcon={<AiOutlineReload />}
+            onClick={onOpen}
+            disabled={!(localImage || moreUserData?.certification)}
+            size="sm"
+            colorScheme="red"
+            marginRight={"auto"}
+          >
+            Reset Data
+          </Button>
+          <Button
             variant="ghost"
             mr={3}
-            onClose={() => {
+            size="sm"
+            onClick={() => {
               setLoading(false);
               props.onClose();
             }}
           >
             Close
           </Button>
-          <Button type="submit" isLoading={loading} disabled={!allowUpdate}>
+          <Button
+            size="sm"
+            type="submit"
+            isLoading={loading}
+            disabled={!allowUpdate}
+            colorScheme="twitter"
+          >
             Update
           </Button>
         </ModalFooter>
+        <AlertDialog
+          isOpen={isOpen}
+          leastDestructiveRef={cancelRef}
+          onClose={onClose}
+        >
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                Reset certification data
+              </AlertDialogHeader>
+
+              <AlertDialogBody>
+                Are you sure you want to reset certification data
+              </AlertDialogBody>
+
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="red"
+                  onClick={() => {
+                    removePhoto();
+                    onClose();
+                  }}
+                  ml={3}
+                  leftIcon={<AiOutlineReload />}
+                >
+                  Reset
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
       </ModalContent>
     </Modal>
   );

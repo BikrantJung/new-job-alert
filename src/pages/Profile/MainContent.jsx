@@ -1,25 +1,22 @@
-import React, { useContext, useState } from "react";
 import {
   Avatar,
-  Icon,
-  useColorModeValue,
-  Text,
-  useDisclosure,
-  Stack,
-  Tooltip,
   Button,
+  Icon,
+  Link,
   Skeleton,
   SkeletonCircle,
-  Link,
+  Stack,
+  Text,
+  Tooltip,
+  useColorModeValue,
 } from "@chakra-ui/react";
+import React, { useContext } from "react";
 
+import { AiFillInstagram } from "react-icons/ai";
 import { FaFacebook } from "react-icons/fa";
 import { IoLogoWhatsapp } from "react-icons/io";
-import { AiFillInstagram } from "react-icons/ai";
-import AuthContext from "../../context/AuthContext";
-import EditProfile from "./EditProfile";
-import { getTokens } from "../../services/localStorage";
 import { Link as ReactLink, Outlet } from "react-router-dom";
+import AuthContext from "../../context/AuthContext";
 
 function MainContent() {
   const { userProfileData, initialUserData, urlID, userID } =

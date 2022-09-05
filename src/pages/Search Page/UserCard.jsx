@@ -1,24 +1,22 @@
 import {
-  Heading,
   Avatar,
   Box,
-  Center,
-  Image,
-  Flex,
-  Text,
-  Stack,
   Button,
-  useColorModeValue,
-  GridItem,
   Divider,
-  Tag,
-  useColorMode,
+  Flex,
+  Heading,
+  Image,
   Link,
+  Stack,
+  Tag,
+  Text,
+  useColorMode,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 import { Link as ReactLink } from "react-router-dom";
 export default function UserCard(props) {
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode } = useColorMode();
   return (
     <Box
       maxW={"270px"}
@@ -88,9 +86,8 @@ export default function UserCard(props) {
         >
           <Button
             w={"full"}
+            colorScheme="twitter"
             mt={8}
-            bg={useColorModeValue("#151f21", "gray.900")}
-            color={"white"}
             rounded={"md"}
             _hover={{
               transform: "translateY(-2px)",
