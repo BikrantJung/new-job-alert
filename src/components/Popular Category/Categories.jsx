@@ -17,7 +17,31 @@ import AmazonLogo from "../../images/amazon.png";
 import AppleLogo from "../../images/apple.png";
 import CokeLogo from "../../images/coke.png";
 import { categoryData } from "./CategoryData";
+import { useEffect } from "react";
+import { useContext } from "react";
+import StateContext from "../../context/StateContext";
+import axios from "axios";
 function Categories() {
+  const { popularCategory, setPopularCategory } = useContext(StateContext);
+  useEffect(() => {
+    async function getPopularCategory() {
+      if (!popularCategory.length) {
+        try {
+          const res = await axios.get("popularCategory/", {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: null,
+            },
+          });
+          setPopularCategory(res.data.results);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+    getPopularCategory();
+  }, []);
+
   return (
     <Box sx={{ py: 6, mb: 3 }}>
       <Center>
@@ -70,15 +94,8 @@ function Categories() {
           gap={2}
           // p={2}
         >
-          {categoryData.map((item, index) => {
-            return (
-              <CategoryCard
-                logo={item.img}
-                company={item.companyName}
-                post={item.jobCategory}
-                key={index}
-              />
-            );
+          {popularCategory?.map((item, index) => {
+            return <CategoryCard {...item} key={index} />;
           })}
         </Grid>
 

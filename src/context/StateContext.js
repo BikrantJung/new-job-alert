@@ -22,6 +22,8 @@ export const StateProvider = ({ children }) => {
   const [localCover, setLocalCover] = useState("");
   const [localLogo, setLocalLogo] = useState("");
   const [loading, setLoading] = useState(true);
+  const [popularCategory, setPopularCategory] = useState([]);
+  const [jobApplications, setJobApplications] = useState([]);
   useEffect(() => {
     const hasCompany = async () => {
       if (userID) {
@@ -58,7 +60,6 @@ export const StateProvider = ({ children }) => {
 
   const contextData = {
     nav: [navHeight, setNavHeight],
-    just_registered: [justRegistered, setJustRegistered],
     render_nav: [renderNav, setRenderNav],
     successfulPost,
     setSuccessfulPost,
@@ -79,6 +80,12 @@ export const StateProvider = ({ children }) => {
     setLocalCover,
     localLogo,
     setLocalLogo,
+    jobApplications,
+    setJobApplications,
+    popularCategory,
+    setPopularCategory,
+    justRegistered,
+    setJustRegistered,
   };
 
   return (

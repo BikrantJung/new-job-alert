@@ -1,11 +1,10 @@
 import { createContext, useEffect, useState } from "react";
 
-import { getTokens, saveTokens, clearTokens } from "../services/localStorage";
+import { getTokens, saveTokens } from "../services/localStorage";
 import axios from "axios";
 import handleLogout from "../utils/logoutUser";
-import { Stack, useToast } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import jwtDecode from "jwt-decode";
-import Loader from "../components/Loader";
 import ServerErrorSVG from "../components/ServerErrorSVG";
 import { PuffLoader } from "react-spinners";
 
@@ -18,7 +17,6 @@ export const AuthProvider = ({ children }) => {
   const { refreshToken } = getTokens();
   const [userSubscribed, setUserSubscribed] = useState(false);
   const [userData, setUserData] = useState([]);
-  const [searchFilter, setSearchFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [userProfileData, setUserProfileData] = useState([]);
   const [isExpired, setIsExpired] = useState(true);
@@ -42,7 +40,6 @@ export const AuthProvider = ({ children }) => {
           refreshToken: null,
         }
   );
-  console.log("I RUN");
   // axios.defaults.headers["Authorization"] = `Bearer ${authTokens?.accessToken}`;
   useEffect(() => {
     async function getUserProfileData() {
@@ -94,7 +91,6 @@ export const AuthProvider = ({ children }) => {
         );
 
         saveTokens(res.data.refresh);
-        console.log(res);
 
         setAuthTokens({
           accessToken: res.data.access,

@@ -71,6 +71,7 @@ function EducationModal(props) {
       setMoreUserData(res.data);
     } catch (error) {
       setAllowClose(false);
+      console.log(error);
       setLoading(false);
       if (error.response?.data?.fromYear || error.response?.data?.toYear) {
         toast({

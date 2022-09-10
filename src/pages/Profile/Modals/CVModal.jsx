@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { AddIcon } from "@chakra-ui/icons";
 import {
   AlertDialog,
   AlertDialogBody,
@@ -6,13 +6,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
-  Box,
   Button,
   Divider,
-  Heading,
   HStack,
   Icon,
-  Image,
   Input,
   Link,
   Modal,
@@ -23,17 +20,14 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  Tag,
   Text,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
-import { useContext } from "react";
 import axios from "axios";
-import AuthContext from "../../../context/AuthContext";
+import React, { useContext, useEffect, useState } from "react";
 import { AiOutlineFileText, AiOutlineReload } from "react-icons/ai";
-import { GrPowerReset } from "react-icons/gr";
+import AuthContext from "../../../context/AuthContext";
 function CVModal(props) {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -45,7 +39,6 @@ function CVModal(props) {
   const [allowClose, setAllowClose] = useState(false);
   const [allowUpdate, setAllowUpdate] = useState(false);
   const [removed, setRemoved] = useState(false);
-  const [fileName, setFileName] = useState("");
   const handleChange = (e) => {
     setAllowUpdate(true);
     setlocalFile(e.target.files[0].name);

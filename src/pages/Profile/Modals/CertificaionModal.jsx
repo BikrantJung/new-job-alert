@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { AddIcon } from "@chakra-ui/icons";
 import {
   AlertDialog,
   AlertDialogBody,
@@ -6,12 +6,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
-  Box,
   Button,
   Divider,
-  Heading,
-  Icon,
-  Image,
   Input,
   Modal,
   ModalBody,
@@ -25,17 +21,16 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
-import { useContext } from "react";
 import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
+import { AiOutlineReload } from "react-icons/ai";
 import AuthContext from "../../../context/AuthContext";
-import { AiOutlineFileText, AiOutlineReload } from "react-icons/ai";
 
 function CertificationModal(props) {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef();
-  const { userProfileData, userID, authTokens, moreUserData, setMoreUserData } =
+  const { userID, authTokens, moreUserData, setMoreUserData } =
     useContext(AuthContext);
   const [localImage, setLocalImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -133,6 +128,7 @@ function CertificationModal(props) {
     }
   };
 
+  console.log(moreUserData);
   return (
     <Modal
       preserveScrollBarGap
@@ -171,7 +167,7 @@ function CertificationModal(props) {
                 width={"18rem"}
                 border="2px dashed"
                 borderColor="gray.400"
-                backgroundImage={localImage}
+                backgroundImage={localImage || moreUserData?.certification}
                 backgroundSize={"cover"}
                 backgroundRepeat={"no-repeat"}
                 backgroundPosition="center center"

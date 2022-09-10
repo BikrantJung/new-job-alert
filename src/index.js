@@ -8,7 +8,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { Provider } from "react-redux";
 const App = lazy(() => import("./App"));
 
-axios.defaults.baseURL = "http://192.168.1.73:8000/api/user/";
+axios.defaults.baseURL = "http://192.168.1.93:8000/api/user/";
 // axios.defaults.withCredentials = true;
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

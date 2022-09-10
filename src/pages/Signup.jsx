@@ -29,8 +29,7 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasAcceptedPolicy, setHasAcceptedPolicy] = useState(false);
-  const { just_registered } = useContext(StateContext);
-  const [justRegistered, setJustRegistered] = just_registered;
+  const { justRegistered, setJustRegistered } = useContext(StateContext);
   const toast = useToast();
   const navigate = useNavigate();
   // Submit the form
@@ -61,6 +60,7 @@ export default function Signup() {
       navigate("/login");
     } catch (error) {
       setIsLoading(false);
+      console.log(error);
       if (
         error.response.status === 500 &&
         error.response.statusText === "Internal Server Error"

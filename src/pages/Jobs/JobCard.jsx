@@ -233,16 +233,20 @@ function JobCard(props) {
             Education & Specification
           </Heading>
         </Stack>
-
-        <Button
-          style={{ marginTop: "auto", marginBottom: "1rem" }}
-          colorScheme="twitter"
-          size={{ base: "xs", sm: "sm" }}
-          onClick={() => setMoreShown(!moreShown)}
-          marginTop={moreShown ? "1rem" : "none"}
+        <Link
+          textDecoration="none"
+          _hover={{ textDecoration: "none" }}
+          as={ReactLink}
+          to={`/company/${props.companyName}/${props.jobTitle}/${props.jobID}`}
         >
-          View {moreShown ? "Less" : "Details"}
-        </Button>
+          <Button
+            style={{ marginTop: "auto", marginBottom: "1rem" }}
+            colorScheme="twitter"
+            size={{ base: "xs", sm: "sm" }}
+          >
+            View Details
+          </Button>
+        </Link>
       </Stack>
       <Stack
         flex={1}

@@ -1,37 +1,24 @@
-import { useContext } from "react";
-import { Link as ReactLink, useNavigate } from "react-router-dom";
+import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Flex,
-  Avatar,
-  HStack,
-  Link,
-  IconButton,
   Button,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuDivider,
-  useDisclosure,
-  useColorModeValue,
-  Stack,
-  SkeletonCircle,
+  Flex,
+  HStack,
+  IconButton,
+  Image,
+  Link,
   Skeleton,
-  Text,
-  Input,
+  SkeletonCircle,
+  Stack,
+  useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
-import ToggleMode from "../ToggleMode";
-import { AiOutlineUser } from "react-icons/ai";
-import { FiSettings } from "react-icons/fi";
-import { IoIosLogOut } from "react-icons/io";
+import { useContext } from "react";
+import { Link as ReactLink } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
-import { clearTokens } from "../../services/localStorage";
-import handleLogout from "../../utils/logoutUser";
 import { ProfileMenu } from "../../pages/Profile/Profile";
-import RegisterButton from "../RegisterButton";
-import { SearchIcon } from "@chakra-ui/icons";
+import ToggleMode from "../ToggleMode";
+import CompanyLogo from "../../images/company_logo.png";
 const Links = [
   {
     link: "/jobs",
@@ -70,6 +57,7 @@ const NavLink = (props) => (
       bg: useColorModeValue("gray.200", "gray.700"),
     }}
     to={props.link}
+    fontSize={16}
   >
     {props.children}
   </Link>
@@ -87,7 +75,7 @@ export default function Navbar() {
         px={4}
         sx={{ position: "sticky", top: 0, zIndex: 1500 }}
       >
-        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+        <Flex alignItems={"center"} justifyContent={"space-between"} gap={4}>
           <IconButton
             size={"md"}
             icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
@@ -95,16 +83,20 @@ export default function Navbar() {
             display={{ md: "none" }}
             onClick={isOpen ? onClose : onOpen}
           />
-          <HStack spacing={8} alignItems={"center"}>
-            <Box>
-              <Link as={ReactLink} to="/">
-                Jobs Nepal
-              </Link>
-            </Box>
+          <HStack alignItems={"center"} w="100%">
+            <Link
+              as={ReactLink}
+              to="/"
+              w={{ base: "20vw", sm: "10vw", md: "6vw" }}
+            >
+              <Image src={CompanyLogo} w={{ base: "100%" }} />
+            </Link>
+
             <HStack
               as={"nav"}
-              spacing={4}
+              spacing={10}
               display={{ base: "none", md: "flex" }}
+              style={{ marginLeft: "auto", marginRight: "auto" }}
             >
               {Links.map((link, index) => (
                 <NavLink key={index} link={link.link}>
@@ -114,21 +106,10 @@ export default function Navbar() {
             </HStack>
           </HStack>
 
-          <Flex alignItems={"center"} gap={[5]}>
+          <Flex alignItems={"center"} gap={4}>
             <ToggleMode />
-            {authTokens?.accessToken ? (
-              initialUserData?.username || userProfileData?.username ? (
-                <ProfileMenu py={1} ml={3} />
-              ) : (
-                <Flex width={["auto", "auto", "100px"]} align="center" gap={1}>
-                  <SkeletonCircle size={["9", "9", "10"]} />
-                  <Skeleton
-                    height="10px"
-                    flex={1}
-                    display={["none", "none", "block"]}
-                  />
-                </Flex>
-              )
+            {authTokens?.accessToken && initialUserData?.username ? (
+              <ProfileMenu py={1} ml={3} />
             ) : (
               <Link
                 as={ReactLink}

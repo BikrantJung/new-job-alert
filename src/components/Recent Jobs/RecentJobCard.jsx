@@ -8,10 +8,13 @@ import {
   Icon,
   TagLabel,
   Tag,
+  Link,
+  Image,
 } from "@chakra-ui/react";
 import { GoLocation } from "react-icons/go";
 import { AiOutlineDollar, AiOutlineTag } from "react-icons/ai";
 import { MdWorkOutline } from "react-icons/md";
+import { Link as ReactLink } from "react-router-dom";
 export default function RecentJobCard(props) {
   return (
     <Box
@@ -28,11 +31,12 @@ export default function RecentJobCard(props) {
         color={useColorModeValue("gray.800", "white")}
         align={"center"}
       >
-        <Stack direction={"row"} align={"center"} justify={"center"}>
+        <Stack align={"center"} justify={"center"}>
           <Stack>
             <Text fontSize="3xl">{props.jobTitle}</Text>
             <Text fontWeight={"bold"}>{props.companyName}</Text>
           </Stack>
+          <Image src={props.companyLogo} width="50%" borderRadius="md" />
         </Stack>
       </Stack>
 
@@ -45,7 +49,9 @@ export default function RecentJobCard(props) {
           <Stack direction="row" align={"center"}>
             <Icon as={AiOutlineDollar} color="blue.400" fontSize={20} />
             <Text>
-              ${props.minSalary} - ${props.maxSalary}
+              {props.maxSalary
+                ? ` $ ${props.minSalary} - $ ${props.maxSalary} `
+                : `$ ${props.minSalary}`}
             </Text>
           </Stack>
           <Stack direction="row" align={"center"}>
@@ -66,22 +72,28 @@ export default function RecentJobCard(props) {
             </Stack>
           )}
         </List>
-
-        <Button
-          mt={10}
-          w={"full"}
-          bg={"blue.400"}
-          color={"white"}
-          rounded={"xl"}
-          _hover={{
-            bg: "blue.500",
-          }}
-          _focus={{
-            bg: "blue.500",
-          }}
+        <Link
+          as={ReactLink}
+          textDecoration="none"
+          _hover={{ textDecoration: "none" }}
+          to={`/company/${props.companyName}/${props.jobTitle}/${props.jobID}`}
         >
-          View Details
-        </Button>
+          <Button
+            mt={10}
+            w={"full"}
+            bg={"blue.400"}
+            color={"white"}
+            rounded={"xl"}
+            _hover={{
+              bg: "blue.500",
+            }}
+            _focus={{
+              bg: "blue.500",
+            }}
+          >
+            View Details
+          </Button>
+        </Link>
       </Box>
     </Box>
   );

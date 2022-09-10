@@ -23,6 +23,7 @@ function RecentJobs() {
     };
     getRecentJobs();
   }, []);
+  console.log(recentJobs);
   return (
     <>
       <Center py={5}>
@@ -75,6 +76,8 @@ function RecentJobs() {
               maxSalary={item.SalaryMax}
               jobType={item.JobType}
               jobTags={item.JobTags}
+              jobID={item.id}
+              companyLogo={item.companyLogo}
             />
           );
         })}

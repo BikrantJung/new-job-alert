@@ -22,31 +22,32 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import React, { useContext } from "react";
-import { useState } from "react";
+import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
 import { IoMdCheckmarkCircle } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import Biography from "./Biography";
 import ContactDetails from "./ContactDetails";
 import ExperienceModal from "./ExperienceModal";
 import GeneralDetails from "./GeneralDetails";
+import CertificationModal from "./Modals/CertificaionModal";
+import CVModal from "./Modals/CVModal";
+import EducationModal from "./Modals/EducationModal";
 import ProfilePicture from "./ProfilePicture";
 import SkillsModal from "./SkillsModal";
 import SocialMediaDetails from "./SocialMediaDetails";
 import WorkAreaModal from "./WorkAreaModal";
-import { useNavigate } from "react-router-dom";
-import EducationModal from "./Modals/EducationModal";
-import CertificationModal from "./Modals/CertificaionModal";
-import { getTokens } from "../../services/localStorage";
-import StateContext from "../../context/StateContext";
-import { useEffect } from "react";
-import axios from "axios";
-import CVModal from "./Modals/CVModal";
-function EditProfile(props) {
+function EditProfile() {
   const navigate = useNavigate();
   const [selectedModal, setSelectedModal] = useState("");
-  const { userProfileData, initialUserData, moreUserData, setMoreUserData } =
-    useContext(AuthContext);
+  const {
+    userProfileData,
+    authTokens,
+    initialUserData,
+    moreUserData,
+    setMoreUserData,
+  } = useContext(AuthContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleClick = (e) => {
     setSelectedModal(e.target.value);
@@ -56,7 +57,13 @@ function EditProfile(props) {
       if (!moreUserData?.euser && userProfileData?.user) {
         try {
           const res = await axios.get(
-            `profileEduDetails/${userProfileData?.user}`
+            `profileEduDetails/${userProfileData?.user}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${authTokens?.accessToken}`,
+              },
+            }
           );
           setMoreUserData(res.data);
           console.log(res);
@@ -69,20 +76,29 @@ function EditProfile(props) {
   }, []);
 
   console.log("PROFILE");
-
+  const urlHash = window.location.hash;
+  if (urlHash.length) {
+    const element = document.getElementById(urlHash.substring(1));
+    if (element) {
+      element.scrollIntoView();
+    }
+  }
   return (
     <>
       <Stack
-        flex={7}
         style={{ marginInlineStart: 0 }}
-        w="100%"
-        overflow="auto"
-        height="100vh"
+        h={{ base: "auto", md: "100vh" }}
+        overflow={"auto"}
+        w={{ base: "100vw", md: "100%" }}
       >
         <Stack p={5}>
           <Stack direction={"row"} align="center">
             <IconButton icon={<ArrowBackIcon />} onClick={() => navigate(-1)} />
-            <Heading textAlign={"center"} style={{ margin: "0 auto" }}>
+            <Heading
+              textAlign={"center"}
+              style={{ margin: "0 auto" }}
+              fontSize={{ base: "md", sm: "lg", md: "xl" }}
+            >
               Edit profile
             </Heading>
           </Stack>
@@ -121,7 +137,7 @@ function EditProfile(props) {
                 <Stack align="center" justify={"center"} my={3}>
                   <Avatar
                     src={initialUserData?.avatar || userProfileData?.avatar}
-                    size="xl"
+                    size={{ base: "sm", sm: "md", md: "lg", lg: "xl" }}
                   />
                 </Stack>
                 {selectedModal === "picture" && (
@@ -552,7 +568,7 @@ function EditProfile(props) {
                         <Td style={{ padding: 0 }}>Whatsapp</Td>
                         <Td
                           color={
-                            userProfileData?.facebook ? "blue.400" : "gray.800"
+                            userProfileData?.whatsapp ? "gray.800" : "gray.400"
                           }
                         >
                           {userProfileData?.whatsapp
@@ -569,7 +585,7 @@ function EditProfile(props) {
                             color={
                               userProfileData?.instagram
                                 ? "blue.400"
-                                : "gray.800"
+                                : "gray.400"
                             }
                             target="_blank"
                             _hover={
@@ -624,7 +640,7 @@ function EditProfile(props) {
                   )}
                 </Stack>
                 <Divider />
-                <TableContainer px={3} my={3}>
+                <TableContainer px={3} my={3} overflow="hidden">
                   <Table variant="simple">
                     <Tbody>
                       <Tr>
@@ -684,7 +700,7 @@ function EditProfile(props) {
               </Box>
 
               {/* Certification and CV */}
-              <Box>
+              <Box id="certification">
                 <Stack
                   direction="row"
                   align="center"

@@ -1,40 +1,40 @@
 import {
+  Box,
+  Button,
   Container,
   Flex,
-  Box,
-  Heading,
-  Text,
-  IconButton,
-  Button,
-  VStack,
-  HStack,
-  Wrap,
-  WrapItem,
   FormControl,
   FormLabel,
+  Heading,
+  HStack,
+  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
   Stack,
+  Text,
   Textarea,
+  useColorModeValue,
+  VStack,
+  WrapItem,
 } from "@chakra-ui/react";
-import {
-  MdPhone,
-  MdEmail,
-  MdLocationOn,
-  MdFacebook,
-  MdOutlineEmail,
-} from "react-icons/md";
-import { BsGithub, BsDiscord, BsPerson } from "react-icons/bs";
-import { IoLogoWhatsapp } from "react-icons/io";
+import { BsPerson } from "react-icons/bs";
 import { FaViber } from "react-icons/fa";
+import { IoLogoWhatsapp } from "react-icons/io";
+import {
+  MdEmail,
+  MdFacebook,
+  MdLocationOn,
+  MdOutlineEmail,
+  MdPhone,
+} from "react-icons/md";
 import Navbar from "../components/Navbar/Navbar";
 export default function Contact() {
   return (
     <>
       <Navbar />
       <Container
-        bg="#9DC4FB"
+        bg={useColorModeValue("#9DC4FB", "gray.800")}
         maxW="full"
         height={["auto", "90vh", "90vh"]}
         mt={0}
@@ -43,16 +43,16 @@ export default function Contact() {
       >
         <Flex>
           <Box
-            bg="#02054B"
+            bg={useColorModeValue("#02054B", "gray.900")}
             color="white"
             borderRadius="lg"
             m={{ sm: 4, md: 14, lg: 4 }}
-            p={{ sm: 5, md: 5, lg: 12 }}
+            p={{ sm: 5, md: 5, lg: 8 }}
           >
             <Box p={4}>
               <Stack
                 direction={["column", "column", "row"]}
-                spacing={{ base: 20, sm: 3, md: 5, lg: 20 }}
+                spacing={{ base: 20, sm: 3, md: 5, lg: 10 }}
                 alignItems="center"
                 justifyContent={"center"}
               >
@@ -68,7 +68,7 @@ export default function Contact() {
                           size="md"
                           height="48px"
                           variant="ghost"
-                          color="#DCE2FF"
+                          colorScheme={"twitter"}
                           leftIcon={<MdPhone color="#1970F1" size="20px" />}
                         >
                           +977-9851116608
@@ -77,7 +77,7 @@ export default function Contact() {
                           size="md"
                           height="48px"
                           variant="ghost"
-                          color="#DCE2FF"
+                          colorScheme={"twitter"}
                           leftIcon={<MdEmail color="#1970F1" size="20px" />}
                         >
                           jobalertnepal2020@gmail.com
@@ -86,7 +86,7 @@ export default function Contact() {
                           size="md"
                           height="48px"
                           variant="ghost"
-                          color="#DCE2FF"
+                          colorScheme={"twitter"}
                           leftIcon={
                             <MdLocationOn color="#1970F1" size="20px" />
                           }
@@ -129,31 +129,64 @@ export default function Contact() {
                   </Box>
                 </WrapItem>
                 <WrapItem>
-                  <Box bg="white" borderRadius="lg">
+                  <Box
+                    background={useColorModeValue("white", "gray.700")}
+                    borderRadius="lg"
+                  >
                     <Box m={8} color="#0B0E3F">
                       <VStack spacing={5}>
                         <FormControl id="name" isRequired>
-                          <FormLabel>Your Name</FormLabel>
+                          <FormLabel
+                            color={useColorModeValue("gray.900", "gray.200")}
+                          >
+                            Your Name
+                          </FormLabel>
                           <InputGroup borderColor="#E0E1E7">
                             <InputLeftElement
                               pointerEvents="none"
-                              children={<BsPerson color="gray.800" />}
+                              children={
+                                <BsPerson
+                                  color={useColorModeValue("black", "white")}
+                                />
+                              }
                             />
-                            <Input type="text" size="md" name="user_name" />
+                            <Input
+                              color={useColorModeValue("gray.900", "gray.200")}
+                              type="text"
+                              size="md"
+                              name="user_name"
+                            />
                           </InputGroup>
                         </FormControl>
                         <FormControl id="email">
-                          <FormLabel>Email</FormLabel>
+                          <FormLabel
+                            color={useColorModeValue("gray.900", "gray.200")}
+                          >
+                            Email
+                          </FormLabel>
                           <InputGroup borderColor="#E0E1E7">
                             <InputLeftElement
                               pointerEvents="none"
-                              children={<MdOutlineEmail color="gray.800" />}
+                              children={
+                                <MdOutlineEmail
+                                  color={useColorModeValue("black", "white")}
+                                />
+                              }
                             />
-                            <Input type="email" size="md" name="user_email" />
+                            <Input
+                              color={useColorModeValue("gray.900", "gray.200")}
+                              type="email"
+                              size="md"
+                              name="user_email"
+                            />
                           </InputGroup>
                         </FormControl>
                         <FormControl id="message">
-                          <FormLabel>Message</FormLabel>
+                          <FormLabel
+                            color={useColorModeValue("gray.900", "gray.200")}
+                          >
+                            Message
+                          </FormLabel>
                           <Textarea
                             borderColor="gray.300"
                             _hover={{
@@ -161,6 +194,7 @@ export default function Contact() {
                             }}
                             placeholder="message"
                             name="user_message"
+                            color={useColorModeValue("gray.900", "gray.200")}
                           />
                         </FormControl>
                         <FormControl id="name" float="right">
@@ -170,6 +204,7 @@ export default function Contact() {
                             color="white"
                             _hover={{}}
                             type="submit"
+                            size="sm"
                           >
                             Send Message
                           </Button>

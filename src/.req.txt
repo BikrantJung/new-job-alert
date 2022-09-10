@@ -1,0 +1,9 @@
+#Requirements
+
+1. Blogs
+2. Pricing details
+3. Footer Links
+4. Terms of Service
+5. Privacy Policy
+6. About us
+7. 

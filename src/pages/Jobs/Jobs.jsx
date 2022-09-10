@@ -1,8 +1,10 @@
 import { SearchIcon } from "@chakra-ui/icons";
 import {
+  Button,
   Heading,
   IconButton,
   Input,
+  Link,
   Stack,
   useColorMode,
 } from "@chakra-ui/react";
@@ -17,18 +19,19 @@ import JobCard from "./JobCard";
 
 function Jobs() {
   const { colorMode, toggleColorMode } = useColorMode();
-
+  const [hasMore, setHasMore] = useState(false);
+  const [nextUrl, setNextUrl] = useState("");
   const { jobData, setJobData } = useContext(StateContext);
   const [jobSearchValue, setJobSearchValue] = useState("");
   const [showContent, setShowContent] = useState(false);
   const [error, setError] = useState(false);
   const query = new URLSearchParams(useLocation().search);
-  const name = null;
+  const [loading, setLoading] = useState(false);
+  const name = query.get("search");
   useEffect(() => {
     async function getJobs() {
       setShowContent(false);
       if (!(name && jobData.length)) {
-        console.log("HELLO");
         try {
           const res = await axios({
             url: "jobs/",
@@ -40,8 +43,10 @@ function Jobs() {
           });
 
           setJobData(res.data.results);
+          if (res.data.next) {
+            setNextUrl(res.data.next);
+          }
           setShowContent(true);
-          console.log(res);
           setError(false);
         } catch (error) {
           setShowContent(true);
@@ -51,6 +56,35 @@ function Jobs() {
     }
     getJobs();
   }, [name]);
+
+  const showMoreHandler = async () => {
+    if (nextUrl) {
+      setLoading(true);
+      try {
+        const res = await axios({
+          url: nextUrl,
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: null,
+          },
+        });
+        setJobData((prevData) => {
+          return [...prevData, ...res.data.results];
+        });
+        setLoading(false);
+        if (res.data.next) {
+          setNextUrl(res.data.next);
+        } else {
+          setNextUrl("");
+        }
+        setError(false);
+      } catch (error) {
+        setLoading(false);
+        setError(true);
+      }
+    }
+  };
   useEffect(() => {
     const fetchJobs = async () => {
       if (name) {
@@ -61,7 +95,14 @@ function Jobs() {
               Authorization: null,
             },
           });
-        } catch (error) {}
+          setJobData([]);
+          setJobData(res.data);
+          setShowContent(true);
+          setNextUrl("");
+        } catch (error) {
+          setNextUrl("");
+          setShowContent(true);
+        }
       }
     };
     fetchJobs();
@@ -133,6 +174,24 @@ function Jobs() {
                     />
                   );
                 })}
+              {nextUrl && (
+                <Stack
+                  // sx={{ my: 3 }}
+                  style={{ margin: "1rem 0" }}
+                  width={["95%", "80%", "70%"]}
+                  align="flex-end"
+                >
+                  <Button
+                    size="sm"
+                    colorScheme="twitter"
+                    onClick={showMoreHandler}
+                    isLoading={loading}
+                    isDisabled={loading}
+                  >
+                    Show more...
+                  </Button>
+                </Stack>
+              )}
             </Stack>
           </Stack>
         </>

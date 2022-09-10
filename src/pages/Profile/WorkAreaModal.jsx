@@ -1,6 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
 import {
-  Avatar,
   Button,
   Divider,
   FormControl,
@@ -14,14 +12,11 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  Textarea,
   useToast,
 } from "@chakra-ui/react";
-import StateContext from "../../context/StateContext";
-import { getTokens } from "../../services/localStorage";
 import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
 import AuthContext from "../../context/AuthContext";
-import axiosInstance from "../../services/api";
 function WorkAreaModal(props) {
   const toast = useToast();
   const {
@@ -30,6 +25,7 @@ function WorkAreaModal(props) {
     initialUserData,
     setInitialUserData,
     userID,
+    authTokens,
   } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [allowClose, setAllowClose] = useState(false);
@@ -39,14 +35,15 @@ function WorkAreaModal(props) {
     const data = new FormData(e.currentTarget);
     const professionData = {
       user: userID,
-      profession: data.get("profession"),
-      subscription: userProfileData.subscription,
+      profession: data.get("profession") ? data.get("profession") : null,
+      // subscription: userProfileData.subscription,
     };
 
     try {
       const res = await axios.put(`profileSelf/${userID}`, professionData, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens?.accessToken}`,
         },
       });
       setLoading(false);
@@ -55,6 +52,7 @@ function WorkAreaModal(props) {
       setUserProfileData([]);
       setUserProfileData(res.data);
     } catch (error) {
+      console.log(error);
       setAllowClose(false);
       setLoading(false);
       toast({

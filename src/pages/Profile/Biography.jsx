@@ -47,6 +47,7 @@ function Biography(props) {
       const res = await axios.put(`profileSelf/${userID}`, biographyData, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens?.accessToken}`,
         },
       });
       setLoading(false);

@@ -1,40 +1,34 @@
-import { useEffect, useState, useContext } from "react";
-import KhaltiCheckout from "khalti-checkout-web";
 import axios from "axios";
+import KhaltiCheckout from "khalti-checkout-web";
+import { useContext, useEffect, useState } from "react";
 
 import {
-  Box,
-  Stack,
-  HStack,
-  Heading,
-  Text,
-  VStack,
-  useColorModeValue,
-  List,
-  ListItem,
-  ListIcon,
-  Button,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  Wrap,
   Avatar,
-  Flex,
-  Center,
+  Box,
+  Button,
+  Heading,
+  HStack,
+  List,
+  ListIcon,
+  ListItem,
+  Modal,
   ModalBody,
-  IconButton,
-  useToast,
+  ModalContent,
+  ModalOverlay,
   Skeleton,
+  Stack,
+  Text,
+  useColorModeValue,
+  useDisclosure,
+  useToast,
+  VStack,
 } from "@chakra-ui/react";
 import { FaCheckCircle } from "react-icons/fa";
-import AuthContext from "../context/AuthContext";
-import { getTokens } from "../services/localStorage";
-import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
-import { PuffLoader } from "react-spinners";
-import ServerErrorSVG from "../components/ServerErrorSVG";
 import Loader from "../components/Loader";
+import Navbar from "../components/Navbar/Navbar";
+import ServerErrorSVG from "../components/ServerErrorSVG";
+import AuthContext from "../context/AuthContext";
 
 function PriceWrapper({ children }) {
   return (
@@ -74,7 +68,7 @@ export default function Pricing(props) {
           },
         });
 
-        const removedData = res.data.shift();
+        // const removedData = res.data.shift();
         setPricingData(res.data);
 
         setShowContent(true);
@@ -97,10 +91,16 @@ export default function Pricing(props) {
           token: null,
         };
 
-        const res = await axios.post("subscribe/", data);
-        setModalOpen(true);
+        const res = await axios.post("subscribe/", data, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authTokens.accessToken}`,
+          },
+        });
+        handlePayment();
         setPricingDetail(pricingData.find((obj) => obj.id === id));
       } catch (error) {
+        console.log(error);
         if (error.response.data.msg) {
           toast({
             title: "You are not verified. Check inbox for verification.",
@@ -210,53 +210,6 @@ export default function Pricing(props) {
                 anytime.
               </Text>
             </VStack>
-            <Modal isOpen={modalOpen} onClose={modalClose} isCentered>
-              <ModalOverlay />
-              <ModalContent bgColor="transparent" boxShadow="none">
-                <ModalBody>
-                  <Stack direction={"row"} justify="space-evenly">
-                    <Stack align={"center"}>
-                      <Avatar
-                        _hover={{ cursor: "pointer" }}
-                        src="https://play-lh.googleusercontent.com/Xh_OlrdkF1UnGCnMN__4z-yXffBAEl0eUDeVDPr4UthOERV4Fll9S-TozSfnlXDFzw"
-                        onClick={handlePayment}
-                      />
-                      {/* <Button
-                  _hover={{
-                    bgColor: useColorModeValue("gray.400", "gray.700"),
-                  }}
-                  bgColor={useColorModeValue("gray.300", "gray.600")}
-                  onClick={handlePayment}
-                >
-                  Khalti
-                </Button> */}
-                    </Stack>
-                    <Stack align={"center"}>
-                      <Avatar src="https://esewa.com.np/common/images/esewa-icon-large.png" />
-                      {/* <Button
-                  _hover={{
-                    bgColor: useColorModeValue("gray.400", "gray.700"),
-                  }}
-                  bgColor={useColorModeValue("gray.300", "gray.600")}
-                >
-                  eSewa
-                </Button> */}
-                    </Stack>
-                    <Stack align={"center"}>
-                      <Avatar />
-                      {/* <Button
-                  _hover={{
-                    bgColor: useColorModeValue("gray.400", "gray.700"),
-                  }}
-                  bgColor={useColorModeValue("gray.300", "gray.600")}
-                >
-                  Stripe
-                </Button> */}
-                    </Stack>
-                  </Stack>
-                </ModalBody>
-              </ModalContent>
-            </Modal>
             <Stack
               direction={{ base: "column", md: "row" }}
               textAlign="center"
@@ -278,7 +231,7 @@ export default function Pricing(props) {
                         </Text>
                         <HStack justifyContent="center">
                           <Text fontSize="3xl" fontWeight="600">
-                            $
+                            Rs
                           </Text>
                           <Text fontSize="5xl" fontWeight="900">
                             {Math.floor(item.price)}

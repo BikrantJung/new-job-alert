@@ -12,18 +12,10 @@ import {
   useBreakpointValue,
   useColorModeValue,
 } from "@chakra-ui/react";
-import axios from "axios";
-import { useEffect } from "react";
-import { useContext } from "react";
-import { useState } from "react";
-import {
-  Link as ReactLink,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link as ReactLink } from "react-router-dom";
 import Typewriter from "typewriter-effect";
 
-import AuthContext from "../../context/AuthContext";
 import StateContext from "../../context/StateContext";
 function Hero() {
   const [query, setQuery] = useState("");
@@ -74,8 +66,9 @@ function Hero() {
             />
           </Text>
           <Text fontSize={{ base: "md", lg: "lg" }} color={"gray.500"}>
-            This website is an exclusive resource for contract work. It's
-            perfect for freelancers, agencies, and moonlighters.
+            This website is an exclusive resource for freelancers, agencies, and
+            moonlighters.Unlike other job portals, we do not take any percentage
+            of your earning.
           </Text>
           <Stack
             direction={{ base: "column", md: "row" }}
@@ -88,10 +81,28 @@ function Hero() {
               _hover={{
                 bg: "blue.500",
               }}
-              width={{ base: "40%", md: "inherit" }}
+              width={{ base: "100%", sm: "inherit" }}
             >
               Create post
             </Button>
+            <Link
+              as={ReactLink}
+              to="/jobs"
+              textDecoration="none"
+              _hover={{ textDecoration: "none" }}
+              width={{ base: "100%", sm: "inherit" }}
+            >
+              <Button
+                bg={"blue.400"}
+                color={"white"}
+                _hover={{
+                  bg: "blue.500",
+                }}
+                width={{ base: "100%", sm: "inherit" }}
+              >
+                Find Jobs
+              </Button>
+            </Link>
             <Stack
               className="search-box"
               direction="row"

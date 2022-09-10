@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState, useContext, useEffect } from "react";
-import { Link as ReactLink, useNavigate } from "react-router-dom";
+import { Link as ReactLink, Navigate, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import AuthContext from "../context/AuthContext";
 import StateContext from "../context/StateContext";
@@ -23,13 +23,12 @@ import { saveTokens } from "../services/localStorage";
 
 export default function Login() {
   const toast = useToast();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   const { setAuthTokens } = useContext(AuthContext);
-  const { just_registered } = useContext(StateContext);
-  const [justRegistered, setJustRegistered] = just_registered;
-
-
+  const { justRegistered, setJustRegistered } = useContext(StateContext);
+  console.log(justRegistered);
   useEffect(() => {
     justRegistered &&
       toast({
@@ -39,6 +38,7 @@ export default function Login() {
         duration: 4000,
         isClosable: true,
       });
+    return () => setJustRegistered(false);
   }, []);
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -62,12 +62,13 @@ export default function Login() {
 
       setIsLoading(false);
       saveTokens(res.data.token);
-
       setAuthTokens({
         refreshToken: res.data.token,
       });
 
       window.location.reload(false);
+      // Navigate()
+      // navigate("/");
     } catch (error) {
       setIsLoading(false);
       if (error?.response?.data?.errors?.non_field_errors) {

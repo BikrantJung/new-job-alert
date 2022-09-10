@@ -27,21 +27,26 @@ import Signup from "./pages/Signup";
 import VerifyRegister from "./services/VerifyRegister";
 import PrivateRoute from "./utils/PrivateRoute";
 import RestrictLoginPage from "./utils/RestrictLoginPage";
+import SubscribedRoute from "./utils/SubscribedRoute";
 function App() {
   const { isValidUser, companyData, companyJobs } = useContext(StateContext);
-  console.log("APP", companyJobs);
   return (
     <BrowserRouter>
       <div className="App">
         <Routes>
           <Route path="/" element={<Home />} exact />
+
           <Route path="/" element={<RestrictLoginPage />}>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
           </Route>
+
           <Route path="/contact-us" element={<Contact />} />
+
           <Route path="/" element={<PrivateRoute />}>
-            <Route path="/create-job-post" element={<JobPost />} />
+            <Route path="/" element={<SubscribedRoute />}>
+              <Route path="/create-job-post" element={<JobPost />} />
+            </Route>
             <Route path="/profile/:id" element={<Profile />}>
               <Route index element={<DefaultContent />} />
               <Route path="education" element={<UserEducation />} />
@@ -61,21 +66,21 @@ function App() {
                   />
                 }
               />
-              <Route path=":jobTitle/:jobID" element={<CompanyJobDetails />} />
+              <Route
+                path=":jobTitle/:jobID"
+                element={<CompanyJobDetails companyData={companyData} />}
+              />
             </Route>
 
             <Route path="/create-company" element={<CreateCompany />} />
+            <Route path="/pricing" element={<Pricing />} />
           </Route>
-          <Route path="/pricing" element={<Pricing />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/faq" element={<Faq />} />
           <Route path="/jobs/:id" element={<CompanyJob />} />
           <Route path={`/users`} element={<SearchPage />} />
-          <Route
-            path="/api/user/verify/:id/:token"
-            element={<VerifyRegister />}
-          />
+          <Route path="verify/:id/:token" element={<VerifyRegister />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

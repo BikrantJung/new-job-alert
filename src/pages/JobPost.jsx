@@ -71,7 +71,7 @@ export default function JobPost() {
     jobSalaryData: [],
   });
 
-  // Job tags multi select updata array
+  console.log(postData.categoryData); // Job tags multi select updata array
 
   // Next button tab increment
   const tabIncrement = () => {
@@ -174,25 +174,20 @@ export default function JobPost() {
       window.location.reload(false);
     } catch (error) {
       setIsLoading(false);
-
+      console.log(error);
       if (error.response.data) {
-        toast({
-          title: "Make sure you enter all valid data",
-          status: "warning",
-          duration: 4000,
-          isClosable: true,
-        });
-      }
-      if (error.response.data.JobEmail) {
-        toast({
-          title: "Enter valid job address",
-          status: "warning",
-          duration: 4000,
-          isClosable: true,
-        });
+        for (const key in error.response.data) {
+          toast({
+            title: `${key}: ${error.response.data[key][0]} `,
+            status: "warning",
+            duration: 4000,
+            isClosable: true,
+          });
+        }
       }
     }
   };
+  console.log(isLoading);
 
   const customStyles = {
     option: (provided, state) => ({
@@ -390,6 +385,7 @@ function BasicDetails(props) {
             <FormControl isRequired>
               <FormLabel>Position</FormLabel>
               <ReactSelect
+                placeholder="Job Position"
                 isClearable
                 name="job_position"
                 options={props.positionData}
@@ -413,6 +409,7 @@ function BasicDetails(props) {
             <FormControl isRequired>
               <FormLabel>Job category</FormLabel>
               <ReactSelect
+                placeholder="Job Category"
                 isClearable
                 options={props.categoryData}
                 styles={props.customStyles}
@@ -431,6 +428,7 @@ function BasicDetails(props) {
               <FormLabel>Job Type</FormLabel>
               <ReactSelect
                 isClearable
+                placeholder="Job Type"
                 options={props.jobType}
                 styles={props.customStyles}
                 name="job_type"
@@ -491,6 +489,7 @@ function EduExperience(props) {
             <FormControl mb={5}>
               <FormLabel>Education Level</FormLabel>
               <ReactSelect
+                placeholder="Education Level"
                 isClearable
                 options={props.jobEducation}
                 styles={props.customStyles}
@@ -581,6 +580,7 @@ function EduExperience(props) {
             <FormControl>
               <FormLabel>Skills Required (No more than 5 skills)</FormLabel>
               <ReactSelect
+                placeholder="Skills Required"
                 isClearable
                 options={props.jobSkills}
                 isMulti
@@ -686,6 +686,7 @@ function PaymentDate(props) {
                 {/* Salary Options... */}
                 <Box flex={1}>
                   <ReactSelect
+                    placeholder="Salary type"
                     isClearable
                     name="salary_option"
                     styles={props.customStyles}

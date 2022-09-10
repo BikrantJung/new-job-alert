@@ -31,13 +31,13 @@ function MainContent() {
       justify={{ base: "center", md: "start" }}
       style={{ marginTop: 0 }}
       height="100%"
+
       // align='center'
     >
       {/*  Left avatar section */}
       <Stack
         height={{ base: "auto", md: "100%" }}
         width={{ base: "100%", md: "auto" }}
-        // height='20%'
         direction={{ base: "row", md: "column" }}
         px={{ base: 2, md: 5 }}
         boxShadow="md"
@@ -47,46 +47,31 @@ function MainContent() {
         align="center"
         justify={{ base: "space-between", md: "flex-start" }}
       >
-        {userProfileData?.username || initialUserData?.username ? (
-          <Stack
-            direction={["column"]}
-            align="center"
-            py={1}
-            justify={["center"]}
-            px={{ base: 2, md: 5 }}
-          >
-            <Avatar
-              size={{ base: "sm", sm: "lg", xl: "xl" }}
-              src={
-                urlID === initialUserData?.username
-                  ? initialUserData?.avatar
-                  : userProfileData?.avatar
-              }
-            />
+        <Stack
+          direction={["column"]}
+          align="center"
+          justify={["center"]}
+          px={{ base: 2, md: 5 }}
+        >
+          <Avatar
+            size={{ base: "sm", sm: "md", xl: "xl" }}
+            src={
+              urlID === initialUserData?.username
+                ? initialUserData?.avatar
+                : userProfileData?.avatar
+            }
+          />
 
-            <Text
-              fontSize={{ base: 16, sm: 17, md: 18, lg: 20, xl: 22 }}
-              fontWeight={"bold"}
-              style={{ marginTop: 0 }}
-            >
-              {urlID === initialUserData.username
-                ? initialUserData?.username
-                : userProfileData?.username}
-            </Text>
-          </Stack>
-        ) : (
-          <Stack
-            direction={["column"]}
-            align="center"
-            py={1}
-            justify={["center"]}
-            px={{ base: 2, md: 5 }}
+          <Text
+            fontSize={{ base: 16, sm: 17, md: 18, lg: 20, xl: 22 }}
+            fontWeight={"bold"}
+            style={{ marginTop: 0 }}
           >
-            <SkeletonCircle size="20" />
-            <Skeleton height="20px" width="100%" />
-          </Stack>
-        )}
-
+            {urlID === initialUserData.username
+              ? initialUserData?.username
+              : userProfileData?.username}
+          </Text>
+        </Stack>
         {/* Edit Profile*/}
         {userID === checkID && (
           <Link
@@ -105,9 +90,7 @@ function MainContent() {
             </Button>
           </Link>
         )}
-
         {/* Social Media box Mobile */}
-
         <Stack
           flex={1}
           direction={{ base: "row", md: "column" }}
@@ -184,7 +167,7 @@ function MainContent() {
               </Link>
             </span>
           </Tooltip>
-        </Stack>
+        </Stack>{" "}
       </Stack>
 
       {/* Right profile panel */}

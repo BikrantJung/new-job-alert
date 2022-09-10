@@ -181,7 +181,7 @@ function CreateCompany() {
                   p={1}
                   borderRadius="full"
                   position="absolute"
-                  bottom={"-20%"}
+                  bottom={"-10%"}
                   left={"50%"}
                   transform="translateX(-50%)"
                 >
@@ -202,24 +202,9 @@ function CreateCompany() {
                   <Text
                     fontWeight={"bold"}
                     fontSize={[15, 16, 17, 18, 19, 20]}
-                    mt={13}
+                    // mt={13}
                   >
                     Company name
-                  </Text>
-                </Stack>
-                <Stack direction="row">
-                  <Text
-                    fontSize={[8, 9, 10, 11, 12, 13]}
-                    color={colorMode === "light" ? "gray.700" : "gray.300"}
-                  >
-                    tags
-                  </Text>
-                  <Divider orientation="vertical" />
-                  <Text
-                    fontSize={[8, 9, 10, 11, 12, 13]}
-                    color={colorMode === "light" ? "gray.700" : "gray.300"}
-                  >
-                    tags
                   </Text>
                 </Stack>
               </Stack>

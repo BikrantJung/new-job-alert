@@ -1,53 +1,46 @@
-import React, { useState } from "react";
 import {
   Avatar,
   Box,
   CloseButton,
-  Flex,
-  HStack,
-  VStack,
-  Icon,
-  useColorModeValue,
-  Link,
   Drawer,
   DrawerContent,
-  Text,
-  useDisclosure,
+  Flex,
+  HStack,
+  Icon,
+  IconButton,
+  Image,
+  Link,
   Menu,
   MenuButton,
   MenuDivider,
   MenuItem,
   MenuList,
   Stack,
-  IconButton,
+  Text,
   useColorMode,
-  Heading,
-  Button,
+  useColorModeValue,
+  useDisclosure,
+  VStack,
 } from "@chakra-ui/react";
-import {
-  FiSettings,
-  FiChevronDown,
-  FiLogOut,
-  FiMenu,
-  FiBell,
-} from "react-icons/fi";
+import React, { useState } from "react";
+import { FiChevronDown, FiLogOut, FiMenu, FiSettings } from "react-icons/fi";
 
-import { Link as ReactLink, useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { useContext } from "react";
-import AuthContext from "../../context/AuthContext";
+import axios from "axios";
+import { useContext, useEffect } from "react";
 import { AiOutlineUser } from "react-icons/ai";
+import { BiBuildings } from "react-icons/bi";
+import { BsBook } from "react-icons/bs";
+import { TbCertificate } from "react-icons/tb";
+import { TiBusinessCard } from "react-icons/ti";
+import { Link as ReactLink, useParams } from "react-router-dom";
+import Loader from "../../components/Loader";
+import ServerErrorSVG from "../../components/ServerErrorSVG";
+import AuthContext from "../../context/AuthContext";
+import StateContext from "../../context/StateContext";
 import handleLogout from "../../utils/logoutUser";
 import MainContent from "./MainContent";
-import axios from "axios";
-import { TiBusinessCard } from "react-icons/ti";
-import { BsBook } from "react-icons/bs";
-import { BiBuildings } from "react-icons/bi";
-import StateContext from "../../context/StateContext";
-import { TbCertificate } from "react-icons/tb";
-import { PuffLoader } from "react-spinners";
-import ServerErrorSVG from "../../components/ServerErrorSVG";
-import Loader from "../../components/Loader";
+import CompanyLogo from "../../images/company_logo.png";
+
 export default function Profile(props) {
   const { colorMode, toggleColorMode } = useColorMode();
 
@@ -98,9 +91,16 @@ export default function Profile(props) {
   useEffect(() => {
     const getMoreUserData = async () => {
       if (userProfileData?.user) {
+        console.log("HI HI HI");
         try {
           const res = await axios.get(
-            `profileEduDetails/${userProfileData?.user}`
+            `profileEduDetailsView/${userProfileData?.user}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: null,
+              },
+            }
           );
           setMoreUserData(res.data);
           console.log(res);
@@ -110,7 +110,7 @@ export default function Profile(props) {
       }
     };
     getMoreUserData();
-  }, []);
+  }, [userProfileData.user]);
 
   return (
     <>
@@ -145,11 +145,11 @@ export default function Profile(props) {
           </Drawer>
           {/* mobilenav */}
           <Stack flex={4} style={{ marginInlineStart: "0" }}>
-            <MobileNav onOpen={onOpen} display={{ base: "flex", md: "none" }} />
+            <MobileNav onOpen={onOpen} display={{ base: "flex", lg: "none" }} />
 
+            {/* Main Content */}
             <MainContent />
           </Stack>
-          {/* Main Content */}
         </Stack>
       )}
     </>
@@ -158,37 +158,29 @@ export default function Profile(props) {
 const MobileNav = ({ onOpen, ...rest }) => {
   return (
     <Flex
-      ml={{ base: 0, md: 60 }}
+      ml={{ base: 0, lg: 60 }}
       px={{ base: 4, md: 4 }}
       height="20"
       alignItems="center"
       bg={useColorModeValue("white", "gray.900")}
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue("gray.200", "gray.700")}
-      justifyContent={{ base: "space-between", md: "flex-end" }}
+      justifyContent={{ base: "space-between", lg: "flex-end" }}
       {...rest}
     >
       <IconButton
-        display={{ base: "flex", md: "none" }}
+        display={{ base: "flex", lg: "none" }}
         onClick={onOpen}
         variant="outline"
         aria-label="open menu"
         icon={<FiMenu />}
       />
 
-      <Link as={ReactLink} to="/">
-        <Text fontSize="2xl" fontWeight="bold">
-          Job Alert
-        </Text>
+      <Link as={ReactLink} to="/" w={{ base: "20vw", sm: "10vw", lg: "6vw" }}>
+        <Image src={CompanyLogo} w={{ base: "100%" }} />
       </Link>
 
       <HStack spacing={{ base: "0", md: "6" }}>
-        {/* <IconButton
-          size="lg"
-          variant="ghost"
-          aria-label="open menu"
-          icon={<FiBell />}
-        /> */}
         <Flex alignItems={"center"}>
           <ProfileMenu py={2} />
         </Flex>
@@ -215,16 +207,6 @@ const SidebarContent = ({ onClose, ...rest }) => {
       icon: TbCertificate,
       link: `${userProfileData?.username}/certification `,
     },
-    {
-      name: "Company Details",
-      icon: TiBusinessCard,
-      link: `${userProfileData?.username}/company-details `,
-    },
-    {
-      name: "Payment History",
-      icon: FiSettings,
-      link: `${userProfileData?.username}/education `,
-    },
   ];
   return (
     <Box
@@ -237,10 +219,8 @@ const SidebarContent = ({ onClose, ...rest }) => {
       {...rest}
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Link as={ReactLink} to="/">
-          <Text fontSize="2xl" fontWeight="bold">
-            Job Alert
-          </Text>
+        <Link as={ReactLink} to="/" w={{ base: "20vw", sm: "10vw", lg: "6vw" }}>
+          <Image src={CompanyLogo} w={{ base: "100%" }} />
         </Link>
         <CloseButton display={{ base: "flex", lg: "none" }} onClick={onClose} />
       </Flex>
@@ -292,8 +272,7 @@ const NavItem = ({ icon, children, ...rest }) => {
 
 export const ProfileMenu = (props) => {
   const { userProfileData, initialUserData } = useContext(AuthContext);
-  const { userCompany, setUserCompany, hasCompany, setHasCompany } =
-    useContext(StateContext);
+  const { userCompany, hasCompany } = useContext(StateContext);
 
   return (
     <Menu ml={3}>

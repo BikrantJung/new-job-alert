@@ -2,7 +2,6 @@ import {
   Center,
   Divider,
   Heading,
-  Link,
   List,
   ListIcon,
   ListItem,
@@ -15,11 +14,8 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-import axios from "axios";
 import React, { useContext } from "react";
-import { useEffect } from "react";
-import { IoMdCheckmarkCircle, IoMdSettings } from "react-icons/io";
-import { IoRefreshCircle } from "react-icons/io5";
+import { IoMdCheckmarkCircle } from "react-icons/io";
 import AuthContext from "../../../context/AuthContext";
 
 function UserEducation() {
@@ -53,14 +49,7 @@ function UserEducation() {
 function EducationDetails() {
   const { moreUserData } = useContext(AuthContext);
   return (
-    <Stack
-      overflow="auto"
-      // p={3}
-      // height="100vh"
-      // boxShadow={"md"}
-      style={{ marginLeft: "0" }}
-      // border="1px solid"
-    >
+    <Stack overflow="auto" style={{ marginLeft: "0" }}>
       <Stack gap={2}>
         <Stack boxShadow="md" direction="column" width="100%">
           <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }} p={3}>

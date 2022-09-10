@@ -53,13 +53,7 @@ function Certification() {
 function Certificate() {
   const { moreUserData } = useContext(AuthContext);
   return (
-    <Stack
-      overflow="auto"
-      height="80vh"
-      // boxShadow={"md"}
-      style={{ marginLeft: "0" }}
-      // border="1px solid"
-    >
+    <Stack overflow="auto" style={{ marginLeft: "0" }}>
       <Stack gap={2}>
         <Stack boxShadow="md" direction="column" width="100%">
           <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }} p={3}>
@@ -86,7 +80,6 @@ function Certificate() {
 
 function CV() {
   const { moreUserData } = useContext(AuthContext);
-  console.log(moreUserData);
   return (
     <Stack overflow="auto" style={{ marginLeft: "0" }}>
       <Stack gap={2}>

@@ -12,12 +12,15 @@ import React from "react";
 import { useState } from "react";
 import { Link as ReactLink } from "react-router-dom";
 import { Link } from "@chakra-ui/react";
-function CategoryCard(props) {
+function CategoryCard({ JobCategory, JobTitle, companyLogo, companyUser, id }) {
   const [name, setName] = useState("");
 
   return (
     <LinkBox>
-      <LinkOverlay as={ReactLink} to={`/jobs/${props.company}`}>
+      <LinkOverlay
+        as={ReactLink}
+        to={`company/${companyUser}/${JobTitle}/${id}`}
+      >
         <GridItem
           sx={{
             height: "70px",
@@ -44,7 +47,7 @@ function CategoryCard(props) {
             direction={"row"}
           >
             <Stack align="flex-start" justify="center">
-              <Image src={props.logo} rounded="md" boxSize={["50px"]} />
+              <Image src={companyLogo} rounded="md" boxSize={["50px"]} />
             </Stack>
 
             <Stack justify="center">
@@ -53,7 +56,7 @@ function CategoryCard(props) {
                 sx={{ fontWeight: "bold" }}
                 color={useColorModeValue("black", "gray.300")}
               >
-                {props.company}
+                {JobTitle}
               </Text>
 
               <Text
@@ -61,7 +64,7 @@ function CategoryCard(props) {
                 style={{ marginTop: "0" }}
                 color={useColorModeValue("black", "gray.300")}
               >
-                {props.post}
+                {JobCategory}
               </Text>
             </Stack>
           </Stack>

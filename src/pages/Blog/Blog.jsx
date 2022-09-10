@@ -122,74 +122,71 @@ const Blog = () => {
       ) : (
         <>
           <Navbar />
+
           <Container maxW={"7xl"} p={{ base: "3", md: 10 }} pt={1}>
-            <Heading as="h1">Our Blogs</Heading>
-            <Box
-              marginTop={{ base: "1", sm: "5" }}
-              display="flex"
-              flexDirection={{ base: "column", sm: "row" }}
-              justifyContent="space-between"
-            >
+            <Heading as="h1" color="teal.400">
+              Our Blogs
+            </Heading>
+            {latestBlog.length ? (
               <Box
+                marginTop={{ base: "1", sm: "5" }}
                 display="flex"
-                flex="1"
-                marginRight="3"
-                position="relative"
-                alignItems="center"
-                justifyContent={["center", "flex-start"]}
+                flexDirection={{ base: "column", sm: "row" }}
+                justifyContent="space-between"
               >
                 <Box
-                  width={{ base: "90%", sm: "85%" }}
-                  zIndex="2"
-                  marginLeft={{ base: "0", sm: "5%" }}
-                  marginTop="5%"
+                  display="flex"
+                  flex="1"
+                  marginRight="3"
+                  position="relative"
+                  alignItems="center"
+                  justifyContent={["center", "flex-start"]}
                 >
-                  <Link
-                    textDecoration="none"
-                    _hover={{ textDecoration: "none" }}
+                  <Box
+                    width={{ base: "90%", sm: "85%" }}
+                    zIndex="2"
+                    marginLeft={{ base: "0", sm: "5%" }}
+                    marginTop="5%"
                   >
-                    {latestBlog.length ? (
+                    <Link
+                      textDecoration="none"
+                      _hover={{ textDecoration: "none" }}
+                    >
                       <Image
                         borderRadius="lg"
                         src={latestBlog[0]?.blogImage}
                         alt="Blog Image"
                         objectFit="contain"
                       />
-                    ) : (
-                      <Box
-                        width={{ base: "100%", sm: "85%" }}
-                        zIndex="2"
-                        marginLeft={{ base: "0", sm: "5%" }}
-                        height={["45vw", "25vw", "25vw"]}
-                      >
-                        <Skeleton height="100%" />
-                      </Box>
-                    )}
-                  </Link>
-                </Box>
-                <Box zIndex="1" width="100%" position="absolute" height="100%">
+                    </Link>
+                  </Box>
                   <Box
-                    bgGradient={
-                      colorMode === "light"
-                        ? "radial(orange.600 1px, transparent 1px)"
-                        : "radial(orange.300 1px, transparent 1px)"
-                    }
-                    backgroundSize="20px 20px"
-                    opacity="0.4"
+                    zIndex="1"
+                    width="100%"
+                    position="absolute"
                     height="100%"
-                  />
+                  >
+                    <Box
+                      bgGradient={
+                        colorMode === "light"
+                          ? "radial(orange.600 1px, transparent 1px)"
+                          : "radial(orange.300 1px, transparent 1px)"
+                      }
+                      backgroundSize="20px 20px"
+                      opacity="0.4"
+                      height="100%"
+                    />
+                  </Box>
                 </Box>
-              </Box>
-              <Box
-                display="flex"
-                flex="1"
-                flexDirection="column"
-                justifyContent="center"
-                marginTop={{ base: "3", sm: "0" }}
-              >
-                <BlogTags tags={latestBlog[0]?.blogTags} />
+                <Box
+                  display="flex"
+                  flex="1"
+                  flexDirection="column"
+                  justifyContent="center"
+                  marginTop={{ base: "3", sm: "0" }}
+                >
+                  <BlogTags tags={latestBlog[0]?.blogTags} />
 
-                {latestBlog.length ? (
                   <Heading
                     marginTop="1"
                     display={"flex"}
@@ -201,19 +198,7 @@ const Blog = () => {
                       <ExternalLinkIcon fontSize={[16]} ml={3} />
                     </Link>
                   </Heading>
-                ) : (
-                  <Heading
-                    marginTop="1"
-                    display={"flex"}
-                    alignItems="center"
-                    as="div"
-                    width="100%"
-                    my={3}
-                  >
-                    <Skeleton height="2rem" width="40%" />
-                  </Heading>
-                )}
-                {latestBlog.length ? (
+
                   <Text
                     fontSize={[12, 13, 14, 15, 16, 17]}
                     noOfLines={[2]}
@@ -225,78 +210,77 @@ const Blog = () => {
                       }}
                     />
                   </Text>
-                ) : (
-                  <Box>
-                    <SkeletonText mt="2" noOfLines={5} spacing="2" />
-                  </Box>
-                )}
 
-                <Text>{latestBlog[0]?.created_at}</Text>
+                  <Text>{latestBlog[0]?.created_at}</Text>
+                </Box>
               </Box>
-            </Box>
-            <Heading as="h2" marginTop="5">
+            ) : (
+              <Heading textAlign="center" fontSize="lg">
+                No Blogs Found
+              </Heading>
+            )}
+
+            <Heading as="h2" marginTop="5" color="teal.400">
               Latest articles
             </Heading>
             <Divider marginTop="5" />
             <Wrap spacing="30px" marginTop="5" p={4}>
-              {blogData.length
-                ? blogData.map((item, index) => {
-                    return (
-                      <LinkBox
-                        as={WrapItem}
-                        width={{
-                          base: "100%",
-                          sm: "45%",
-                          md: "45%",
-                          lg: "30%",
-                        }}
-                        boxShadow="md"
-                        p={3}
-                        key={index}
+              {blogData.map((item, index) => {
+                return (
+                  <LinkBox
+                    as={WrapItem}
+                    width={{
+                      base: "100%",
+                      sm: "45%",
+                      md: "45%",
+                      lg: "30%",
+                    }}
+                    boxShadow="md"
+                    p={3}
+                    key={index}
+                  >
+                    <Box w="100%">
+                      <Box borderRadius="lg" overflow="hidden">
+                        <Link
+                          textDecoration="none"
+                          _hover={{ textDecoration: "none" }}
+                        >
+                          <Image
+                            transform="scale(1.0)"
+                            src={item.blogImage}
+                            alt="Blog image"
+                            objectFit="contain"
+                            width="100%"
+                            transition="0.3s ease-in-out"
+                            _hover={{
+                              transform: "scale(1.05)",
+                            }}
+                          />
+                        </Link>
+                      </Box>
+                      <BlogTags tags={item.blogTags} marginTop="3" />
+                      <Heading fontSize="xl" marginTop="2">
+                        <LinkOverlay as={ReactLink} to={`${item.id}`}>
+                          {item.blogTitle}
+                        </LinkOverlay>
+                        <ExternalLinkIcon fontSize={[16]} ml={3} />
+                      </Heading>
+                      <Text>{item.created_at}</Text>
+                      <Text
+                        fontSize={[12, 13, 14, 15, 16, 17]}
+                        noOfLines={[2]}
+                        as={"div"}
                       >
-                        <Box w="100%">
-                          <Box borderRadius="lg" overflow="hidden">
-                            <Link
-                              textDecoration="none"
-                              _hover={{ textDecoration: "none" }}
-                            >
-                              <Image
-                                transform="scale(1.0)"
-                                src={item.blogImage}
-                                alt="Blog image"
-                                objectFit="contain"
-                                width="100%"
-                                transition="0.3s ease-in-out"
-                                _hover={{
-                                  transform: "scale(1.05)",
-                                }}
-                              />
-                            </Link>
-                          </Box>
-                          <BlogTags tags={item.blogTags} marginTop="3" />
-                          <Heading fontSize="xl" marginTop="2">
-                            <LinkOverlay as={ReactLink} to={`${item.id}`}>
-                              {item.blogTitle}
-                            </LinkOverlay>
-                            <ExternalLinkIcon fontSize={[16]} ml={3} />
-                          </Heading>
-                          <Text>{item.created_at}</Text>
-                          <Text
-                            fontSize={[12, 13, 14, 15, 16, 17]}
-                            noOfLines={[2]}
-                            as={"div"}
-                          >
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: blogData[0]?.blogDescription,
-                              }}
-                            />
-                          </Text>
-                        </Box>
-                      </LinkBox>
-                    );
-                  })
-                : ""}
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: blogData[0]?.blogDescription,
+                          }}
+                        />
+                      </Text>
+                    </Box>
+                  </LinkBox>
+                );
+              })}
             </Wrap>
             <VStack paddingTop="40px" spacing="2" alignItems="flex-start">
               <Heading as="h2">What we write about</Heading>

@@ -13,7 +13,7 @@ import {
   TabPanels,
   Tabs,
   Tag,
-  Text
+  Text,
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { IoMdCheckmarkCircle } from "react-icons/io";
@@ -35,7 +35,7 @@ function DefaultContent() {
               Contact
             </Tab>
             <Tab borderRadius="0" fontWeight={"bold"}>
-              About {userProfileData?.username || initialUserData?.username}
+              About
             </Tab>
           </TabList>
 
@@ -60,39 +60,33 @@ function General() {
     useContext(AuthContext);
 
   return (
-    <Stack overflow="auto" p={3} boxShadow={"md"} style={{ marginLeft: "0" }}>
-      {userProfileData?.username || initialUserData?.username ? (
-        <Stack p={3}>
-          <Stack direction="row" align="center" width="100%">
-            <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
-              {initialUserData?.username
+    <Stack overflow="auto" style={{ marginLeft: "0" }}>
+      <Stack p={3}>
+        <Stack direction="row" align="center" width="100%">
+          <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
+            {initialUserData?.username
+              ? initialUserData?.profession
                 ? initialUserData?.profession
-                  ? initialUserData?.profession
-                  : "Add your profession"
-                : parseInt(userID) === userProfileData?.user
+                : "Add your profession"
+              : parseInt(userID) === userProfileData?.user
+              ? userProfileData?.profession
                 ? userProfileData?.profession
-                  ? userProfileData?.profession
-                  : "Add your profession"
-                : "No profession to show"}
-            </Heading>
-          </Stack>
+                : "Add your profession"
+              : "No profession to show"}
+          </Heading>
+        </Stack>
 
-          <Text fontSize={{ base: 13, md: 15 }}>
-            {urlID === initialUserData?.username
+        <Text fontSize={{ base: 13, md: 15 }}>
+          {urlID === initialUserData?.username
+            ? initialUserData?.bio
               ? initialUserData?.bio
-                ? initialUserData?.bio
-                : "Bio not available"
-              : userProfileData?.bio
-              ? userProfileData?.bio
-              : "Bio not available"}
-          </Text>
-        </Stack>
-      ) : (
-        <Stack p={3}>
-          <Skeleton width="50%" height="30px" />
-          <Skeleton width="30%" height="10px" />
-        </Stack>
-      )}
+              : "Bio not available"
+            : userProfileData?.bio
+            ? userProfileData?.bio
+            : "Bio not available"}
+        </Text>
+      </Stack>
+
       <Divider borderTop="1px solid gray" />
       <Stack p={3} gap={1}>
         <Stack direction="row" align="center" width="100%">
@@ -100,27 +94,20 @@ function General() {
             Skills
           </Heading>
         </Stack>
-        {userProfileData?.username ? (
-          <Stack direction="row" width="100%">
-            {userProfileData?.skills ? (
-              userProfileData?.skills?.map((item, index) => {
-                return (
-                  <Tag key={index} colorScheme="twitter">
-                    {item}
-                  </Tag>
-                );
-              })
-            ) : (
-              <Text>No skills to show</Text>
-            )}
-          </Stack>
-        ) : (
-          <Stack height="2rem" direction={"row"}>
-            <Skeleton height="20px" width="10%" borderRadius={"md"} />
-            <Skeleton height="20px" width="10%" borderRadius={"md"} />
-            <Skeleton height="20px" width="10%" borderRadius={"md"} />
-          </Stack>
-        )}
+
+        <Stack direction="row" width="100%">
+          {userProfileData?.skills ? (
+            userProfileData?.skills?.map((item, index) => {
+              return (
+                <Tag key={index} colorScheme="twitter">
+                  {item}
+                </Tag>
+              );
+            })
+          ) : (
+            <Text>No skills to show</Text>
+          )}
+        </Stack>
       </Stack>
       <Divider borderTop="1px solid gray" />
       <Stack p={3} gap={3}>
@@ -129,40 +116,32 @@ function General() {
             Work Experience
           </Heading>
         </Stack>
-        {userProfileData?.username ? (
-          <Stack my={2}>
-            {userProfileData?.workExperience ? (
-              <List gap={1}>
-                {userProfileData?.workExperience?.map((item, index) => {
-                  return (
-                    <ListItem
-                      display={"flex"}
-                      alignItems="center"
-                      gap={1}
-                      w="100%"
-                      key={index}
-                    >
-                      <ListIcon
-                        as={IoMdCheckmarkCircle}
-                        color="rgb(29, 161, 242)"
-                      />
-                      <Text fontSize={(10, 11, 12, 13, 14, 15)}>{item}</Text>
-                    </ListItem>
-                  );
-                })}
-              </List>
-            ) : (
-              <Text>No work experience to show</Text>
-            )}
-          </Stack>
-        ) : (
-          <Stack height="6rem">
-            <Skeleton height="20px" width="40%" borderRadius={"md"} />
-            <Skeleton height="20px" width="40%" borderRadius={"md"} />
-            <Skeleton height="20px" width="40%" borderRadius={"md"} />
-            <Skeleton height="20px" width="40%" borderRadius={"md"} />
-          </Stack>
-        )}
+
+        <Stack my={2}>
+          {userProfileData?.workExperience ? (
+            <List gap={1}>
+              {userProfileData?.workExperience?.map((item, index) => {
+                return (
+                  <ListItem
+                    display={"flex"}
+                    alignItems="center"
+                    gap={1}
+                    w="100%"
+                    key={index}
+                  >
+                    <ListIcon
+                      as={IoMdCheckmarkCircle}
+                      color="rgb(29, 161, 242)"
+                    />
+                    <Text fontSize={(10, 11, 12, 13, 14, 15)}>{item}</Text>
+                  </ListItem>
+                );
+              })}
+            </List>
+          ) : (
+            <Text>No work experience to show</Text>
+          )}
+        </Stack>
       </Stack>
     </Stack>
   );
@@ -287,7 +266,7 @@ function About() {
       <Stack p={3}>
         <Stack direction="row" align="center" width="100%" mb={2}>
           <Heading fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
-            About {userProfileData?.username}
+            About
           </Heading>
         </Stack>
 
